@@ -1,0 +1,27 @@
+# Data (large/unversioned)
+data/raw/
+data/interim/
+data/processed/
+data/external/
+results/models/
+results/diagnostics/
+results/cv/
+results/figures/
+results/tables/
+
+# Allow small samples and metadata
+!data/sample/
+!data/metadata/
+
+# Python/R caches and environments
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+.env
+.Rhistory
+.Rproj.user/
+renv/library/
+renv/staging/
+
+# OS/Editor
+.DS_Store
