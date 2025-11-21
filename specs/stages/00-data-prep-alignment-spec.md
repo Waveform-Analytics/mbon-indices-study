@@ -25,6 +25,18 @@ Outputs
 - `data/interim/aligned_base.parquet`
   - Keys: `datetime` (UTC, ISO), `date`, `hour`, `station`
   - Columns: canonical detection fields (fish/dolphin/vessel), environmental (`temperature`, `depth`), optional SPL fields
+- `data/interim/aligned_indices.parquet`
+  - Keys: `datetime` (UTC, ISO), `station`
+  - Columns: acoustic indices aligned/aggregated to 2‑hour bins per station
+- `data/interim/aligned_detections.parquet`
+  - Keys: `datetime` (UTC, ISO), `station`
+  - Columns: canonical detection fields aligned to 2‑hour bins
+- `data/interim/aligned_environment.parquet`
+  - Keys: `datetime` (UTC, ISO), `station`
+  - Columns: environmental covariates aligned to 2‑hour bins (`temperature`, `depth`)
+- `data/interim/aligned_spl.parquet`
+  - Keys: `datetime` (UTC, ISO), `station`
+  - Columns: SPL features aggregated to 2‑hour bins
 - `results/tables/alignment_schema.csv`
 - `results/figures/alignment_completeness.png`
 - `results/logs/alignment_summary.json` (row counts, missingness, imputation events, unit conversions)
@@ -38,7 +50,9 @@ Methods
 - Column normalization
   - Apply `det_column_names.csv` to standardize detection columns; coerce types (ints for counts, bools for presence).
 - Temporal alignment
-  - Perform inner join on `datetime`+`station` across detections and environmental; optionally left join indices for presence inspection (indices are fully aligned in Stage 01).
+  - Perform inner join on `datetime`+`station` across detections and environmental.
+  - Align acoustic indices to 2‑hour bins per `station` by aggregating hourly values (mean unless specified) and write `aligned_indices.parquet`.
+  - Write separate aligned artifacts for detections (`aligned_detections.parquet`), environmental (`aligned_environment.parquet`), and SPL (`aligned_spl.parquet`) to support downstream contracts.
 - Unit handling
   - Ensure `temperature` in °C and `depth` in meters; record any conversions.
 - Missing data policy
@@ -73,7 +87,9 @@ Performance
 
 Dependencies
 - Upstream: raw files present; metadata mapping for detections and indices.
-- Downstream: Stage 01 Index Reduction consumes aligned indices or uses this alignment contract for consistent joins.
+- Downstream: Stage 01 Index Reduction consumes `data/interim/aligned_indices.parquet`.
+- Downstream: Stage 03 Community Metrics consumes `data/interim/aligned_detections.parquet`.
 
 Change Record
-- YYYY‑MM‑DD: Draft created; alignment policies and thresholds specified.
+- 2025‑11‑21: Added explicit aligned indices output and indices alignment steps; clarified downstream dependency for Stage 01.
+- 2025‑11‑21: Split aligned outputs into separate files for detections, environmental, and SPL; updated downstream dependencies for Stage 03.

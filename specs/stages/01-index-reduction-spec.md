@@ -1,14 +1,14 @@
 # 01 Index Reduction — Stage Spec
 
 Title
-- Index Reduction: Correlation + VIF pruning to ~10 indices
+- Index Reduction: Correlation + VIF pruning to ~5-10 indices
 
 Purpose
 - Reduce ~60 acoustic indices to a distinct, low-collinearity subset suitable for GLMM/GAMM modeling while preserving coverage of spectral, temporal, and complexity aspects of the soundscape.
 
 Inputs
-- Source indices: `data/raw/indices/`
-  - Per-station/year CSVs (e.g., `Acoustic_Indices_9M_2021_8kHz_v2_Final.csv`, `..._FullBW_v2_Final.csv` and `indices/culled/*Final.csv`).
+- Aligned indices: `data/interim/aligned_indices.parquet`
+  - Columns: `datetime`, `station`, acoustic index columns aligned to 2‑hour bins
 - Metadata: `data/raw/metadata/Updated_Index_Categories_v2.csv`
   - Columns: `index_name`, `category`, `frequency_band`, `description`.
 - Key columns expected in indices files:
@@ -23,6 +23,8 @@ Outputs
   - Pairwise correlation summary and VIF table.
 - `results/indices/index_final_list.json`
   - Ordered list of ~10 indices with rationale and categories.
+ - `results/indices/index_final_list_8kHz.json`
+ - `results/indices/index_final_list_FullBW.json`
 
 Methods
 - Correlation pruning:
@@ -32,21 +34,24 @@ Methods
   - Sensitivity analysis: report pairs with aggregated `|r| > 0.8` and note differences in final selection.
   - Selection rule within correlated pairs (priority): coverage → interpretability → preliminary VIF → category balance.
 - VIF analysis:
-  - Compute VIF on remaining set; iteratively remove indices with `VIF > 5` (fallback `10`) until all below threshold.
+  - Compute VIF on remaining set; iteratively remove indices with `VIF > 5`.
+  - Fallback policy: if achieving `VIF <= 5` would violate category coverage or reduce the final list below 5, allow `VIF <= 10` for specific indices with explicit justification recorded in the report.
 - Domain coverage check:
   - Ensure representation of categories: spectral energy, temporal modulation, complexity/entropy.
   - If pruning removes a whole category, reintroduce the best candidate with lowest correlation/VIF.
 
 Parameters
-- `correlation_threshold`: default `0.7` (absolute).
-- `vif_threshold`: default `5` (allow `10` if necessary).
-- `min_coverage_fraction`: default `0.95` (fraction of timestamps present across stations/years to be considered robust).
-- `bands_to_include`: `8kHz`, `FullBW` (can be set per analysis).
+- `correlation_threshold`: see `config/analysis.yml -> thresholds.correlation_r`.
+- `vif_threshold`: see `config/analysis.yml -> thresholds.vif`.
+- `vif_threshold_fallback`: see `config/analysis.yml -> thresholds.vif_fallback`.
+- `min_coverage_fraction`: see `config/analysis.yml -> thresholds.min_coverage_fraction`.
+- `bands_policy`: see `config/analysis.yml -> predictors.band_policy`.
+- `analysis_band`: see `config/analysis.yml -> predictors.analysis_band`.
 
 Acceptance Criteria
 - Final list size is between approximately 5-10 indices.
 - No pair among final indices has `|r| > correlation_threshold`.
-- All final indices have `VIF <= vif_threshold`.
+- All final indices have `VIF <= vif_threshold`; if not achievable without violating coverage or list-size constraints, allow up to `vif_threshold_fallback` with per-index justification captured in the report.
 - Each major category (spectral/temporal/complexity) is represented by ≥1 index.
 - Indices chosen are present for ≥`min_coverage_fraction` of records across stations and years.
 - Heatmap and report generated; rationale documented for each dropped/kept index.
@@ -62,7 +67,9 @@ Performance
 
 Dependencies
 - Upstream: raw indices and metadata availability.
-- Downstream: Feature Engineering stage expects `indices_final.csv` list and metadata categories.
+- Upstream: Stage 00 aligned indices (`data/interim/aligned_indices.parquet`) and metadata.
+- Downstream: Stage 02 Feature Engineering expects `indices_final.csv` list and metadata categories.
 
 Change Record
 - 2025‑11‑21: Adopted per station‑year Pearson aggregation by median |r|; added 0.8 sensitivity artifact; set final target to 5–10 indices; thresholds remain 0.7 and VIF 5 (fallback 10).
+- 2025‑11‑21: Clarified VIF fallback policy and switched inputs to aligned indices from Stage 00; updated dependencies accordingly.

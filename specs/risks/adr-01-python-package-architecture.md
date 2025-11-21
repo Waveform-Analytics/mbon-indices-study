@@ -18,4 +18,4 @@ Alternatives
 - Use a larger monolithic package (more complex, less flexible for rapid spec changes).
 
 References
-- Stage specs in `specs/stages/00-02` referencing package functions for deterministic transforms.
+- Stage specs in `specs/stages/00-04` referencing package functions for deterministic transforms.

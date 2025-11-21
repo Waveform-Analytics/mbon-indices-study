@@ -5,15 +5,15 @@ Status Board
 - Stages:
   - 00 Data Prep & Alignment: Draft
   - 01 Index Reduction: Draft
-  - 02 Feature Engineering: Draft
-  - 03 Community Metrics: Draft
+  - 02 Community Metrics: Draft
+  - 03 Feature Engineering: Draft
   - 04 Exploratory Visualization: Draft
-  - 03 GLMM Modeling: Draft
-  - 04 GAMM Modeling: Draft
-  - 05 Cross-Validation: Draft
-  - 06 Model Selection: Draft
-  - 07 Visualization: Draft
-  - 08 Reporting: Draft
+  - 05 GLMM Modeling: Draft
+  - 06 GAMM Modeling: Draft
+  - 07 Cross-Validation: Draft
+  - 08 Model Selection: Draft
+  - 09 Visualization: Draft
+  - 10 Reporting: Draft
 
 Glossary
 - GLMM: Generalized Linear Mixed Model

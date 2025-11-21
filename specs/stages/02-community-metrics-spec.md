@@ -1,4 +1,4 @@
-# 03 Community Metrics — Stage Spec
+# 02 Community Metrics — Stage Spec
 
 Title
 - Derive biological community metrics from detections aligned to 2‑hour bins
@@ -7,8 +7,7 @@ Purpose
 - Compute standardized response variables per station/time for modeling and exploratory analyses.
 
 Inputs
-- Aligned base: `data/interim/aligned_base.parquet` (from Stage 00)
-- Detections: same sources as Stage 00 for reference and audit
+- Aligned detections: `data/interim/aligned_detections.parquet` (from Stage 00)
 - Metadata: `data/raw/metadata/det_column_names.csv` for column mappings
 
 Outputs
@@ -28,7 +27,7 @@ Outputs
 - `results/logs/community_metrics_summary.json` (counts per station/year, missingness)
 
 Methods
-- Use `aligned_base.parquet` as the canonical timeline; derive metrics by grouping on `station, datetime`.
+- Use `aligned_detections.parquet` as the canonical timeline; derive metrics by grouping on `station, datetime`.
 - Column mapping: apply `det_column_names.csv` to identify fish/dolphin/vessel fields and intensity columns.
 - Fish metrics:
   - Activity: sum intensity columns per bin; missing treated as zero only when absence is explicit; otherwise leave missing and report.
@@ -43,9 +42,10 @@ Methods
   - Ensure non‑negative counts; presence flags ∈ {0,1}.
 
 Parameters
-- `assume_zero_when_missing`: default `false` (prefer explicit absence over implicit)
-- `species_column`: name mapping for fish species field(s)
-- `intensity_columns`: list of columns contributing to fish activity
+- `assume_zero_when_missing`: see `config/analysis.yml -> community_metrics.assume_zero_when_missing`.
+- `season_definition`: see `config/analysis.yml -> community_metrics.season_definition`.
+- `species_column`: from detection metadata mapping.
+- `intensity_columns`: from detection metadata mapping.
 
 Acceptance Criteria
 - Schema and types as per `community_metrics_schema.csv`.
@@ -60,9 +60,8 @@ Edge Cases
 Performance
 - Target runtime: < 5 minutes full; < 1 minute sample.
 
-Dependencies
-- Upstream: Stage 00 alignment.
+- Upstream: Stage 00 aligned detections.
 - Downstream: Stage 04 Exploratory Visualization; Stage 05 GLMM; Stage 06 GAMM.
 
 Change Record
-- 2025‑11‑21: Draft created; metrics defined per overview and aligned base.
+- 2025‑11‑21: Draft created; metrics defined per overview and aligned detections; parameters now reference config; renumbered to Stage 02.

@@ -1,4 +1,4 @@
-# 02 Feature Engineering — Stage Spec
+# 03 Feature Engineering — Stage Spec
 
 Title
 - Temporal and grouping features; merge environmental covariates; analysis‑ready dataset
@@ -7,18 +7,10 @@ Purpose
 - Create cyclic temporal terms, grouping IDs for random effects, and within‑day sequence needed for AR1; merge environmental variables; output a clean, deterministic dataset for modeling.
 
 Inputs
-- Index time series:
-  - `data/processed/indices_final.csv` (list of kept indices)
-  - Source indices files from `data/raw/indices/` (same as Stage 01)
-- Detections (manual annotations):
-  - `data/raw/2018/detections/Master_Manual_<station>_2h_2018.xlsx`
-  - `data/raw/2021/detections/Master_Manual_<station>_2h_2021.xlsx`
-- Environmental:
-  - `data/raw/2018/environmental/Master_<station>_Temp_2018.xlsx`, `...Depth_2018.xlsx`
-  - `data/raw/2021/environmental/Master_<station>_Temp_2021.xlsx`, `...Depth_2021.xlsx`
-- SPL (optional):
-  - `data/raw/2018/rms_spl/Master_rmsSPL_<station>_1h_2018.xlsx`
-  - `data/raw/2021/rms_spl/Master_rmsSPL_<station>_1h_2021.xlsx`
+- Final indices list: `data/processed/indices_final.csv` (from Stage 01)
+- Aligned indices: `data/interim/aligned_indices.parquet` (from Stage 00)
+- Aligned environment: `data/interim/aligned_environment.parquet` (from Stage 00)
+- Community metrics: `data/processed/community_metrics.parquet` (from Stage 03)
 
 Outputs
 - `data/processed/analysis_ready.parquet`
@@ -29,14 +21,15 @@ Outputs
     - Sequence: `time_within_day` (0‑based within each `day_id`)
     - Predictors: final indices from Stage 01
     - Covariates: `temperature`, `depth` (per station/time)
-    - Responses: per overview (fish activity/richness, dolphin call counts, presence flags, vessel presence)
+    - Optional scaled covariates: `temperature_z`, `depth_z` (enabled via config)
+    - Responses: from Stage 03 community metrics
 - `results/tables/feature_engineering_schema.csv`
 - `results/figures/temporal_feature_checks.png`
 - `results/logs/feature_engineering_summary.json`
 
 Methods
 - Time normalization:
-  - Parse timestamps to UTC; standardize to 2‑hour resolution; align across sources via inner join on `datetime`+`station`.
+  - Parse timestamps to UTC; standardize to 2‑hour resolution; align via inner join on `datetime`+`station` using aligned inputs.
 - Temporal features:
   - `sin_hour = sin(2π * hour / 24)`
   - `cos_hour = cos(2π * hour / 24)`
@@ -48,12 +41,9 @@ Methods
 - Sequence for AR1:
   - `time_within_day = rank(order(datetime))` within each `day_id` starting at 0.
 - Covariate merge:
-  - Map `temperature` and `depth` per `station`+`datetime` with forward‑fill allowance ≤ 2 hours for occasional gaps; record imputation.
-- Response derivation:
-  - Fish metrics: activity (intensity sum), richness (species count), presence (binary)
-  - Dolphin metrics: burst pulse, click, whistle counts; activity (sum); presence (binary)
-  - Vessel presence: binary
-  - Derive directly from detections files; document column mappings.
+  - Use `aligned_environment.parquet` for `temperature` and `depth` per `station`+`datetime`.
+- Responses:
+  - Join `community_metrics.parquet` on `station, datetime`; no derivation in this stage.
 
 Parameters
 - `time_resolution_hours`: default `2`.
@@ -79,9 +69,8 @@ Performance
 - Target runtime: < 15 minutes full; < 2 minutes sample.
 - Memory: streaming reads for Excel; prefer column subsets.
 
-Dependencies
-- Upstream: Stage 01 outputs; raw detections/environmental files.
+- Upstream: Stage 01 indices list; Stage 00 aligned indices/environment; Stage 03 community metrics.
 - Downstream: GLMM/GAMM stages consume `analysis_ready.parquet`.
 
 Change Record
-- YYYY‑MM‑DD: Draft created; acceptance gates aligned to overview.
+- 2025‑11‑21: Renumbered to Stage 03; inputs switched to aligned indices/environment and Stage 02 community metrics; added optional covariate scaling controlled via config; acceptance criteria retained.

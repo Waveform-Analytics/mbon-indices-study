@@ -1,0 +1,76 @@
+# Analysis configuration (stub)
+
+responses:
+  fish_activity:
+    family: nbinom2
+  fish_richness:
+    family: nbinom2
+  fish_presence:
+    family: binomial
+  dolphin_burst:
+    family: nbinom2
+  dolphin_click:
+    family: nbinom2
+  dolphin_whistle:
+    family: nbinom2
+  dolphin_activity:
+    family: nbinom2
+  dolphin_presence:
+    family: binomial
+  vessel_presence:
+    family: binomial
+
+predictors:
+  indices_source: data/raw/indices/
+  aligned_indices_path: data/interim/aligned_indices.parquet
+  final_list_path: data/processed/indices_final.csv
+  include_bands: ["8kHz", "FullBW"]
+  band_policy: separate
+  analysis_band: FullBW
+
+covariates:
+  temperature: true
+  depth: true
+  scale: false
+  to_scale: ["temperature", "depth"]
+
+temporal:
+  resolution_hours: 2
+  cyclic_terms: ["sin_hour", "cos_hour"]
+  timezone: UTC
+
+random_effects:
+  - station
+  - month_id
+  - day_id
+
+autocorrelation:
+  glmm_ar1: true
+  sequence_column: time_within_day
+
+thresholds:
+  correlation_r: 0.7
+  correlation_sensitivity_r: 0.8
+  vif: 5
+  vif_fallback: 10
+  min_coverage_fraction: 0.95
+
+stations:
+  include: ["9M", "14M", "37M"]
+
+seeds:
+  analysis: 1234
+
+community_metrics:
+  assume_zero_when_missing: false
+  season_definition: month
+
+exploratory:
+  overlay_indices: ["ACI", "Entropy", "BI"]
+  diel_bins: 12
+  figure_size: [1600, 900]
+  font_size: 12
+  heatmap_color_scheme: viridis
+  dpi: 300
+  heatmap_midnight_center: true
+  heatmap_shift_hours: 12

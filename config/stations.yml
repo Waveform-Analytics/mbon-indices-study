@@ -1,0 +1,16 @@
+# Station metadata (stub)
+
+stations:
+  - id: "9M"
+    name: "Upriver"
+    timezone: "UTC"
+  - id: "14M"
+    name: "Midriver"
+    timezone: "UTC"
+  - id: "37M"
+    name: "River mouth"
+    timezone: "UTC"
+
+alignment:
+  resolution_hours: 2
+  env_max_gap_hours: 2

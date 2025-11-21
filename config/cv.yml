@@ -1,0 +1,19 @@
+# Cross-validation configuration (stub)
+
+primary_strategy:
+  name: within_month_split
+  train_days: 1-21
+  test_days: 22-end
+  min_month_rows: 20
+
+secondary_strategy:
+  name: leave_one_station_out
+  stations: ["9M", "14M", "37M"]
+  repeats: 1
+
+metrics:
+  counts: ["rmse", "mae", "r2"]
+  binary: ["auc", "accuracy", "sensitivity", "specificity"]
+
+seeds:
+  cv: 2025
