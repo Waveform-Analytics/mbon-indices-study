@@ -74,3 +74,21 @@ exploratory:
   dpi: 300
   heatmap_midnight_center: true
   heatmap_shift_hours: 12
+
+gamm:
+  smooth_k: 5
+  cyclic_k: 12
+  method: fREML
+  discrete: true
+  select: true
+
+selection:
+  delta_aic_equivalent: 4
+  delta_aic_moderate: 10
+  prefer_simpler_when_equivalent: true
+  cv_primary_metric_counts: rmse
+  cv_primary_metric_binary: auc
+
+alignment:
+  spl_aggregation: mean
+  env_max_gap_hours: 2
