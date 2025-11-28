@@ -76,3 +76,48 @@ def get_indices_band_policy(analysis_cfg: dict[str, Any]) -> dict[str, Any]:
         "band_policy": p.get("band_policy", "separate"),
         "analysis_band": p.get("analysis_band"),
     }
+
+
+def get_source_settings(analysis_cfg: dict[str, Any], source: str) -> dict[str, Any]:
+    """
+    Return normalized loader settings for a given source type.
+
+    Keys returned:
+    - required_columns: list[str]
+    - datetime_column: str | None
+    - compose_datetime: dict | None with keys {date_key, time_key}
+    - sheet_name: str | None (default to first sheet when None)
+    - timezone: str (default "UTC")
+    """
+    s = analysis_cfg.get("sources", {}).get(source, {})
+    return {
+        "required_columns": list(s.get("required_columns", [])),
+        "datetime_column": s.get("datetime_column"),
+        "compose_datetime": s.get("compose_datetime"),
+        "sheet_name": s.get("sheet_name"),
+        "timezone": s.get("timezone", analysis_cfg.get("temporal", {}).get("timezone", "UTC")),
+    }
+
+
+def validate_source_settings(settings: dict[str, Any], source: str) -> dict[str, Any]:
+    """
+    Validate loader settings and return the same dict.
+
+    Rules:
+    - Either datetime_column or compose_datetime must be provided to avoid candidate searches.
+    - compose_datetime must contain both date_key and time_key when provided.
+    - sheet_name may be None (loader defaults to first sheet).
+    - timezone defaults to "UTC" when unspecified.
+    Raises ValueError with clear messages including config path.
+    """
+    dt_col = settings.get("datetime_column")
+    comp = settings.get("compose_datetime")
+    if not dt_col and not comp:
+        raise ValueError(f"analysis.yml:sources.{source}: must provide datetime_column or compose_datetime")
+    if comp is not None:
+        if not isinstance(comp, dict) or "date_key" not in comp or "time_key" not in comp:
+            raise ValueError(f"analysis.yml:sources.{source}.compose_datetime: must specify both date_key and time_key")
+    req = settings.get("required_columns", [])
+    if not isinstance(req, list):
+        raise ValueError(f"analysis.yml:sources.{source}.required_columns: must be a list")
+    return settings

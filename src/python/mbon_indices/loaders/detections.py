@@ -16,8 +16,9 @@ Example
 from pathlib import Path
 
 import pandas as pd
-from mbon_indices.config import get_temporal_settings
+from mbon_indices.config import get_source_settings, get_temporal_settings
 from mbon_indices.paths import det_metadata_map_path, detections_excel_path
+from mbon_indices.utils.datetime import parse_datetime as parse_dt
 
 
 def _read_metadata_map(path: Path) -> pd.DataFrame | None:
@@ -29,21 +30,20 @@ def _read_metadata_map(path: Path) -> pd.DataFrame | None:
 def _apply_column_map(df: pd.DataFrame, mapping: pd.DataFrame | None) -> pd.DataFrame:
     if mapping is None:
         return df
-    m = dict(zip(mapping["original"], mapping["canonical"], strict=False))
+    cols = {c.lower(): c for c in mapping.columns}
+    orig = cols.get("original") or cols.get("original_name") or cols.get("source")
+    canon = cols.get("canonical") or cols.get("canonical_name") or cols.get("target")
+    if not orig or not canon:
+        return df
+    m = dict(zip(mapping[orig], mapping[canon], strict=False))
     return df.rename(columns=m)
 
 
-def _parse_datetime(df: pd.DataFrame, tz: str) -> pd.DataFrame:
-    if "datetime" in df.columns:
-        df["datetime"] = pd.to_datetime(df["datetime"], utc=True)
-        return df
-    if "timestamp" in df.columns:
-        df["datetime"] = pd.to_datetime(df["timestamp"], utc=True)
-        return df
-    return df
+# datetime parsing is unified via mbon_indices.utils.datetime.parse_datetime
 
 
 def load_detections(root: Path, stations: list[str], years: list[int], analysis_cfg: dict) -> pd.DataFrame:
+    src = get_source_settings(analysis_cfg, "detections")
     temporal = get_temporal_settings(analysis_cfg)
     dfs = []
     meta = _read_metadata_map(det_metadata_map_path(root))
@@ -52,9 +52,13 @@ def load_detections(root: Path, stations: list[str], years: list[int], analysis_
             path = detections_excel_path(root, year, station)
             if not path.exists():
                 continue
-            df = pd.read_excel(path, engine="openpyxl")
+            sheet = src.get("sheet_name")
+            df = pd.read_excel(path, sheet_name=sheet, engine="openpyxl")
             df = _apply_column_map(df, meta)
-            df = _parse_datetime(df, temporal.get("timezone", "UTC"))
+            tz = temporal.get("timezone")
+            if not tz:
+                raise ValueError("analysis.yml:temporal.timezone must be defined")
+            df = parse_dt(df, src, tz, source="detections")
             df["station"] = station
             dfs.append(df)
     if not dfs:

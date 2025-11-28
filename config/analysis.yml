@@ -92,3 +92,26 @@ selection:
 alignment:
   spl_aggregation: mean
   env_max_gap_hours: 2
+
+sources:
+  detections:
+    required_columns: ["Date"]
+    datetime_column: "Date"
+    sheet_name: Data
+    timezone: UTC
+  environment:
+    required_columns: ["Date and time"]
+    datetime_column: "Date and time"
+    sheet_name: Data
+    timezone: UTC
+  spl:
+    required_columns: ["Date", "Time"]
+    compose_datetime:
+      date_key: "Date"
+      time_key: "Time"
+    sheet_name: Data
+    timezone: UTC
+  indices:
+    required_columns: ["Date"]
+    datetime_column: "Date"
+    timezone: UTC
