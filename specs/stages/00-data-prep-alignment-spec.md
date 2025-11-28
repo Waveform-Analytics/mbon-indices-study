@@ -91,5 +91,12 @@ Dependencies
 - Downstream: Stage 03 Community Metrics consumes `data/interim/aligned_detections.parquet`.
 
 Change Record
+- 2025‑11‑28: **IMPLEMENTED** - All outputs produced and verified against acceptance criteria. Implementation complete.
+  - Added config-driven loader architecture: `config/analysis.yml:sources.*` specifies datetime columns, sheet names, timezones per data type.
+  - Added unified datetime parser (`src/python/mbon_indices/utils/datetime.py`) with support for `datetime_column` and `compose_datetime` (handles Excel Date+Time combination for SPL).
+  - Added environment metadata mapping: `data/raw/metadata/env_column_names.yml` for temperature/depth raw→canonical column names.
+  - Critical fix: SPL requires combining Date column (date part) + Time column (time part) via `compose_datetime` to avoid microsecond offsets from Excel datetime serialization.
+  - Scripts: stage00-a_verify_loaders.py (config check), stage00-b_align.py (alignment orchestration), stage00-c_generate_qa.py (QA artifacts).
+  - Acceptance criteria met: 100% completeness for detections/environment 2021; <5% imputation; all artifacts produced.
 - 2025‑11‑21: Added explicit aligned indices output and indices alignment steps; clarified downstream dependency for Stage 01.
 - 2025‑11‑21: Split aligned outputs into separate files for detections, environmental, and SPL; updated downstream dependencies for Stage 03.

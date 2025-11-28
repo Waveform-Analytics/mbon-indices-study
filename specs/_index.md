@@ -1,10 +1,10 @@
 # MBON Acoustic Indices — Spec Index
 
 Status Board
-- Project: Draft
+- Project: In Progress
 - Stages:
-  - 00 Data Prep & Alignment: Approved
-  - 01 Index Reduction: Approved
+  - 00 Data Prep & Alignment: ✅ Implemented (2025-11-28)
+  - 01 Index Reduction: Approved → Ready for Implementation
   - 02 Community Metrics: Approved
   - 03 Feature Engineering: Approved
   - 04 Exploratory Visualization: Approved
