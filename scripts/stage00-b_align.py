@@ -50,6 +50,17 @@ def write_parquet(df: pd.DataFrame, path: Path, order: list[str] | None = None) 
     if order:
         cols = [c for c in order if c in df.columns]
         df = df[cols].copy()
+    else:
+        df = df.copy()
+
+    # Drop raw Date/Time columns (redundant with datetime, date, hour)
+    df = df.drop(columns=['Date', 'Time'], errors='ignore')
+
+    # Convert object columns to string for parquet compatibility
+    for col in df.select_dtypes(include=['object']).columns:
+        if col not in ['station', 'date']:  # Keep station and date as-is
+            df[col] = df[col].astype(str)
+
     df.sort_values(["station", "datetime"], inplace=True)
     df.to_parquet(path)
 
@@ -112,11 +123,11 @@ def main() -> None:
     if not spl_aligned.empty:
         base = pd.merge(base, spl_aligned, on=["station", "datetime"], how="left")
 
-    write_parquet(det_aligned, out_dir / "aligned_detections.parquet", order=["station", "datetime", "date", "hour"])
+    write_parquet(det_aligned, out_dir / "aligned_detections.parquet")  # Keep all detection columns
     write_parquet(env_aligned, out_dir / "aligned_environment.parquet", order=["station", "datetime", "date", "hour", "temperature", "depth"])
-    write_parquet(idx_aligned, out_dir / "aligned_indices.parquet", order=["station", "datetime", "date", "hour"])
-    write_parquet(spl_aligned, out_dir / "aligned_spl.parquet", order=["station", "datetime", "date", "hour"])
-    write_parquet(base, out_dir / "aligned_base.parquet", order=["station", "datetime", "date", "hour"])
+    write_parquet(idx_aligned, out_dir / "aligned_indices.parquet")  # Keep all index columns
+    write_parquet(spl_aligned, out_dir / "aligned_spl.parquet")  # Keep all SPL columns
+    write_parquet(base, out_dir / "aligned_base.parquet")  # Keep all merged columns
 
     summary = {
         "rows": {
