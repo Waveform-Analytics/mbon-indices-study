@@ -4,8 +4,8 @@ Status Board
 - Project: In Progress
 - Stages:
   - 00 Data Prep & Alignment: ✅ Implemented (2025-11-28)
-  - 01 Index Reduction: Approved → Ready for Implementation
-  - 02 Community Metrics: Approved
+  - 01 Index Reduction: ✅ Implemented (2025-12-02) — 20 final indices
+  - 02 Community Metrics: Approved → Ready for Implementation
   - 03 Feature Engineering: Approved
   - 04 Exploratory Visualization: Approved
   - 05 GLMM Modeling: Approved
