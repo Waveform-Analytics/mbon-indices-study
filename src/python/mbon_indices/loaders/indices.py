@@ -25,7 +25,9 @@ from mbon_indices.config import (
 from mbon_indices.utils.datetime import parse_datetime as parse_dt
 
 
-def load_indices(root: Path, stations: list[str], years: list[int], analysis_cfg: dict) -> pd.DataFrame:
+def load_indices(
+    root: Path, stations: list[str], years: list[int], analysis_cfg: dict
+) -> pd.DataFrame:
     src_dir = get_indices_source(analysis_cfg, root)
     band_cfg = get_indices_band_policy(analysis_cfg)
     src_settings = get_source_settings(analysis_cfg, "indices")
@@ -33,6 +35,10 @@ def load_indices(root: Path, stations: list[str], years: list[int], analysis_cfg
     tz = temporal.get("timezone")
     if not tz:
         raise ValueError("analysis.yml:temporal.timezone must be defined")
+
+    # Metadata columns to exclude (not acoustic indices)
+    exclude_cols = ["FrequencyResolution"]
+
     dfs = []
     for year in years:
         for station in stations:
@@ -46,9 +52,11 @@ def load_indices(root: Path, stations: list[str], years: list[int], analysis_cfg
                 if inc_bands and not any(b in name for b in inc_bands):
                     continue
                 df = pd.read_csv(p)
+                # Drop metadata columns
+                df = df.drop(columns=[c for c in exclude_cols if c in df.columns], errors="ignore")
                 df = parse_dt(df, src_settings, tz, source="indices")
                 df["station"] = station
                 dfs.append(df)
     if not dfs:
-        return pd.DataFrame(columns=["datetime", "station"])  
+        return pd.DataFrame(columns=["datetime", "station"])
     return pd.concat(dfs, ignore_index=True)
