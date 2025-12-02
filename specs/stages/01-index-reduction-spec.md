@@ -23,16 +23,20 @@ Outputs
   - Pairwise correlation summary and VIF table.
 - `results/indices/index_final_list.json`
   - Ordered list of ~10 indices with rationale and categories.
- - `results/indices/index_final_list_8kHz.json`
- - `results/indices/index_final_list_FullBW.json`
+- `results/indices/index_final_list_8kHz.json`
+- `results/indices/index_final_list_FullBW.json`
+- `results/logs/stage01_index_reduction_YYYYMMDD_HHMMSS.txt`
+  - Timestamped execution log with all steps, decisions, and outputs.
+- `results/logs/archive/`
+  - Previous run logs.
 
 Methods
 - Correlation pruning:
   - Standardize each index (z‑score) within station‑year.
-  - Compute pairwise Pearson correlations per station‑year, then aggregate by median absolute correlation across station‑years.
-  - Primary threshold: drop one index from each pair with aggregated `|r| > 0.7`.
-  - Sensitivity analysis: report pairs with aggregated `|r| > 0.8` and note differences in final selection.
-  - Selection rule within correlated pairs (priority): coverage → interpretability → preliminary VIF → category balance.
+  - Compute pairwise Pearson correlations across all data.
+  - Primary threshold: drop one index from each pair with `|r| > 0.7`.
+  - Greedy selection: process pairs sorted by correlation strength (highest first); for each pair where both indices remain, keep one using decision rules.
+  - Selection rule within correlated pairs (priority): coverage (fewer missing values) → alphabetical tiebreaker (deterministic).
 - VIF analysis:
   - Compute VIF on remaining set; iteratively remove indices with `VIF > 5`.
   - Fallback policy: if achieving `VIF <= 5` would violate category coverage or reduce the final list below 5, allow `VIF <= 10` for specific indices with explicit justification recorded in the report.
@@ -71,5 +75,6 @@ Dependencies
 - Downstream: Stage 02 Feature Engineering expects `indices_final.csv` list and metadata categories.
 
 Change Record
+- 2025‑12‑02: **Implementation in progress** - Added correlation pruning with greedy algorithm. Simplified decision rules to: (1) coverage (fewer missing values), (2) alphabetical tiebreaker. Rationale: interpretability is subjective and hard to operationalize; using VIF in pairwise decisions creates circular dependency with subsequent VIF analysis step; alphabetical provides deterministic, reproducible tiebreaker. Manual review of dropped indices remains available if domain knowledge suggests reconsideration. Added timestamped logging with archiving: `results/logs/stage01_index_reduction_YYYYMMDD_HHMMSS.txt` captures all steps, decisions, and outputs for audit trail and debugging.
 - 2025‑11‑21: Adopted per station‑year Pearson aggregation by median |r|; added 0.8 sensitivity artifact; set final target to 5–10 indices; thresholds remain 0.7 and VIF 5 (fallback 10).
 - 2025‑11‑21: Clarified VIF fallback policy and switched inputs to aligned indices from Stage 00; updated dependencies accordingly.
