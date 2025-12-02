@@ -12,6 +12,8 @@ Outputs
 - Paths
 - Schemas
 - Figures/Tables
+- `results/logs/stage<NN>_<name>_YYYYMMDD_HHMMSS.txt` - Timestamped execution log
+- `results/logs/archive/` - Previous run logs
 
 Methods
 - Algorithms

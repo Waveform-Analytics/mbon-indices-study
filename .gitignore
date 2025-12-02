@@ -9,6 +9,10 @@ results/cv/
 results/figures/
 results/tables/
 
+# Logs (timestamped execution logs - regenerated on each run)
+results/logs/*.txt
+results/logs/archive/
+
 # Allow small samples and metadata
 !data/sample/
 !data/metadata/
