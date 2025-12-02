@@ -10,3 +10,5 @@ Please be aware of the .trae/documents folder, Especially .trae/documents/MBON A
 - Point user to relevant files to review and WAIT for their response
 - This is a learning experience as much as a building experience
 - Step-by-step collaboration, not autonomous implementation
+
+- Make sure to commit often/as needed.
