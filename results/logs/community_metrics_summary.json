@@ -1,0 +1,35 @@
+{
+  "total_rows": 26250,
+  "stations": [
+    "14M",
+    "37M",
+    "9M"
+  ],
+  "date_range": {
+    "start": "2018-01-01T00:00:00+00:00",
+    "end": "2021-12-31T22:00:00+00:00"
+  },
+  "by_station": {
+    "14M": {
+      "rows": 8760,
+      "fish_presence_fraction": 0.5311643835616439,
+      "dolphin_presence_fraction": 0.07077625570776255,
+      "vessel_presence_fraction": 0.14029680365296804,
+      "mean_fish_richness": 0.7058219178082191
+    },
+    "37M": {
+      "rows": 8730,
+      "fish_presence_fraction": 0.5145475372279495,
+      "dolphin_presence_fraction": 0.49587628865979383,
+      "vessel_presence_fraction": 0.38384879725085913,
+      "mean_fish_richness": 0.6990836197021764
+    },
+    "9M": {
+      "rows": 8760,
+      "fish_presence_fraction": 0.5092465753424658,
+      "dolphin_presence_fraction": 0.11004566210045662,
+      "vessel_presence_fraction": 0.04737442922374429,
+      "mean_fish_richness": 0.7229452054794521
+    }
+  }
+}

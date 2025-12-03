@@ -66,4 +66,5 @@ Performance
 - Downstream: Stage 04 Exploratory Visualization; Stage 05 GLMM; Stage 06 GAMM.
 
 Change Record
+- 2025‑12‑03: **IMPLEMENTED** - Computed community metrics from aligned detections. Outputs: 26,250 observations (3 stations, 2018-2021), 11 columns (keys + 9 metrics). Fish presence ~51%, dolphin presence 7-50% by station, vessel presence 5-38%. All validation passed: non-negative counts, binary flags, deterministic derivation.
 - 2025‑11‑21: Draft created; metrics defined per overview and aligned detections; parameters now reference config; renumbered to Stage 02.
