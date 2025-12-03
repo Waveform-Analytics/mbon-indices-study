@@ -10,7 +10,6 @@ Derives biological community metrics from aligned detections:
 import sys
 from pathlib import Path
 from datetime import datetime
-import json
 
 import pandas as pd
 import numpy as np
@@ -19,19 +18,8 @@ root = Path(__file__).parent.parent
 sys.path.append(str(root / "src" / "python"))
 
 from mbon_indices.config import load_analysis_config
+from mbon_indices.data import load_interim_parquet, save_parquet, save_summary_json
 from mbon_indices.utils.logging import setup_stage_logging
-
-
-def load_aligned_detections(root: Path) -> pd.DataFrame:
-    """Load aligned detections from Stage 00 output."""
-    detections_path = root / "data" / "interim" / "aligned_detections.parquet"
-
-    if not detections_path.exists():
-        raise FileNotFoundError(f"Aligned detections not found: {detections_path}")
-
-    df = pd.read_parquet(detections_path)
-    print(f"✓ Loaded aligned detections: {len(df):,} rows, {len(df.columns)} columns")
-    return df
 
 
 def load_column_metadata(root: Path) -> pd.DataFrame:
@@ -192,7 +180,7 @@ def save_outputs(root: Path, metrics_df: pd.DataFrame, summary: dict):
 
     # 1. Save community metrics parquet
     metrics_path = root / "data" / "processed" / "community_metrics.parquet"
-    metrics_df.to_parquet(metrics_path, index=False)
+    save_parquet(metrics_df, metrics_path)
     print(f"  ✓ Saved community metrics: {metrics_path}")
 
     # 2. Save schema CSV
@@ -206,8 +194,7 @@ def save_outputs(root: Path, metrics_df: pd.DataFrame, summary: dict):
 
     # 3. Save summary JSON
     summary_path = root / "results" / "logs" / "community_metrics_summary.json"
-    with open(summary_path, 'w') as f:
-        json.dump(summary, f, indent=2)
+    save_summary_json(summary, summary_path)
     print(f"  ✓ Saved summary: {summary_path}")
 
 
@@ -229,7 +216,8 @@ def main():
 
         # Load data
         print("Step 1: Loading data...")
-        detections_df = load_aligned_detections(root)
+        detections_df = load_interim_parquet(root, "aligned_detections")
+        print(f"✓ Loaded aligned detections: {len(detections_df):,} rows, {len(detections_df.columns)} columns")
         metadata_df = load_column_metadata(root)
         print()
 
