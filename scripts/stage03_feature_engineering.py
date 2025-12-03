@@ -8,7 +8,6 @@ into a single analysis-ready dataset for modeling.
 import sys
 from pathlib import Path
 from datetime import datetime
-import json
 
 import pandas as pd
 import numpy as np
@@ -19,61 +18,14 @@ root = Path(__file__).parent.parent
 sys.path.append(str(root / "src" / "python"))
 
 from mbon_indices.config import load_analysis_config
+from mbon_indices.data import (
+    load_interim_parquet,
+    load_processed_parquet,
+    load_final_indices_list,
+    save_parquet,
+    save_summary_json,
+)
 from mbon_indices.utils.logging import setup_stage_logging
-
-
-def load_final_indices(root: Path) -> list[str]:
-    """Load final indices list from Stage 01."""
-    indices_path = root / "data" / "processed" / "indices_final.csv"
-
-    if not indices_path.exists():
-        raise FileNotFoundError(f"Final indices list not found: {indices_path}")
-
-    df = pd.read_csv(indices_path)
-    indices = df['index_name'].tolist()
-    print(f"✓ Loaded final indices: {len(indices)} indices")
-    return indices
-
-
-def load_aligned_indices(root: Path, final_indices: list[str]) -> pd.DataFrame:
-    """Load aligned indices and filter to final list."""
-    indices_path = root / "data" / "interim" / "aligned_indices.parquet"
-
-    if not indices_path.exists():
-        raise FileNotFoundError(f"Aligned indices not found: {indices_path}")
-
-    df = pd.read_parquet(indices_path)
-
-    # Keep only final indices plus keys
-    keep_cols = ['station', 'datetime', 'datetime_local'] + [c for c in final_indices if c in df.columns]
-    df = df[keep_cols].copy()
-
-    print(f"✓ Loaded aligned indices: {len(df):,} rows, {len(final_indices)} indices")
-    return df
-
-
-def load_aligned_environment(root: Path) -> pd.DataFrame:
-    """Load aligned environmental covariates."""
-    env_path = root / "data" / "interim" / "aligned_environment.parquet"
-
-    if not env_path.exists():
-        raise FileNotFoundError(f"Aligned environment not found: {env_path}")
-
-    df = pd.read_parquet(env_path)
-    print(f"✓ Loaded aligned environment: {len(df):,} rows")
-    return df[['station', 'datetime', 'temperature', 'depth']].copy()
-
-
-def load_community_metrics(root: Path) -> pd.DataFrame:
-    """Load community metrics from Stage 02."""
-    metrics_path = root / "data" / "processed" / "community_metrics.parquet"
-
-    if not metrics_path.exists():
-        raise FileNotFoundError(f"Community metrics not found: {metrics_path}")
-
-    df = pd.read_parquet(metrics_path)
-    print(f"✓ Loaded community metrics: {len(df):,} rows, {len(df.columns)} columns")
-    return df
 
 
 def create_temporal_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -306,7 +258,7 @@ def save_outputs(root: Path, analysis_df: pd.DataFrame, summary: dict):
 
     # 1. Save analysis-ready parquet
     analysis_path = root / "data" / "processed" / "analysis_ready.parquet"
-    analysis_df.to_parquet(analysis_path, index=False)
+    save_parquet(analysis_df, analysis_path)
     print(f"  ✓ Saved analysis-ready dataset: {analysis_path}")
 
     # 2. Save schema CSV
@@ -325,8 +277,7 @@ def save_outputs(root: Path, analysis_df: pd.DataFrame, summary: dict):
 
     # 4. Save summary JSON
     summary_path = root / "results" / "logs" / "feature_engineering_summary.json"
-    with open(summary_path, 'w') as f:
-        json.dump(summary, f, indent=2)
+    save_summary_json(summary, summary_path)
     print(f"  ✓ Saved summary: {summary_path}")
 
 
@@ -347,10 +298,25 @@ def main():
 
         # Step 1: Load all data sources
         print("Step 1: Loading data sources...")
-        final_indices = load_final_indices(root)
-        indices_df = load_aligned_indices(root, final_indices)
-        env_df = load_aligned_environment(root)
-        metrics_df = load_community_metrics(root)
+
+        # Load final indices list
+        final_indices = load_final_indices_list(root)
+        print(f"✓ Loaded final indices: {len(final_indices)} indices")
+
+        # Load aligned indices and filter to final list
+        indices_df = load_interim_parquet(root, "aligned_indices")
+        keep_cols = ['station', 'datetime', 'datetime_local'] + [c for c in final_indices if c in indices_df.columns]
+        indices_df = indices_df[keep_cols].copy()
+        print(f"✓ Loaded aligned indices: {len(indices_df):,} rows, {len(final_indices)} indices")
+
+        # Load aligned environment
+        env_df = load_interim_parquet(root, "aligned_environment")
+        env_df = env_df[['station', 'datetime', 'temperature', 'depth']].copy()
+        print(f"✓ Loaded aligned environment: {len(env_df):,} rows")
+
+        # Load community metrics
+        metrics_df = load_processed_parquet(root, "community_metrics")
+        print(f"✓ Loaded community metrics: {len(metrics_df):,} rows, {len(metrics_df.columns)} columns")
         print()
 
         # Step 2: Merge all sources
