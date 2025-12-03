@@ -15,8 +15,8 @@ Inputs
 Outputs
 - `data/processed/analysis_ready.parquet`
   - Columns:
-    - Keys: `datetime` (UTC ISO), `date`, `station`
-    - Temporal: `hour`, `sin_hour`, `cos_hour`, `day_of_year`, `hour_of_day`
+    - Keys: `datetime` (UTC ISO), `datetime_local` (America/New_York), `date`, `station`
+    - Temporal: `hour`, `sin_hour`, `cos_hour`, `day_of_year`, `hour_of_day` (all derived from `datetime_local` for biological interpretation)
     - Grouping: `day_id`, `month_id`
     - Sequence: `time_within_day` (0‑based within each `day_id`)
     - Predictors: final indices from Stage 01
@@ -30,11 +30,11 @@ Outputs
 Methods
 - Time normalization:
   - Parse timestamps to UTC; standardize to 2‑hour resolution; align via inner join on `datetime`+`station` using aligned inputs.
-- Temporal features:
-  - `sin_hour = sin(2π * hour / 24)`
-  - `cos_hour = cos(2π * hour / 24)`
-  - `day_of_year = yday(date)`
-  - `hour_of_day = hour(datetime)`
+- Temporal features (derived from `datetime_local` for biological interpretation):
+  - `hour_of_day = hour(datetime_local)` — local hour (0-23) for day/night patterns
+  - `sin_hour = sin(2π * hour_of_day / 24)` — cyclic encoding of daily pattern
+  - `cos_hour = cos(2π * hour_of_day / 24)` — cyclic encoding of daily pattern
+  - `day_of_year = yday(datetime_local)` — seasonal patterns
 - Grouping factors:
   - `day_id = paste(date, station, sep="_")`
   - `month_id = format(date, "%Y-%m")`
@@ -73,4 +73,5 @@ Performance
 - Downstream: GLMM/GAMM stages consume `analysis_ready.parquet`.
 
 Change Record
+- 2025‑12‑03: Updated to use `datetime_local` (America/New_York) for all temporal feature extraction. Rationale: biological patterns follow local day/night cycles, not UTC. `datetime` (UTC) retained for merging/alignment only.
 - 2025‑11‑21: Renumbered to Stage 03; inputs switched to aligned indices/environment and Stage 02 community metrics; added optional covariate scaling controlled via config; acceptance criteria retained.
