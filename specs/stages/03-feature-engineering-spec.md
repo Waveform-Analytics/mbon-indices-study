@@ -73,5 +73,6 @@ Performance
 - Downstream: GLMM/GAMM stages consume `analysis_ready.parquet`.
 
 Change Record
+- 2025‑12‑03: **IMPLEMENTED** - Created analysis-ready dataset with 13,102 observations (2021 only, 3 stations). Features: temporal (hour_of_day, sin_hour, cos_hour, day_of_year from datetime_local), grouping (day_id, month_id), AR1 sequence (time_within_day), 20 acoustic indices, 2 environmental covariates, 9 community metrics. All validation passed.
 - 2025‑12‑03: Updated to use `datetime_local` (America/New_York) for all temporal feature extraction. Rationale: biological patterns follow local day/night cycles, not UTC. `datetime` (UTC) retained for merging/alignment only.
 - 2025‑11‑21: Renumbered to Stage 03; inputs switched to aligned indices/environment and Stage 02 community metrics; added optional covariate scaling controlled via config; acceptance criteria retained.

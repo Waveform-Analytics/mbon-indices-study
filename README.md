@@ -1,119 +1,135 @@
-# MBON Acoustic Indices Analysis
+# MBON Acoustic Indices Study
 
-Multistage pipeline for analyzing acoustic indices from passive acoustic monitoring data in relation to environmental covariates and biological detections.
+## Overview
 
-## Project Structure
+This project investigates whether **acoustic indices** — summary statistics computed from underwater sound recordings — can predict **biological community metrics** in estuarine environments. We analyze passive acoustic monitoring data from three sites along the May River, South Carolina to understand relationships between soundscape characteristics and the presence/activity of fish, dolphins, and vessels.
+
+## Study Sites
+
+Data were collected at three stations along the May River estuary:
+
+| Station | Location | Description |
+|---------|----------|-------------|
+| **37M** | River mouth | Closest to open water |
+| **14M** | Mid-river | Intermediate position |
+| **9M** | Up-river | Furthest inland |
+
+## Data Sources
+
+- **Acoustic indices**: ~60 metrics computed from sound recordings (e.g., acoustic complexity, entropy, bioacoustic index), currently available for 2021
+- **Manual detections**: Expert annotations of fish calls, dolphin vocalizations, and vessel noise for 2018 and 2021
+- **Environmental data**: Water temperature and depth at each station
+
+## Species and Metrics
+
+### Fish (8 species)
+- Silver perch
+- Oyster toadfish (boat whistle and grunt calls)
+- Black drum
+- Spotted seatrout
+- Red drum
+- Atlantic croaker
+- Weakfish
+
+**Derived metrics**: activity (total call intensity), richness (species count per time bin), presence (binary)
+
+### Bottlenose Dolphins
+- Echolocation clicks
+- Burst pulses
+- Whistles
+
+**Derived metrics**: counts by call type, total activity, presence (binary)
+
+### Vessels
+**Derived metrics**: presence (binary)
+
+## Research Questions
+
+1. Which acoustic indices best capture variation in biological activity?
+2. Can we predict fish and dolphin presence/activity from soundscape metrics?
+3. How do these relationships vary across stations and time of day?
+
+## Analysis Approach
+
+The analysis proceeds through a series of stages:
+
+### Stage 0: Data Preparation
+Align all data sources to a common 2-hour temporal resolution and standardize formats across stations and years.
+
+### Stage 1: Index Reduction
+Reduce ~60 acoustic indices to a smaller, non-redundant set using correlation analysis and variance inflation factor (VIF) screening. This avoids multicollinearity issues in downstream models.
+
+**Current result**: 20 final indices representing spectral, temporal, and complexity dimensions of the soundscape.
+
+### Stage 2: Community Metrics
+Derive biological response variables from manual detections:
+- **Fish**: activity, richness, presence
+- **Dolphins**: counts by call type, total activity, presence
+- **Vessels**: presence
+
+### Stage 3: Feature Engineering
+Create temporal features (time of day, day of year) and grouping variables needed for mixed-effects modeling.
+
+### Stages 4–6: Statistical Modeling
+Fit Generalized Linear Mixed Models (GLMM) and Generalized Additive Mixed Models (GAMM) to assess which indices predict each community metric, accounting for:
+- Station-level variation (random effects)
+- Temporal autocorrelation
+- Non-linear relationships (GAMM smooth terms)
+
+### Stages 7–10: Model Selection & Reporting
+Compare models via cross-validation, select best predictors, and generate visualizations and reports.
+
+## Current Progress
+
+| Stage | Description | Status |
+|-------|-------------|--------|
+| 00 | Data Prep & Alignment | Complete |
+| 01 | Index Reduction | Complete (20 indices) |
+| 02 | Community Metrics | Complete (9 response variables) |
+| 03 | Feature Engineering | Ready to implement |
+| 04–10 | Modeling & Reporting | Planned |
+
+## Project Organization
 
 ```
 mbon-indices-study/
-├── data/                    # Data files (gitignored)
+├── data/
 │   ├── raw/                 # Original data files
-│   ├── interim/             # Aligned and cleaned data
-│   └── processed/           # Final analysis-ready data
-├── results/                 # Analysis outputs (gitignored)
-│   ├── logs/                # Timestamped execution logs
-│   ├── figures/             # Generated plots
+│   ├── interim/             # Cleaned, aligned data
+│   └── processed/           # Analysis-ready datasets
+├── results/
+│   ├── figures/             # Plots and visualizations
 │   ├── tables/              # Summary tables
-│   └── models/              # Fitted model objects
-├── specs/                   # Stage specifications and documentation
-│   ├── stages/              # Per-stage specs
-│   ├── templates/           # Spec templates
-│   └── reviews/             # Stage checklists
-├── scripts/                 # Executable stage scripts
-├── src/
-│   ├── python/
-│   │   └── mbon_indices/    # Python package for data processing
-│   └── r/                   # R code for modeling (GLMM, GAMM)
-├── config/                  # Configuration files
-└── .trae/                   # Project rules and documentation
-
+│   └── logs/                # Processing logs
+├── specs/                   # Detailed documentation for each stage
+│   └── stages/              # Stage-by-stage specifications
+├── scripts/                 # Executable analysis scripts
+├── src/python/              # Python code for data processing
+├── src/r/                   # R code for statistical modeling
+└── config/                  # Analysis parameters
 ```
 
-## Installation
+### Where to Find More Information
 
-### Prerequisites
-- Python >= 3.10
-- [uv](https://github.com/astral-sh/uv) package manager
+- **Stage specifications** (`specs/stages/`): Detailed documentation of inputs, outputs, methods, and decisions for each analysis stage
+- **Configuration** (`config/analysis.yml`): Parameter values and thresholds used in the analysis
+- **Processing logs** (`results/logs/`): Timestamped records of each analysis run
 
-### Install Package in Editable Mode
+## Key Outputs
 
-```bash
-# Install the mbon_indices package in editable mode
-uv pip install -e .
+- `data/processed/indices_final.csv` — Final set of acoustic indices for modeling
+- `data/processed/community_metrics.parquet` — Biological response variables
+- `data/processed/analysis_ready.parquet` — Combined dataset for modeling (after Stage 03)
+- `results/figures/` — Correlation heatmaps, diagnostic plots, model visualizations
 
-# This allows:
-# - Import from anywhere: `from mbon_indices.config import load_analysis_config`
-# - IDEs/linters can resolve package references
-# - Changes to source code are immediately available
-```
+## Contributing
 
-### Development Tools
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, coding conventions, and workflow details.
 
-```bash
-# Install development dependencies (ruff linter/formatter)
-uv pip install -e ".[dev]"
-```
+## Acknowledgments
 
-## Usage
-
-### Running Stage Scripts
-
-Each stage has a corresponding script in `scripts/`:
-
-```bash
-# Stage 00: Data preparation and temporal alignment
-python scripts/stage00_align.py
-
-# Stage 01: Index reduction (correlation + VIF pruning)
-python scripts/stage01_index_reduction.py
-```
-
-All scripts produce timestamped logs in `results/logs/`.
-
-### Importing the Package
-
-```python
-from mbon_indices.config import load_analysis_config
-from mbon_indices.utils.logging import setup_stage_logging
-
-# Load configuration
-cfg = load_analysis_config(project_root)
-
-# Set up logging for a stage
-logger = setup_stage_logging(project_root, "stage01_index_reduction")
-```
-
-## Workflow
-
-This project follows a **spec-driven development** approach:
-
-1. **Write specs** - Define stage inputs, outputs, methods, and acceptance criteria
-2. **Review specs** - Use checklists in `specs/reviews/`
-3. **Implement** - Write code only after spec approval
-4. **Verify** - Check outputs against acceptance criteria
-5. **Document** - Update spec Change Records
-
-See `specs/_index.md` for stage status and `.trae/rules/project_rules.md` for workflow details.
-
-## Pipeline Stages
-
-- **00: Data Prep & Alignment** - ✅ Complete
-- **01: Index Reduction** - 🚧 In Progress
-- **02: Community Metrics** - Approved
-- **03: Feature Engineering** - Approved
-- **04: Exploratory Visualization** - Approved
-- **05: GLMM Modeling** - Approved
-- **06: GAMM Modeling** - Approved
-- **07-10: Cross-Validation, Selection, Visualization, Reporting** - Draft
-
-## Configuration
-
-Analysis parameters are defined in `config/analysis.yml`:
-- Correlation and VIF thresholds
-- Station lists
-- Temporal resolution
-- Feature engineering rules
+*To be added*
 
 ## License
 
-Research project - not currently licensed for external use.
+Research project — not currently licensed for external use.

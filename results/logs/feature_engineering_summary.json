@@ -1,0 +1,50 @@
+{
+  "total_rows": 13102,
+  "stations": [
+    "14M",
+    "37M",
+    "9M"
+  ],
+  "date_range": {
+    "start": "2021-01-02T00:00:00+00:00",
+    "end": "2021-12-31T22:00:00+00:00"
+  },
+  "temporal_features": {
+    "sin_hour_range": [
+      -1.0,
+      1.0
+    ],
+    "cos_hour_range": [
+      -1.0,
+      1.0
+    ],
+    "day_of_year_range": [
+      1,
+      365
+    ]
+  },
+  "grouping": {
+    "unique_day_ids": 1095,
+    "unique_month_ids": 12
+  },
+  "by_station": {
+    "14M": {
+      "rows": 4368,
+      "unique_days": 365,
+      "mean_temperature": 22.14208335392561,
+      "mean_depth": 8.54593340032967
+    },
+    "37M": {
+      "rows": 4367,
+      "unique_days": 365,
+      "mean_temperature": 21.535333049215918,
+      "mean_depth": 6.298964373039354
+    },
+    "9M": {
+      "rows": 4367,
+      "unique_days": 365,
+      "mean_temperature": 22.260868932821072,
+      "mean_depth": 5.948799365459125
+    }
+  }
+}
