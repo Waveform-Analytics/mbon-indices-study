@@ -17,8 +17,8 @@ Outputs
     - Fish activity (sum of intensity values across fish detections)
     - Fish richness (count of unique fish species present)
     - Fish presence (binary)
+    - Dolphin echolocation count
     - Dolphin burst pulse count
-    - Dolphin click count
     - Dolphin whistle count
     - Dolphin activity (sum across call types)
     - Dolphin presence (binary)
@@ -28,16 +28,18 @@ Outputs
 
 Methods
 - Use `aligned_detections.parquet` as the canonical timeline; derive metrics by grouping on `station, datetime`.
-- Column mapping: apply `det_column_names.csv` to identify fish/dolphin/vessel fields and intensity columns.
+- Column mapping: apply `det_column_names.csv` to identify fish/dolphin/vessel fields using `keep_species=1` filter; excludes interruption columns and non-target species.
 - Fish metrics:
+  - Species selection: filter `group=fish` AND `keep_species=1` (8 species: Silver perch, Oyster toadfish boat whistle/grunt, Black drum, Spotted seatrout, Red drum, Atlantic croaker, Weakfish).
   - Activity: sum intensity columns per bin; missing treated as zero only when absence is explicit; otherwise leave missing and report.
-  - Richness: count unique species detected per bin.
+  - Richness: count unique species detected (>0) per bin.
   - Presence: binary indicator if any fish species present.
 - Dolphin metrics:
-  - Counts for burst, click, whistle from detections; presence if any call type > 0.
+  - Columns: Bottlenose dolphin echolocation, burst pulses, whistles (convert first two from string to numeric).
+  - Counts: extract the 3 call type counts from detections; presence if any call type > 0.
   - Activity: sum of the three counts.
 - Vessel metric:
-  - Presence from detections; prefer binary, optional counts if available.
+  - Presence: binary from Vessel column.
 - Validation:
   - Ensure non‑negative counts; presence flags ∈ {0,1}.
 
