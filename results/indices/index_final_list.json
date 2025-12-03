@@ -106,11 +106,11 @@
     "total_indices": 20,
     "categories_covered": 5,
     "categories": [
-      "Complexity Indices",
       "Diversity Indices",
+      "Complexity Indices",
+      "Amplitude Indices",
       "Spectral Indices",
-      "Temporal Indices",
-      "Amplitude Indices"
+      "Temporal Indices"
     ],
     "missing": []
   },

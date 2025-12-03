@@ -31,13 +31,19 @@ def floor_to_resolution(df: pd.DataFrame, hours: int) -> pd.DataFrame:
 
 def add_date_hour(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Add derived `date` and `hour` columns based on `datetime`.
+    Add derived `datetime_local`, `date` and `hour` columns based on `datetime`.
 
+    `datetime` is expected to be in UTC.
+    `datetime_local` is converted to America/New_York timezone for biological interpretation.
     Missing `datetime` values are set to NaT before derivation.
     """
     out = df.copy()
     if "datetime" not in out.columns:
         out["datetime"] = pd.NaT
+
+    # Convert UTC to local time (America/New_York)
+    out["datetime_local"] = out["datetime"].dt.tz_convert("America/New_York")
+
     out["date"] = out["datetime"].dt.date.astype("string")
     out["hour"] = out["datetime"].dt.hour
     return out
@@ -77,7 +83,9 @@ def deduplicate_keep_last(df: pd.DataFrame, by: list[str]) -> pd.DataFrame:
     return df.sort_values(by).drop_duplicates(subset=by, keep="last")
 
 
-def forward_fill_with_limit(df: pd.DataFrame, group_cols: list[str], cols: list[str], limit: int) -> pd.DataFrame:
+def forward_fill_with_limit(
+    df: pd.DataFrame, group_cols: list[str], cols: list[str], limit: int
+) -> pd.DataFrame:
     """
     Forward-fill specified columns per group with a maximum step limit.
 
