@@ -13,7 +13,6 @@ from datetime import datetime
 
 import pandas as pd
 import numpy as np
-import json
 import matplotlib.pyplot as plt
 import seaborn as sns
 from statsmodels.stats.outliers_influence import variance_inflation_factor
@@ -22,19 +21,8 @@ root = Path(__file__).parent.parent
 sys.path.append(str(root / "src" / "python"))
 
 from mbon_indices.config import load_analysis_config
+from mbon_indices.data import load_interim_parquet, save_summary_json
 from mbon_indices.utils.logging import setup_stage_logging
-
-
-def load_aligned_indices(root: Path) -> pd.DataFrame:
-    """Load aligned acoustic indices from Stage 00 output."""
-    indices_path = root / "data" / "interim" / "aligned_indices.parquet"
-
-    if not indices_path.exists():
-        raise FileNotFoundError(f"Aligned indices not found: {indices_path}")
-
-    df = pd.read_parquet(indices_path)
-    print(f"✓ Loaded aligned indices: {len(df):,} rows, {len(df.columns)} columns")
-    return df
 
 
 def load_index_metadata(root: Path) -> pd.DataFrame:
@@ -363,13 +351,12 @@ def save_outputs(
             'description': description
         })
 
-    with open(final_list_path, 'w') as f:
-        json.dump({
-            'final_indices': final_list_data,
-            'count': len(final_indices),
-            'coverage': coverage,
-            'correlation_threshold': corr_threshold
-        }, f, indent=2)
+    save_summary_json({
+        'final_indices': final_list_data,
+        'count': len(final_indices),
+        'coverage': coverage,
+        'correlation_threshold': corr_threshold
+    }, final_list_path)
     print(f"  ✓ Saved final index list: {final_list_path}")
 
     # 2. Save indices_final.csv
@@ -488,7 +475,8 @@ def main():
 
         # Load data
         print("Step 1: Loading data...")
-        indices_df = load_aligned_indices(root)
+        indices_df = load_interim_parquet(root, "aligned_indices")
+        print(f"✓ Loaded aligned indices: {len(indices_df):,} rows, {len(indices_df.columns)} columns")
         metadata_df = load_index_metadata(root)
         index_cols = extract_index_columns(indices_df)
         print(f"  Starting with: {len(index_cols)} indices")
