@@ -7,9 +7,9 @@ responses:
     family: nbinom2
   fish_presence:
     family: binomial
-  dolphin_burst:
+  dolphin_burst_pulse:
     family: nbinom2
-  dolphin_click:
+  dolphin_echolocation:
     family: nbinom2
   dolphin_whistle:
     family: nbinom2
