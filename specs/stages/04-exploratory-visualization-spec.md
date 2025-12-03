@@ -8,7 +8,11 @@ Purpose
 
 Inputs
 - `data/processed/analysis_ready.parquet` (community metrics, indices, covariates)
-- `data/processed/indices_final.csv` (final indices list)
+- `data/processed/indices_final.csv` (column name list identifying which columns are acoustic indices; not data to merge)
+- Column identification via config:
+  - Responses: `config/analysis.yml -> responses` (9 community metrics)
+  - Covariates: `config/analysis.yml -> covariates` (temperature, depth)
+  - Indices: `config/analysis.yml -> predictors.final_list_path` (20 acoustic indices)
 
 Outputs
 - `results/figures/exploratory/`
@@ -30,13 +34,14 @@ Methods
   - Bar graphs of aggregated metrics by season and station.
   - Overlay scatter/line plots: community metrics vs selected indices (per station); annotate Pearson r; no fitted model beyond linear reference.
   - Distributions: 9‑panel faceted histograms/KDEs for community metrics; validate binary variables show only {0,1}.
-  - Heatmaps: per station, for each community metric, each final index, and each environmental variable; x = date (UTC), y = hour of day.
+  - Heatmaps: per station, for each community metric, each final index, and each environmental variable; x = local date, y = hour of day (local).
 - Index selection for overlays:
   - Use the final indices list; select indices from config representing spectral/temporal/complexity.
 - Reproducibility:
   - Fixed seeds for any sampling; write plots with deterministic filenames.
 - Timezone alignment:
-  - Use `analysis_ready.hour_of_day` and UTC timestamps to avoid misalignment; verify station panels align on identical UTC axes.
+  - Use `datetime_local` and `hour_of_day` (both derived from America/New_York local time) for biological interpretability.
+  - Rationale: diel patterns (day/night activity) follow local sunrise/sunset, not UTC.
  - Midnight centering:
    - To center midnight vertically, shift timestamps by `exploratory.heatmap_shift_hours` (default 12h) before plotting.
    - Compute display hour as `(hour_of_day + heatmap_shift_hours) % 24`.
@@ -57,7 +62,7 @@ Acceptance Criteria
 - Clarity: axes labeled, units noted, captions include data ranges and binning.
 - No inferential claims: visuals are descriptive; results not used for formal model selection.
 - Deterministic outputs: identical figures given identical inputs.
-- Time alignment: all heatmaps use UTC date on x and `hour_of_day` on y; no DST shifts.
+- Time alignment: all heatmaps use local date on x and `hour_of_day` (local) on y; consistent across stations.
 - Binary validation: presence metrics distributions show only {0,1}; deviations are logged.
 - Publication quality: minimum font size and DPI per config; color scheme consistent.
  - Midnight centering: when enabled, heatmaps use shifted timestamps for x‑axis day (shifted_date) and rotated hour values; no vertical swapping artifacts.
@@ -74,4 +79,5 @@ Dependencies
 - Downstream: none strictly; figures for collaborator sharing and sanity checks.
 
 Change Record
+- 2025‑12‑03: Clarified inputs section—`indices_final.csv` is a column list, not data; added config references for identifying response/covariate/index columns. Updated all timezone references from UTC to local time (`datetime_local`, America/New_York) for biological interpretability of diel patterns.
 - 2025‑11‑21: Updated to consume `analysis_ready.parquet` only; added distributions, scatter overlays with Pearson r, and per‑station heatmaps for metrics/indices/environment; parameters reference config; timezone alignment emphasized.
