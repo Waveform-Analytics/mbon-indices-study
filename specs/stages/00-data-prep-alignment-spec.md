@@ -23,19 +23,19 @@ Inputs
 
 Outputs
 - `data/interim/aligned_base.parquet`
-  - Keys: `datetime` (UTC, ISO), `datetime_local` (America/New_York), `date`, `hour`, `station`
+  - Keys: `datetime` (UTC, ISO), `datetime_local` (EST, UTC-5 fixed), `date`, `hour`, `station`
   - Columns: canonical detection fields (fish/dolphin/vessel), environmental (`temperature`, `depth`), optional SPL fields
 - `data/interim/aligned_indices.parquet`
-  - Keys: `datetime` (UTC, ISO), `datetime_local` (America/New_York), `station`
+  - Keys: `datetime` (UTC, ISO), `datetime_local` (EST, UTC-5 fixed), `station`
   - Columns: acoustic indices aligned/aggregated to 2‑hour bins per station
 - `data/interim/aligned_detections.parquet`
-  - Keys: `datetime` (UTC, ISO), `datetime_local` (America/New_York), `station`
+  - Keys: `datetime` (UTC, ISO), `datetime_local` (EST, UTC-5 fixed), `station`
   - Columns: canonical detection fields aligned to 2‑hour bins
 - `data/interim/aligned_environment.parquet`
-  - Keys: `datetime` (UTC, ISO), `datetime_local` (America/New_York), `station`
+  - Keys: `datetime` (UTC, ISO), `datetime_local` (EST, UTC-5 fixed), `station`
   - Columns: environmental covariates aligned to 2‑hour bins (`temperature`, `depth`)
 - `data/interim/aligned_spl.parquet`
-  - Keys: `datetime` (UTC, ISO), `datetime_local` (America/New_York), `station`
+  - Keys: `datetime` (UTC, ISO), `datetime_local` (EST, UTC-5 fixed), `station`
   - Columns: SPL features aggregated to 2‑hour bins
 - `results/tables/alignment_schema.csv`
 - `results/figures/alignment_completeness.png`
@@ -44,7 +44,7 @@ Outputs
 Methods
 - Timestamp normalization
   - Parse all timestamps to timezone‑aware; convert to `UTC` for alignment and merging.
-  - Create `datetime_local` by converting UTC to `America/New_York` timezone for biological interpretation (day/night cycles, fish activity patterns). Local time accounts for EST/EDT transitions.
+  - Create `datetime_local` by converting UTC to fixed EST (UTC-5) for biological interpretation (day/night cycles, fish activity patterns). Fixed offset avoids DST-induced hour gaps that cause visualization artifacts.
   - Normalize to 2‑hour resolution; for sources with 1‑hour resolution (SPL), aggregate to 2‑hour bins via mean unless otherwise specified.
 - Station harmonization
   - Map station names to canonical set `{9M, 14M, 37M}`; drop/flag any unknown codes.
@@ -92,6 +92,7 @@ Dependencies
 - Downstream: Stage 03 Community Metrics consumes `data/interim/aligned_detections.parquet`.
 
 Change Record
+- 2025‑12‑04: Changed `datetime_local` from America/New_York (DST-aware) to fixed EST (UTC-5). DST transitions caused alternating hour gaps in heatmaps (odd hours in winter, even hours in summer). Fixed offset maintains biological time context while ensuring consistent 2-hour bins year-round.
 - 2025‑12‑03: Added `datetime_local` column (America/New_York timezone) to all aligned outputs. Rationale: biological patterns (fish/dolphin activity) follow local day/night cycles, not UTC. UTC retained for alignment/merging; local time used for temporal feature extraction in downstream stages.
 - 2025‑11‑28: **IMPLEMENTED** - All outputs produced and verified against acceptance criteria. Implementation complete.
   - Added config-driven loader architecture: `config/analysis.yml:sources.*` specifies datetime columns, sheet names, timezones per data type.

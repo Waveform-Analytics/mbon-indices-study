@@ -41,8 +41,10 @@ def add_date_hour(df: pd.DataFrame) -> pd.DataFrame:
     if "datetime" not in out.columns:
         out["datetime"] = pd.NaT
 
-    # Convert UTC to local time (America/New_York)
-    out["datetime_local"] = out["datetime"].dt.tz_convert("America/New_York")
+    # Convert UTC to fixed EST (UTC-5) for consistent 2-hour bins year-round
+    # Using fixed offset avoids DST shifts that cause alternating hour gaps in heatmaps
+    # Note: Etc/GMT signs are inverted, so +5 means UTC-5 (EST)
+    out["datetime_local"] = out["datetime"].dt.tz_convert("Etc/GMT+5")
 
     out["date"] = out["datetime"].dt.date.astype("string")
     out["hour"] = out["datetime"].dt.hour

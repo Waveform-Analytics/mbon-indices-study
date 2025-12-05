@@ -40,8 +40,8 @@ Methods
 - Reproducibility:
   - Fixed seeds for any sampling; write plots with deterministic filenames.
 - Timezone alignment:
-  - Use `datetime_local` and `hour_of_day` (both derived from America/New_York local time) for biological interpretability.
-  - Rationale: diel patterns (day/night activity) follow local sunrise/sunset, not UTC.
+  - Use `datetime_local` and `hour_of_day` (both derived from fixed EST, UTC-5) for biological interpretability.
+  - Rationale: diel patterns (day/night activity) follow local sunrise/sunset, not UTC. Fixed EST (vs DST-aware) ensures consistent 2-hour bins year-round.
  - Midnight centering:
    - To center midnight vertically, shift timestamps by `exploratory.heatmap_shift_hours` (default 12h) before plotting.
    - Compute display hour as `(hour_of_day + heatmap_shift_hours) % 24`.
@@ -79,5 +79,6 @@ Dependencies
 - Downstream: none strictly; figures for collaborator sharing and sanity checks.
 
 Change Record
+- 2025‑12‑04: Updated timezone from America/New_York (DST-aware) to fixed EST (UTC-5). DST caused alternating hour gaps in heatmaps; fixed offset ensures consistent 2-hour bins while maintaining biological time context.
 - 2025‑12‑03: Clarified inputs section—`indices_final.csv` is a column list, not data; added config references for identifying response/covariate/index columns. Updated all timezone references from UTC to local time (`datetime_local`, America/New_York) for biological interpretability of diel patterns.
 - 2025‑11‑21: Updated to consume `analysis_ready.parquet` only; added distributions, scatter overlays with Pearson r, and per‑station heatmaps for metrics/indices/environment; parameters reference config; timezone alignment emphasized.

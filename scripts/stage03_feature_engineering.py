@@ -32,7 +32,7 @@ def create_temporal_features(df: pd.DataFrame) -> pd.DataFrame:
     """
     Create temporal features from datetime_local.
 
-    Uses local time (America/New_York) for biological interpretation.
+    Uses fixed EST (UTC-5) for biological interpretation and consistent 2-hour bins.
     """
     out = df.copy()
 
