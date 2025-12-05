@@ -571,10 +571,9 @@ def main():
         exploratory_cfg = cfg.get('exploratory', {})
         cmap = exploratory_cfg.get('heatmap_color_scheme', 'viridis')
         midnight_center = exploratory_cfg.get('heatmap_midnight_center', True)
-        overlay_indices = exploratory_cfg.get('overlay_indices', [])
 
-        # Heatmap variables: responses + representative indices + covariates
-        heatmap_vars = responses + overlay_indices + covariates
+        # Heatmap variables: responses + all final indices + covariates
+        heatmap_vars = responses + indices + covariates
         plot_heatmaps(df, heatmap_vars, heatmap_dir, cmap=cmap, midnight_center=midnight_center)
         print()
 
