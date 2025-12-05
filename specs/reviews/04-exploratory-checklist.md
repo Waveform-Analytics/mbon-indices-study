@@ -2,7 +2,7 @@
 
 Pre‑conditions
 - Inputs available: `analysis_ready.parquet`, `indices_final.csv`
-- Config keys present: `exploratory.overlay_indices`, `exploratory.figure_size`, `exploratory.font_size`, `exploratory.heatmap_color_scheme`, `exploratory.dpi`, `exploratory.heatmap_midnight_center`, `exploratory.heatmap_shift_hours`
+- Config keys present: `exploratory.figure_size`, `exploratory.font_size`, `exploratory.heatmap_color_scheme`, `exploratory.dpi`, `exploratory.heatmap_midnight_center`, `exploratory.heatmap_shift_hours`
 
 Methods
 - Descriptive stats by station, season, hour_of_day

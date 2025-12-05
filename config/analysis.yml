@@ -66,7 +66,6 @@ community_metrics:
   season_definition: month
 
 exploratory:
-  overlay_indices: ["ACI", "Entropy", "BI"]
   diel_bins: 12
   figure_size: [1600, 900]
   font_size: 12

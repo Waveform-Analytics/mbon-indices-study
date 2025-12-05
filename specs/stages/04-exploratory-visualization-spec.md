@@ -49,7 +49,6 @@ Methods
 
 Parameters
 - `season_definition`: see `config/analysis.yml -> community_metrics.season_definition`.
-- `overlay_indices`: see `config/analysis.yml -> exploratory.overlay_indices`.
 - `diel_bins`: see `config/analysis.yml -> exploratory.diel_bins`.
 - `figure_size`: see `config/analysis.yml -> exploratory.figure_size`.
 - `font_size`: see `config/analysis.yml -> exploratory.font_size`.
