@@ -364,7 +364,7 @@ def plot_heatmaps(
     midnight_center: bool = True
 ) -> None:
     """
-    Create date × hour heatmaps for each variable, with one panel per station.
+    Create date × hour heatmaps for each variable, with vertically stacked panels per station.
 
     Parameters:
         df: Analysis-ready DataFrame with datetime_local, hour_of_day, station columns
@@ -391,7 +391,17 @@ def plot_heatmaps(
         return
 
     for var in vars_present:
-        fig, axes = plt.subplots(1, n_stations, figsize=(5 * n_stations, 6), sharey=True)
+        # Vertically stacked layout: wide panels (16 inches) with modest height each (3 inches)
+        # Extra height at bottom for colorbar
+        fig_width = 16
+        panel_height = 3
+        fig_height = n_stations * panel_height + 1.5  # Extra space for colorbar and title
+
+        fig, axes = plt.subplots(
+            n_stations, 1,
+            figsize=(fig_width, fig_height),
+            sharex=True
+        )
         if n_stations == 1:
             axes = [axes]
 
@@ -413,9 +423,7 @@ def plot_heatmaps(
 
             # Reorder hours if midnight_center
             if midnight_center:
-                # Shift so midnight (0) is in the middle
-                # Original order: 0, 2, 4, ..., 22
-                # New order: 12, 14, 16, 18, 20, 22, 0, 2, 4, 6, 8, 10
+                # Shift so midnight (0 or 1 depending on offset) is in the middle
                 hours_present = sorted(pivot.index)
                 shift_point = len(hours_present) // 2
                 new_order = hours_present[shift_point:] + hours_present[:shift_point]
@@ -431,39 +439,41 @@ def plot_heatmaps(
                 interpolation='nearest'
             )
 
-            # Set axis labels
-            ax.set_title(f'{station}')
-            ax.set_xlabel('Date')
-
-            # Y-axis: hours
+            # Y-axis: hours (on left side with station label)
             if midnight_center:
                 y_labels = new_order
             else:
                 y_labels = sorted(pivot.index)
             ax.set_yticks(range(len(y_labels)))
             ax.set_yticklabels([f'{h:02d}:00' for h in y_labels])
+            ax.set_ylabel(f'{station}\nHour (local)', fontsize=10)
 
-            if i == 0:
-                ax.set_ylabel('Hour of Day (local)')
-
-            # X-axis: sample of dates (too many to show all)
+            # X-axis: only show on bottom panel
             n_dates = len(pivot.columns)
-            if n_dates > 10:
-                # Show ~6 date labels
-                step = n_dates // 6
-                tick_positions = range(0, n_dates, step)
-                tick_labels = [pivot.columns[j].strftime('%Y-%m') if j < n_dates else '' for j in tick_positions]
-                ax.set_xticks(list(tick_positions))
-                ax.set_xticklabels(tick_labels, rotation=45, ha='right')
+            if i == n_stations - 1:
+                # Show ~12 date labels on bottom panel
+                if n_dates > 12:
+                    step = n_dates // 12
+                    tick_positions = list(range(0, n_dates, step))
+                    tick_labels = [pivot.columns[j].strftime('%b') if j < n_dates else '' for j in tick_positions]
+                    ax.set_xticks(tick_positions)
+                    ax.set_xticklabels(tick_labels)
+                else:
+                    ax.set_xticks(range(n_dates))
+                    ax.set_xticklabels([d.strftime('%m-%d') for d in pivot.columns], rotation=45, ha='right')
+                ax.set_xlabel('Date (2021)')
             else:
-                ax.set_xticks(range(n_dates))
-                ax.set_xticklabels([d.strftime('%m-%d') for d in pivot.columns], rotation=45, ha='right')
+                ax.set_xticks([])
 
-        # Add colorbar
-        fig.colorbar(im, ax=axes, label=var, shrink=0.8)
+        # Add horizontal colorbar at bottom
+        cbar_ax = fig.add_axes([0.15, 0.06, 0.7, 0.02])  # [left, bottom, width, height]
+        cbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal')
+        cbar.set_label(var, fontsize=11)
 
-        plt.suptitle(f'{var} by Date and Hour', fontsize=14)
-        plt.tight_layout()
+        plt.suptitle(f'{var} by Date and Hour', fontsize=14, y=0.98)
+
+        # Adjust layout to make room for colorbar
+        plt.subplots_adjust(bottom=0.12, top=0.94, hspace=0.15)
 
         # Save
         output_path = output_dir / f'heatmap_{var}.png'
