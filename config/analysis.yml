@@ -66,13 +66,8 @@ community_metrics:
   season_definition: month
 
 exploratory:
-  diel_bins: 12
-  figure_size: [1600, 900]
-  font_size: 12
   heatmap_color_scheme: viridis
-  dpi: 300
   heatmap_midnight_center: true
-  heatmap_shift_hours: 12
 
 gamm:
   smooth_k: 5
