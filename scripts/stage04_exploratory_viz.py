@@ -67,9 +67,12 @@ def generate_descriptive_stats(
     # Compute stats grouped by station, season, hour
     stats_rows = []
 
+    # Get actual hours present in data (may be odd or even depending on timezone offset)
+    hours_in_data = sorted(df['hour_of_day'].unique())
+
     for station in sorted(df['station'].unique()):
         for season in ['Winter', 'Spring', 'Summer', 'Fall']:
-            for hour in range(0, 24, 2):  # 2-hour bins: 0, 2, 4, ..., 22
+            for hour in hours_in_data:
                 subset = df[
                     (df['station'] == station) &
                     (df['season'] == season) &
@@ -542,7 +545,7 @@ def main():
         print()
 
         # Step 4: Scatter overlays (all indices)
-        print("Step 4: Creating scatterin overlays...")
+        print("Step 4: Creating scatter overlays...")
         scatter_dir = root / "results" / "figures" / "exploratory" / "scatter"
         scatter_dir.mkdir(parents=True, exist_ok=True)
         plot_scatter_overlays(df, responses, indices, scatter_dir)
