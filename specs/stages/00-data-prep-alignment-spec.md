@@ -1,12 +1,9 @@
 # 00 Data Preparation & Temporal Alignment — Stage Spec
 
-Title
-- Canonical data cleaning, station harmonization, and temporal alignment to 2‑hour bins
-
-Purpose
+## Purpose
 - Produce a clean, aligned, and documented dataset that standardizes keys, timestamps, station codes, and units across detections, indices, environmental, and SPL sources. Provide deterministic and auditable transforms for downstream stages.
 
-Inputs
+## Inputs
 - Detections (manual annotations):
   - `data/raw/2018/detections/Master_Manual_<station>_2h_2018.xlsx`
   - `data/raw/2021/detections/Master_Manual_<station>_2h_2021.xlsx`
@@ -21,7 +18,7 @@ Inputs
   - `data/raw/metadata/det_column_names.csv` (column name mapping)
   - `data/raw/metadata/Updated_Index_Categories_v2.csv` (index metadata)
 
-Outputs
+## Outputs
 - `data/interim/aligned_base.parquet`
   - Keys: `datetime` (UTC, ISO), `datetime_local` (EST, UTC-5 fixed), `date`, `hour`, `station`
   - Columns: canonical detection fields (fish/dolphin/vessel), environmental (`temperature`, `depth`), optional SPL fields
@@ -41,7 +38,7 @@ Outputs
 - `results/figures/alignment_completeness.png`
 - `results/logs/alignment_summary.json` (row counts, missingness, imputation events, unit conversions)
 
-Methods
+## Methods
 - Timestamp normalization
   - Parse all timestamps to timezone‑aware; convert to `UTC` for alignment and merging.
   - Create `datetime_local` by converting UTC to fixed EST (UTC-5) for biological interpretation (day/night cycles, fish activity patterns). Fixed offset avoids DST-induced hour gaps that cause visualization artifacts.
@@ -63,35 +60,35 @@ Methods
 - Determinism
   - Sort by `station, datetime`; write outputs with fixed column order; record input file hashes in summary.
 
-Parameters
+## Parameters
 - `timezone`: `UTC`
 - `time_resolution_hours`: `2`
 - `env_max_gap_hours`: `2`
 - `stations`: `9M, 14M, 37M`
 - `spl_aggregation`: `mean`
 
-Acceptance Criteria
+## Acceptance Criteria
 - All outputs have canonical keys and types as per schema; schema CSV generated.
 - Alignment completeness ≥ 95% across detections+environmental per station/year; completeness reported.
 - Environmental imputation events ≤ 5% of aligned rows; all imputation logged.
 - Deterministic checksum: reruns on same inputs produce identical `aligned_base.parquet` and summary.
 - Unit conversions, station mappings, and dropped rows are summarized and saved to JSON.
 
-Edge Cases
+## Edge Cases
 - Overlapping timestamps or duplicates → de‑duplicate by `station, datetime` with defined rule (keep last, report count).
 - DST anomalies → neutralized by UTC conversion.
 - Unknown or new station codes → flagged and excluded; summary records occurrences.
 
-Performance
+## Performance
 - Target runtime: < 10 minutes full; < 1 minute sample.
 - Memory: streaming reads for Excel via chunking where needed.
 
-Dependencies
+## Dependencies
 - Upstream: raw files present; metadata mapping for detections and indices.
 - Downstream: Stage 01 Index Reduction consumes `data/interim/aligned_indices.parquet`.
 - Downstream: Stage 03 Community Metrics consumes `data/interim/aligned_detections.parquet`.
 
-Change Record
+## Change Record
 - 2025‑12‑04: Changed `datetime_local` from America/New_York (DST-aware) to fixed EST (UTC-5). DST transitions caused alternating hour gaps in heatmaps (odd hours in winter, even hours in summer). Fixed offset maintains biological time context while ensuring consistent 2-hour bins year-round.
 - 2025‑12‑03: Added `datetime_local` column (America/New_York timezone) to all aligned outputs. Rationale: biological patterns (fish/dolphin activity) follow local day/night cycles, not UTC. UTC retained for alignment/merging; local time used for temporal feature extraction in downstream stages.
 - 2025‑11‑28: **IMPLEMENTED** - All outputs produced and verified against acceptance criteria. Implementation complete.

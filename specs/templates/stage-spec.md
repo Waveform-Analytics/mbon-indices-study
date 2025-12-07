@@ -1,35 +1,36 @@
-# Stage Spec Template
+# [NN] [Name] — Stage Spec
 
-Title
+## Purpose
+- Brief statement of what this stage accomplishes
 
-Purpose
+## Inputs
+- `path/to/input.file` — description
+- Config references: `config/analysis.yml -> key`
 
-Inputs
-- Paths
-- Schemas
+## Outputs
+- `path/to/output.file` — description
+- `results/logs/stage<NN>_<name>_YYYYMMDD_HHMMSS.txt` — timestamped execution log
 
-Outputs
-- Paths
-- Schemas
-- Figures/Tables
-- `results/logs/stage<NN>_<name>_YYYYMMDD_HHMMSS.txt` - Timestamped execution log
-- `results/logs/archive/` - Previous run logs
+## Methods
+- Algorithms and approaches
+- Can use `###` subsections for complex stages
 
-Methods
-- Algorithms
-- Parameters
+## Parameters
+- `param_name`: description, default, config reference
 
-Parameters
-- Key: Type, Default, Description
+## Acceptance Criteria
+- Checkable criteria for successful completion
 
-Acceptance Criteria
-- Objective checks
+## Edge Cases
+- Known edge cases and handling
 
-Edge Cases
+## Performance
+- Runtime targets
+- Memory considerations
 
-Performance
+## Dependencies
+- Upstream: required inputs
+- Downstream: stages that depend on this
 
-Dependencies
-
-Change Record
-- Date, Change, Rationale, Impact
+## Change Record
+- YYYY-MM-DD: Description of change

@@ -1,21 +1,34 @@
-# Per-Metric Model Spec Template
+# [Response] — [Model Type] Spec
 
-Metric
+## Purpose
+- What this model tests or estimates
 
-Model Type
+## Inputs
+- Data sources
+- Config references
 
-Purpose
+## Outputs
+- Model artifacts
+- Summary tables
+- Diagnostic figures
 
-Inputs
+## Formula/Structure
+- Response variable
+- Family/distribution
+- Fixed effects
+- Random effects
+- Autocorrelation structure
 
-Outputs
+## Diagnostics
+- What diagnostics are run
+- How to interpret them
 
-Formula/Structure
+## Acceptance Criteria
+- Convergence requirements
+- Diagnostic thresholds
 
-Diagnostics
+## Notes
+- Additional context or considerations
 
-Acceptance Criteria
-
-Notes
-
-Change Record
+## Change Record
+- YYYY-MM-DD: Description of change

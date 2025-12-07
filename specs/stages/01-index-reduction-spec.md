@@ -1,12 +1,9 @@
 # 01 Index Reduction — Stage Spec
 
-Title
-- Index Reduction: Correlation + VIF pruning to ~5-10 indices
-
-Purpose
+## Purpose
 - Reduce ~60 acoustic indices to a distinct, low-collinearity subset suitable for GLMM/GAMM modeling while preserving coverage of spectral, temporal, and complexity aspects of the soundscape.
 
-Inputs
+## Inputs
 - Aligned indices: `data/interim/aligned_indices.parquet`
   - Columns: `datetime`, `station`, acoustic index columns aligned to 2‑hour bins
 - Metadata: `data/raw/metadata/Updated_Index_Categories_v2.csv`
@@ -14,7 +11,7 @@ Inputs
 - Key columns expected in indices files:
   - `datetime` (ISO), `station` (`9M|14M|37M`), index columns (multiple), optional `date`, `hour`.
 
-Outputs
+## Outputs
 - `data/processed/indices_final.csv`
   - Columns: `index_name`, `kept` (bool), `reason`, `category`, `band`.
 - `results/figures/index_correlation_heatmap.png`
@@ -30,7 +27,7 @@ Outputs
 - `results/logs/archive/`
   - Previous run logs.
 
-Methods
+## Methods
 - Correlation pruning:
   - Standardize each index (z‑score) within station‑year.
   - Compute pairwise Pearson correlations across all data.
@@ -44,7 +41,7 @@ Methods
   - Ensure representation of categories: spectral energy, temporal modulation, complexity/entropy.
   - If pruning removes a whole category, reintroduce the best candidate with lowest correlation/VIF.
 
-Parameters
+## Parameters
 - `correlation_threshold`: see `config/analysis.yml -> thresholds.correlation_r`.
 - `vif_threshold`: see `config/analysis.yml -> thresholds.vif`.
 - `vif_threshold_fallback`: see `config/analysis.yml -> thresholds.vif_fallback`.
@@ -52,7 +49,7 @@ Parameters
 - `bands_policy`: see `config/analysis.yml -> predictors.band_policy`.
 - `analysis_band`: see `config/analysis.yml -> predictors.analysis_band`.
 
-Acceptance Criteria
+## Acceptance Criteria
 - Final list size is between approximately 5-10 indices.
 - No pair among final indices has `|r| > correlation_threshold`.
 - All final indices have `VIF <= vif_threshold`; if not achievable without violating coverage or list-size constraints, allow up to `vif_threshold_fallback` with per-index justification captured in the report.
@@ -60,21 +57,21 @@ Acceptance Criteria
 - Indices chosen are present for ≥`min_coverage_fraction` of records across stations and years.
 - Heatmap and report generated; rationale documented for each dropped/kept index.
 
-Edge Cases
+## Edge Cases
 - Missing `datetime` or station mismatches → exclude affected rows; report fraction excluded.
 - Station/year coverage imbalance → weight correlations by station/year to avoid dominance; document approach.
 - Highly similar indices across bands → choose single band unless justified (document).
 
-Performance
+## Performance
 - Target runtime: < 10 minutes on full dataset; < 1 minute on sample.
 - Memory: fit in standard laptop RAM; chunked reading if necessary.
 
-Dependencies
+## Dependencies
 - Upstream: raw indices and metadata availability.
 - Upstream: Stage 00 aligned indices (`data/interim/aligned_indices.parquet`) and metadata.
 - Downstream: Stage 02 Feature Engineering expects `indices_final.csv` list and metadata categories.
 
-Change Record
+## Change Record
 - 2025‑12‑02: **IMPLEMENTED** - Completed VIF analysis and output generation. Final list: 20 indices (60→22 after correlation, 22→20 after VIF). All acceptance criteria met except list size target (5-10); practical application of thresholds (r=0.7, VIF=5) yielded 20 non-redundant indices with full category coverage. Note: `FrequencyResolution` removed from indices loader (constant metadata field, not an index). Note: `aROI` and `nROI` indices present in raw data but missing from metadata file `Updated_Index_Categories_v2.csv`; retained as legitimate indices pending documentation update.
 - 2025‑12‑02: Added correlation pruning with greedy algorithm. Simplified decision rules to: (1) coverage (fewer missing values), (2) alphabetical tiebreaker. Rationale: interpretability is subjective and hard to operationalize; using VIF in pairwise decisions creates circular dependency with subsequent VIF analysis step; alphabetical provides deterministic, reproducible tiebreaker. Manual review of dropped indices remains available if domain knowledge suggests reconsideration. Added timestamped logging with archiving: `results/logs/stage01_index_reduction_YYYYMMDD_HHMMSS.txt` captures all steps, decisions, and outputs for audit trail and debugging.
 - 2025‑11‑21: Adopted per station‑year Pearson aggregation by median |r|; added 0.8 sensitivity artifact; set final target to 5–10 indices; thresholds remain 0.7 and VIF 5 (fallback 10).

@@ -17,6 +17,7 @@ Documentation Standards
 - Include concise docstrings for modules, functions, and classes to explain purpose, inputs, and outputs.
 - Add short, essential comments where logic is non-obvious; prefer docstrings over excessive inline comments.
 - Keep verification scripts readable with pretty-printed outputs for terminal usage.
+- Spec documents follow the format defined in [specs/SPEC_FORMAT.md](specs/SPEC_FORMAT.md). Use proper markdown headers (`##`) for all sections.
 
 Logging Standard
 - Each stage script produces a timestamped log: `results/logs/stage<NN>_<name>_YYYYMMDD_HHMMSS.txt`

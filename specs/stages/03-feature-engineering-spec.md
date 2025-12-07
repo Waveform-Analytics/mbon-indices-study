@@ -1,18 +1,15 @@
 # 03 Feature Engineering — Stage Spec
 
-Title
-- Temporal and grouping features; merge environmental covariates; analysis‑ready dataset
-
-Purpose
+## Purpose
 - Create cyclic temporal terms, grouping IDs for random effects, and within‑day sequence needed for AR1; merge environmental variables; output a clean, deterministic dataset for modeling.
 
-Inputs
+## Inputs
 - Final indices list: `data/processed/indices_final.csv` (from Stage 01)
 - Aligned indices: `data/interim/aligned_indices.parquet` (from Stage 00)
 - Aligned environment: `data/interim/aligned_environment.parquet` (from Stage 00)
 - Community metrics: `data/processed/community_metrics.parquet` (from Stage 03)
 
-Outputs
+## Outputs
 - `data/processed/analysis_ready.parquet`
   - Columns:
     - Keys: `datetime` (UTC ISO), `datetime_local` (EST, UTC-5 fixed), `date`, `station`
@@ -27,7 +24,7 @@ Outputs
 - `results/figures/temporal_feature_checks.png`
 - `results/logs/feature_engineering_summary.json`
 
-Methods
+## Methods
 - Time normalization:
   - Parse timestamps to UTC; standardize to 2‑hour resolution; align via inner join on `datetime`+`station` using aligned inputs.
 - Temporal features (derived from `datetime_local` for biological interpretation):
@@ -45,13 +42,13 @@ Methods
 - Responses:
   - Join `community_metrics.parquet` on `station, datetime`; no derivation in this stage.
 
-Parameters
+## Parameters
 - `time_resolution_hours`: default `2`.
 - `merge_strategy`: `inner` (default), optional `left` for indices; imputation window `max_gap_hours=2`.
 - `stations`: `9M, 14M, 37M`.
 - `timezone`: `UTC`.
 
-Acceptance Criteria
+## Acceptance Criteria
 - All required columns exist with correct types; schema file generated.
 - Deterministic transforms: same inputs → same outputs; checksum recorded.
 - Temporal cyclic terms in range: `sin_hour, cos_hour ∈ [-1, 1]`.
@@ -60,19 +57,20 @@ Acceptance Criteria
 - Merge completeness ≥ 95% of timestamps; imputation events logged and ≤ 5%.
 - Summary JSON includes row counts per station/year and missingness report.
 
-Edge Cases
+## Edge Cases
 - Daylight saving or timezone inconsistencies → normalize to UTC (ignore DST shifts).
 - SPL at 1‑hour resolution → aggregate to 2‑hour blocks if used; document method.
 - Missing environmental rows → bounded forward‑fill; exceedance flagged.
 
-Performance
+## Performance
 - Target runtime: < 15 minutes full; < 2 minutes sample.
 - Memory: streaming reads for Excel; prefer column subsets.
 
+## Dependencies
 - Upstream: Stage 01 indices list; Stage 00 aligned indices/environment; Stage 03 community metrics.
 - Downstream: GLMM/GAMM stages consume `analysis_ready.parquet`.
 
-Change Record
+## Change Record
 - 2025‑12‑04: Changed `datetime_local` from America/New_York (DST-aware) to fixed EST (UTC-5). DST caused alternating hour gaps in downstream heatmaps; fixed offset ensures consistent 2-hour bins year-round.
 - 2025‑12‑03: **IMPLEMENTED** - Created analysis-ready dataset with 13,102 observations (2021 only, 3 stations). Features: temporal (hour_of_day, sin_hour, cos_hour, day_of_year from datetime_local), grouping (day_id, month_id), AR1 sequence (time_within_day), 20 acoustic indices, 2 environmental covariates, 9 community metrics. All validation passed.
 - 2025‑12‑03: Updated to use `datetime_local` (America/New_York) for all temporal feature extraction. Rationale: biological patterns follow local day/night cycles, not UTC. `datetime` (UTC) retained for merging/alignment only.
