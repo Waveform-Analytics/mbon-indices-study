@@ -1,33 +1,31 @@
 # MBON Acoustic Indices — Spec Index
 
-Status Board
+## Status Board
 - Project: In Progress
 - Stages:
   - 00 Data Prep & Alignment: ✅ Implemented (2025-11-28)
   - 01 Index Reduction: ✅ Implemented (2025-12-02) — 20 final indices
   - 02 Community Metrics: ✅ Implemented (2025-12-03) — 9 response variables
   - 03 Feature Engineering: ✅ Implemented (2025-12-03) — Analysis-ready dataset
-  - 04 Exploratory Visualization: Approved → Ready for Implementation
-  - 05 GLMM Modeling: Approved
-  - 06 GAMM Modeling: Approved
-  - 07 Cross-Validation: Draft
-  - 08 Model Selection: Draft
-  - 09 Visualization: Draft
-  - 10 Reporting: Draft
+  - 04 Exploratory Visualization: ✅ Implemented (2025-12-05) — Heatmaps, scatter plots, distributions
+  - 05 Modeling (GLMM + GAMM): 🔄 In Progress — Merged from stages 05-06; includes AIC comparison
+  - ~~06-08~~: Merged/deferred — CV deferred; model selection integrated into Stage 05
+  - 09 Results Presentation: Draft — Quarto slides for interpretation
+  - 10 Reporting: Draft — Manuscript preparation
 
-Glossary
+## Glossary
 - GLMM: Generalized Linear Mixed Model
 - GAMM: Generalized Additive Mixed Model
 - AIC: Akaike Information Criterion
+- CV: Cross-Validation
 
-Links
-- Stage Specs: specs/stages/
-- Templates: specs/templates/
-- Per-Metric Specs: specs/models/
-- Review Checklists: specs/reviews/
-- ADRs: specs/risks/
+## Links
+- Stage Specs: `specs/stages/`
+- Templates: `specs/templates/`
+- ADRs: `specs/risks/`
+- Format Guide: `specs/SPEC_FORMAT.md`
 
-Folder Structure
+## Folder Structure
 - config/: analysis.yml, cv.yml, stations.yml
 - data/:
   - raw/, metadata/, external/
@@ -35,7 +33,7 @@ Folder Structure
   - processed/: indices_final.csv, community_metrics.parquet, analysis_ready.parquet
   - manifests/, sample/
 - envs/: pyproject.toml, uv.lock (Python); renv/ (R)
-- specs/: stages/, models/, reviews/, templates/, risks/, _index.md
+- specs/: stages/, templates/, risks/, SPEC_FORMAT.md, _index.md
 - src/python/mbon_indices/: data/, transform/, metrics/, viz/, utils/
 - src/r/: glmm/, gamm/, common/
 - pipelines/: Snakefile; rules/
