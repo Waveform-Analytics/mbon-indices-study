@@ -27,6 +27,9 @@ Summary outputs:
 - `results/tables/model_selection_summary.csv` — all responses, which model won, ΔAIC
 - `results/logs/modeling_summary.json` — run metadata
 
+Results interpretation:
+- `results/results_summary.html` — Quarto-generated reveal.js slides for reviewing results
+
 ---
 
 ## Methods
@@ -168,10 +171,35 @@ Yes, with caveats:
 - Smooth plots: Visualize the estimated non-linear relationships
 - gam.check: Residual diagnostics similar to GLMM
 
-**Future Enhancement (Stage 09/10):** Create reveal.js presentation slides that show:
-- All results tables and figures
-- Explanations of what each diagnostic plot type shows and how to interpret it
-- Fill-in-the-blank templates for initial interpretation of results (e.g., "The GLMM found that [index] had a significant [positive/negative] relationship with [response], with a coefficient of [β], meaning that a 1-unit increase in [index] is associated with a [exp(β)]× change in expected [response].")
+---
+
+### Results Interpretation (Quarto Slides)
+
+To support iterative review of results as they're generated, we produce a reveal.js slide deck via Quarto.
+
+**Why Quarto?**
+- Native reveal.js output with clean markdown source
+- Can read CSV outputs (language-agnostic interface to model results)
+- One command to regenerate: `quarto render results/results_summary.qmd`
+- Slides update as new responses are modeled
+
+**What the slides show:**
+- **Overview**: Which responses have been modeled, which model won for each
+- **Per-response slides**:
+  - Model comparison (ΔAIC, selected model)
+  - Significant predictors with effect sizes
+  - Diagnostic plots (embedded PNGs)
+  - Interpretation templates (fill-in-the-blank)
+
+**Interpretation templates** help translate statistical output to plain English:
+- Count models: "A 1-unit increase in [index] is associated with a [exp(β)]× change in expected [response] (95% CI: [lower]–[upper])."
+- Binary models: "A 1-unit increase in [index] multiplies the odds of [response] by [exp(β)] (95% CI: [lower]–[upper])."
+
+**Workflow:**
+1. Run modeling script → generates CSVs and PNGs
+2. Run `quarto render` → regenerates slides from current outputs
+3. Review slides in browser → identify issues or interesting findings
+4. Iterate on model specification if needed
 
 ---
 
@@ -191,8 +219,9 @@ Yes, with caveats:
 ## Implementation Notes
 - **Pilot first**: Start with `fish_activity` to test full pipeline
 - **Expand**: Once pilot works, run remaining 8 responses
-- **Language**: R (glmmTMB, mgcv, DHARMa packages)
+- **Language**: R (glmmTMB, mgcv, DHARMa packages); Quarto for slides
 - **Comments**: Code will be heavily commented for learning purposes
+- **Output management**: Clean slate approach — delete `results/models/`, `results/tables/*/` (per-metric), and `results/figures/*/` (per-metric) at start of each run. This keeps outputs tidy and avoids confusion from stale results. Summary files are regenerated fresh each run.
 
 ## Edge Cases
 - **Non-convergence**: Simplify random effects or reduce smooth complexity; document changes
@@ -207,5 +236,5 @@ Yes, with caveats:
 - Downstream: Results interpretation, manuscript
 
 ## Change Record
-- 2025-12-06: Added explanations for AR1 midnight discontinuity, link scale concept, and noted reveal.js slides as future enhancement.
+- 2025-12-06: Added Quarto-based results slides for iterative review during modeling. Added output management (clean slate). Added explanations for AR1 midnight discontinuity and link scale concept.
 - 2025-12-05: Created merged spec from stages 05-06. Added detailed explanations of formulas, families, and AIC. Simplified to single stage with AIC comparison. Deferred cross-validation.
