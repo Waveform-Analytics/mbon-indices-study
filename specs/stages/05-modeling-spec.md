@@ -1,16 +1,13 @@
 # 05 Modeling — Stage Spec
 
-Title
-- GLMM and GAMM modeling with AIC-based model selection
-
-Purpose
+## Purpose
 - Fit both GLMM and GAMM for each response metric, compare via AIC, and select the better-fitting model. Goal is inference (understanding relationships between acoustic indices and community metrics), not prediction.
 
-Inputs
+## Inputs
 - `data/processed/analysis_ready.parquet`
 - `data/processed/indices_final.csv`
 
-Outputs
+## Outputs
 Per response metric:
 - `results/models/<metric>/glmm.rds` — fitted GLMM object
 - `results/models/<metric>/gamm.rds` — fitted GAMM object
@@ -202,7 +199,7 @@ To support iterative review of results as they're generated, we produce a reveal
 
 ---
 
-## Parameters (from config)
+## Parameters
 - `responses.<metric>.family` — distribution family per response
 - `random_effects` — grouping variables for random effects
 - `gamm.smooth_k` — basis dimension for index/covariate smooths (default 5)
