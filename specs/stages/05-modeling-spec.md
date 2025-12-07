@@ -7,7 +7,7 @@ Implementation Note
 - Since this is a learning experience, the R code will include more explanatory comments than typical production code. Comments will explain what each step does and why.
 
 Purpose
-- Fit both GLMM and GAMM for each response metric, compare via AIC, and select the better-fitting model. Goal is inference (understanding relationships between acoustic indices and community metrics), not prediction.
+- Fit both GLMM and GAMM for each response metric, compare via AIC, and select the better-fitting model. Goal is inference (understanding relationships between acoustic indices and community metrics), not prediction. (this is open for discussion)
 
 Inputs
 - `data/processed/analysis_ready.parquet`
@@ -62,6 +62,18 @@ Breaking this down:
 | `(1\|month_id)` | Random intercept for month | Seasonal baseline differences |
 | `ar1(time_within_day + 0 \| day_id)` | First-order autoregressive correlation within each day | Observations close together in time are more similar than distant ones - this handles that non-independence |
 
+**Why AR1 doesn't need continuity across midnight:**
+
+The AR1 structure treats each day independently - correlation "resets" at midnight. This is intentional and appropriate because:
+
+1. **AR1 handles short-term environmental continuity**: Adjacent 2-hour bins within the same day are correlated because conditions persist (the fish calling at 14:00 are likely still there at 16:00).
+
+2. **Cyclic terms handle the wrap-around**: `sin_hour + cos_hour` encode time of day as a smooth circle where 23:00 is mathematically "close to" 01:00. This captures the diel pattern without AR1 needing to connect across midnight.
+
+3. **Random effects handle longer patterns**: `(1|month_id)` captures seasonal baselines that persist across days.
+
+The key insight: AR1 models "nearby observations are similar due to unmeasured short-term environmental continuity," not "the diel cycle wraps around." The cyclic terms handle the biological expectation that midnight should look like midnight.
+
 **Why these Distribution Families:**
 
 | Response type | Family | Why |
@@ -74,6 +86,17 @@ Breaking this down:
 2. Random effects are normally distributed
 3. AR1 structure adequately captures temporal autocorrelation
 4. Observations are independent AFTER accounting for random effects and AR1
+
+**What is the "link scale"?**
+
+GLMs don't model the response directly - they model a *transformed* version of the expected response. This transformation is the "link function":
+
+| Family | Link | What we model | Interpretation |
+|--------|------|---------------|----------------|
+| Negative binomial | log | log(expected count) | A coefficient of 0.1 means a 1-unit increase in the predictor *multiplies* expected count by exp(0.1) ≈ 1.11, i.e., ~11% increase |
+| Binomial | logit | log(p / (1-p)) | A coefficient of 0.5 means a 1-unit increase in the predictor adds 0.5 to the log-odds of presence |
+
+So the "linear on link scale" assumption means: we assume `log(expected fish calls) = β₀ + β₁×ACI + ...` — a straight line relationship on the log scale. On the original count scale, this corresponds to multiplicative (exponential) effects, not additive ones.
 
 ---
 
@@ -127,7 +150,7 @@ Yes, with caveats:
 
 **When models are equivalent (ΔAIC < 4):** We prefer GLMM because:
 1. Simpler to interpret (linear coefficients)
-2. More familiar to reviewers
+2. More familiar to reviewers/readers
 3. Parsimony principle
 
 ---
@@ -144,6 +167,11 @@ Yes, with caveats:
 - EDF (effective degrees of freedom): Higher = more non-linear. EDF ≈ 1 means relationship is essentially linear.
 - Smooth plots: Visualize the estimated non-linear relationships
 - gam.check: Residual diagnostics similar to GLMM
+
+**Future Enhancement (Stage 09/10):** Create reveal.js presentation slides that show:
+- All results tables and figures
+- Explanations of what each diagnostic plot type shows and how to interpret it
+- Fill-in-the-blank templates for initial interpretation of results (e.g., "The GLMM found that [index] had a significant [positive/negative] relationship with [response], with a coefficient of [β], meaning that a 1-unit increase in [index] is associated with a [exp(β)]× change in expected [response].")
 
 ---
 
@@ -179,4 +207,5 @@ Yes, with caveats:
 - Downstream: Results interpretation, manuscript
 
 ## Change Record
+- 2025-12-06: Added explanations for AR1 midnight discontinuity, link scale concept, and noted reveal.js slides as future enhancement.
 - 2025-12-05: Created merged spec from stages 05-06. Added detailed explanations of formulas, families, and AIC. Simplified to single stage with AIC comparison. Deferred cross-validation.
