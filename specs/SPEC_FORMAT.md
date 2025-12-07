@@ -73,36 +73,6 @@ This document defines the canonical format for all specification documents in th
 - Related specs, external docs, or prior art
 ```
 
-## Model Spec Format
-
-```markdown
-# [Response] — [Model Type] Spec
-
-## Purpose
-- What this model tests or estimates
-
-## Inputs
-- Data sources and config references
-
-## Formula/Structure
-- Response variable
-- Family/distribution
-- Fixed effects
-- Random effects
-- Autocorrelation structure
-
-## Diagnostics
-- What diagnostics are run
-- How to interpret them
-
-## Acceptance Criteria
-- Convergence requirements
-- Diagnostic thresholds
-
-## Change Record
-- YYYY-MM-DD: Description of change
-```
-
 ## Notes
 
 - **Subsections**: Use `###` for subsections within a `##` section when needed

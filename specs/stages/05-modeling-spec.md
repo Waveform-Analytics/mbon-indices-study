@@ -20,7 +20,7 @@
 - Supporting evidence: Simple CV showing relationships generalize across stations/time
 - Future work: Operational application to monitoring/early warning systems
 
-**Journal context:** Targeting scientific/ecological journals; potential special issue in a high-impact journal (Nature-affiliated). Reviewers will likely expect some validation beyond in-sample fit.
+**Journal context:** Targeting scientific/ecological journals; potential special issue in a high-impact journal. Reviewers will likely expect some validation beyond in-sample fit.
 
 **Action needed:** Team to confirm this approach or suggest alternatives before full implementation.
 
