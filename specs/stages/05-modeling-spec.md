@@ -1,7 +1,28 @@
 # 05 Modeling — Stage Spec
 
 ## Purpose
-- Fit both GLMM and GAMM for each response metric, compare via AIC, and select the better-fitting model. Goal is inference (understanding relationships between acoustic indices and community metrics), not prediction.
+- Fit both GLMM and GAMM for each response metric, compare via AIC, and select the better-fitting model.
+
+### Open Question: Inference vs Prediction (team input needed)
+
+**Context:** For journal publication, we need to decide how to frame the paper and how much predictive validation is required.
+
+**Options:**
+
+| Approach | What it means | Pros | Cons |
+|----------|---------------|------|------|
+| **Inference only** | Full-data GLMM/GAMM, report coefficients and significance | Simpler, answers "are there relationships?" | Reviewers may question generalizability |
+| **Inference + light CV** | Add leave-one-station-out or temporal hold-out validation | Shows relationships are robust, preempts overfitting concerns | Slightly more work |
+| **Full predictive focus** | Extensive CV, prediction metrics (RMSE, AUC), model comparison on held-out data | Strongest for "applied monitoring" framing | Scope creep, may not fit paper timeline |
+
+**Tentative decision:** Proceed with inference + light cross-validation. Frame the paper as:
+- Primary contribution: Understanding which acoustic indices relate to biological community metrics
+- Supporting evidence: Simple CV showing relationships generalize across stations/time
+- Future work: Operational application to monitoring/early warning systems
+
+**Journal context:** Targeting scientific/ecological journals; potential special issue in a high-impact journal (Nature-affiliated). Reviewers will likely expect some validation beyond in-sample fit.
+
+**Action needed:** Team to confirm this approach or suggest alternatives before full implementation.
 
 ## Inputs
 - `data/processed/analysis_ready.parquet`
@@ -232,5 +253,6 @@ To support iterative review of results as they're generated, we produce a reveal
 - Downstream: Results interpretation, manuscript
 
 ## Change Record
+- 2025-12-06: Added "Open Question" section for team decision on inference vs prediction framing. Tentative plan: inference + light CV, with operational applications as future work.
 - 2025-12-06: Reorganized for clarity — moved link scale before assumptions, separated Workflow section from Methods. Removed stale "open for discussion" note. Added Quarto slides and output management.
 - 2025-12-05: Created merged spec from stages 05-06. Added detailed explanations of formulas, families, and AIC. Simplified to single stage with AIC comparison. Deferred cross-validation.
