@@ -3,11 +3,8 @@
 Title
 - GLMM and GAMM modeling with AIC-based model selection
 
-Implementation Note
-- Since this is a learning experience, the R code will include more explanatory comments than typical production code. Comments will explain what each step does and why.
-
 Purpose
-- Fit both GLMM and GAMM for each response metric, compare via AIC, and select the better-fitting model. Goal is inference (understanding relationships between acoustic indices and community metrics), not prediction. (this is open for discussion)
+- Fit both GLMM and GAMM for each response metric, compare via AIC, and select the better-fitting model. Goal is inference (understanding relationships between acoustic indices and community metrics), not prediction.
 
 Inputs
 - `data/processed/analysis_ready.parquet`
@@ -84,13 +81,7 @@ The key insight: AR1 models "nearby observations are similar due to unmeasured s
 | Count data (fish_activity, dolphin_echolocation, etc.) | `nbinom2` (negative binomial) | Counts are non-negative integers. Poisson assumes mean=variance, but ecological count data is almost always **overdispersed** (variance > mean). Negative binomial adds a parameter to handle this overdispersion. |
 | Binary data (fish_presence, dolphin_presence, vessel_presence) | `binomial` | These are 0/1 outcomes. Binomial with logit link models the log-odds of presence as a linear function of predictors. |
 
-**Key Assumptions:**
-1. Relationships between indices and response are approximately LINEAR (on the link scale)
-2. Random effects are normally distributed
-3. AR1 structure adequately captures temporal autocorrelation
-4. Observations are independent AFTER accounting for random effects and AR1
-
-**What is the "link scale"?**
+**Understanding the "link scale":**
 
 GLMs don't model the response directly - they model a *transformed* version of the expected response. This transformation is the "link function":
 
@@ -99,7 +90,13 @@ GLMs don't model the response directly - they model a *transformed* version of t
 | Negative binomial | log | log(expected count) | A coefficient of 0.1 means a 1-unit increase in the predictor *multiplies* expected count by exp(0.1) ≈ 1.11, i.e., ~11% increase |
 | Binomial | logit | log(p / (1-p)) | A coefficient of 0.5 means a 1-unit increase in the predictor adds 0.5 to the log-odds of presence |
 
-So the "linear on link scale" assumption means: we assume `log(expected fish calls) = β₀ + β₁×ACI + ...` — a straight line relationship on the log scale. On the original count scale, this corresponds to multiplicative (exponential) effects, not additive ones.
+So "linear on the link scale" means: we assume `log(expected fish calls) = β₀ + β₁×ACI + ...` — a straight line relationship on the log scale. On the original count scale, this corresponds to multiplicative (exponential) effects, not additive ones.
+
+**Key Assumptions:**
+1. Relationships between indices and response are approximately LINEAR (on the link scale)
+2. Random effects are normally distributed
+3. AR1 structure adequately captures temporal autocorrelation
+4. Observations are independent AFTER accounting for random effects and AR1
 
 ---
 
@@ -173,7 +170,9 @@ Yes, with caveats:
 
 ---
 
-### Results Interpretation (Quarto Slides)
+## Workflow
+
+### Iterative Review (Quarto Slides)
 
 To support iterative review of results as they're generated, we produce a reveal.js slide deck via Quarto.
 
@@ -195,7 +194,7 @@ To support iterative review of results as they're generated, we produce a reveal
 - Count models: "A 1-unit increase in [index] is associated with a [exp(β)]× change in expected [response] (95% CI: [lower]–[upper])."
 - Binary models: "A 1-unit increase in [index] multiplies the odds of [response] by [exp(β)] (95% CI: [lower]–[upper])."
 
-**Workflow:**
+**Steps:**
 1. Run modeling script → generates CSVs and PNGs
 2. Run `quarto render` → regenerates slides from current outputs
 3. Review slides in browser → identify issues or interesting findings
@@ -236,5 +235,5 @@ To support iterative review of results as they're generated, we produce a reveal
 - Downstream: Results interpretation, manuscript
 
 ## Change Record
-- 2025-12-06: Added Quarto-based results slides for iterative review during modeling. Added output management (clean slate). Added explanations for AR1 midnight discontinuity and link scale concept.
+- 2025-12-06: Reorganized for clarity — moved link scale before assumptions, separated Workflow section from Methods. Removed stale "open for discussion" note. Added Quarto slides and output management.
 - 2025-12-05: Created merged spec from stages 05-06. Added detailed explanations of formulas, families, and AIC. Simplified to single stage with AIC comparison. Deferred cross-validation.
