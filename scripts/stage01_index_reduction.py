@@ -23,40 +23,7 @@ sys.path.append(str(root / "src" / "python"))
 from mbon_indices.config import load_analysis_config
 from mbon_indices.data import load_interim_parquet, save_summary_json
 from mbon_indices.utils.logging import setup_stage_logging
-
-
-def append_to_run_history(
-    root: Path,
-    cfg: dict,
-    n_start: int,
-    n_after_corr: int,
-    n_final: int,
-    final_indices: list[str],
-    categories: set[str],
-    max_vif: float,
-    max_vif_idx: str
-):
-    """Append a summary entry to RUN_HISTORY.md."""
-    history_path = root / "results" / "logs" / "RUN_HISTORY.md"
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
-
-    entry = f"""## {timestamp} — Stage 01: Index Reduction
-
-- **Config**: correlation_r={cfg['thresholds']['correlation_r']}, vif={cfg['thresholds']['vif']}, vif_fallback={cfg['thresholds']['vif_fallback']}
-- **Result**: {n_start} → {n_after_corr} (correlation) → {n_final} (VIF) indices
-- **Final indices**: {', '.join(sorted(final_indices))}
-- **Categories**: {len(categories)} preserved ({', '.join(sorted(categories))})
-- **Max VIF**: {max_vif:.2f} ({max_vif_idx})
-- **Notes**:
-
----
-
-"""
-
-    with open(history_path, 'a') as f:
-        f.write(entry)
-
-    print(f"  ✓ Appended to run history: {history_path}")
+from mbon_indices.utils.run_history import append_to_run_history
 
 
 def load_index_metadata(root: Path) -> pd.DataFrame:
@@ -621,14 +588,20 @@ def main():
         # Append to run history
         append_to_run_history(
             root=root,
-            cfg=cfg,
-            n_start=len(index_cols),
-            n_after_corr=len(kept_indices),
-            n_final=len(final_indices),
-            final_indices=final_indices,
-            categories=set(coverage['categories']),
-            max_vif=max_vif_row['vif'],
-            max_vif_idx=max_vif_row['index']
+            stage="Stage 01: Index Reduction",
+            config={
+                "correlation_r": cfg['thresholds']['correlation_r'],
+                "vif": cfg['thresholds']['vif'],
+                "vif_fallback": cfg['thresholds']['vif_fallback']
+            },
+            results={
+                "n_start": len(index_cols),
+                "n_after_corr": len(kept_indices),
+                "n_final": len(final_indices),
+                "final_indices": ", ".join(sorted(final_indices)),
+                "categories": f"{len(coverage['categories'])} ({', '.join(sorted(coverage['categories']))})",
+                "max_vif": f"{max_vif_row['vif']:.2f} ({max_vif_row['index']})"
+            }
         )
         print()
 
