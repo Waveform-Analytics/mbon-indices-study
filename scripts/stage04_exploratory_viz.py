@@ -24,6 +24,7 @@ sys.path.append(str(root / "src" / "python"))
 from mbon_indices.config import load_analysis_config
 from mbon_indices.data import load_processed_parquet, load_final_indices_list
 from mbon_indices.utils.logging import setup_stage_logging
+from mbon_indices.utils.run_history import append_to_run_history
 
 
 def get_season(month: int) -> str:
@@ -576,6 +577,24 @@ def main():
         heatmap_vars = responses + indices + covariates
         plot_heatmaps(df, heatmap_vars, heatmap_dir, cmap=cmap, midnight_center=midnight_center)
         print()
+
+        # Append to run history
+        append_to_run_history(
+            root=root,
+            stage="Stage 04: Exploratory Visualization",
+            config={
+                "responses": len(responses),
+                "indices": len(indices),
+                "covariates": len(covariates),
+                "heatmap_cmap": cmap
+            },
+            results={
+                "rows": len(df),
+                "scatter_plots": len(responses),
+                "heatmap_vars": len(heatmap_vars)
+            },
+            log_path=str(logger.log_path.relative_to(root))
+        )
 
         print("=" * 60)
         print("✓ Stage 04 complete")

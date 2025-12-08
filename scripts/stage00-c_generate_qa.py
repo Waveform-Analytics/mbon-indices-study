@@ -16,6 +16,7 @@ root = Path(__file__).parent.parent
 sys.path.append(str(root / "src" / "python"))
 
 from mbon_indices.config import load_analysis_config
+from mbon_indices.utils.run_history import append_to_run_history
 from mbon_indices.qa.alignment import compute_schema, completeness_union, plot_completeness, write_summary_json
 
 
@@ -62,6 +63,20 @@ def main() -> None:
         "unit_conversions": "none_applied",
     }
     write_summary_json(out_logs / "alignment_summary.json", rows, missing, comp_df, extra)
+
+    # Append to run history (no logger in this script, so no log_path)
+    append_to_run_history(
+        root=root,
+        stage="Stage 00-c: QA Artifacts",
+        config={
+            "artifacts_checked": len(artifacts)
+        },
+        results={
+            "schema_columns": len(schema_df),
+            "missing_temp_frac": f"{missing.get('temperature', 0):.2%}",
+            "missing_depth_frac": f"{missing.get('depth', 0):.2%}"
+        }
+    )
 
 
 if __name__ == "__main__":

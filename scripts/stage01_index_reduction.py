@@ -601,7 +601,8 @@ def main():
                 "final_indices": ", ".join(sorted(final_indices)),
                 "categories": f"{len(coverage['categories'])} ({', '.join(sorted(coverage['categories']))})",
                 "max_vif": f"{max_vif_row['vif']:.2f} ({max_vif_row['index']})"
-            }
+            },
+            log_path=str(logger.log_path.relative_to(root))
         )
         print()
 

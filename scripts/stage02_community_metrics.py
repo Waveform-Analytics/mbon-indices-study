@@ -20,6 +20,7 @@ sys.path.append(str(root / "src" / "python"))
 from mbon_indices.config import load_analysis_config
 from mbon_indices.data import load_interim_parquet, save_parquet, save_summary_json
 from mbon_indices.utils.logging import setup_stage_logging
+from mbon_indices.utils.run_history import append_to_run_history
 
 
 def load_column_metadata(root: Path) -> pd.DataFrame:
@@ -287,6 +288,25 @@ def main():
         print("Step 6: Saving outputs...")
         save_outputs(root, metrics_df, summary)
         print()
+
+        # Append to run history
+        append_to_run_history(
+            root=root,
+            stage="Stage 02: Community Metrics",
+            config={
+                "fish_species": len(fish_cols),
+                "dolphin_cols": len(dolphin_cols),
+                "vessel_cols": len(vessel_cols)
+            },
+            results={
+                "rows": len(metrics_df),
+                "stations": ", ".join(summary['stations']),
+                "fish_presence_mean": f"{metrics_df['fish_presence'].mean():.1%}",
+                "dolphin_presence_mean": f"{metrics_df['dolphin_presence'].mean():.1%}",
+                "vessel_presence_mean": f"{metrics_df['vessel_presence'].mean():.1%}"
+            },
+            log_path=str(logger.log_path.relative_to(root))
+        )
 
         print("=" * 60)
         print("✓ Stage 02 complete")

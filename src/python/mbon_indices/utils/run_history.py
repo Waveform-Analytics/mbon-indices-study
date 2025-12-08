@@ -16,6 +16,7 @@ def append_to_run_history(
     stage: str,
     config: dict[str, any],
     results: dict[str, any],
+    log_path: str = "",
     notes: str = ""
 ) -> None:
     """
@@ -26,6 +27,7 @@ def append_to_run_history(
         stage: Stage name (e.g., "Stage 01: Index Reduction")
         config: Key configuration values used (dict of key-value pairs)
         results: Key results produced (dict of key-value pairs)
+        log_path: Path to detailed log file (relative to project root)
         notes: Optional notes (default empty, user can fill in later)
 
     Example:
@@ -34,6 +36,7 @@ def append_to_run_history(
             stage="Stage 01: Index Reduction",
             config={"correlation_r": 0.6, "vif": 2},
             results={"n_start": 60, "n_final": 14, "categories": 5},
+            log_path="results/logs/stage01_index_reduction_20251208_111021.txt",
             notes="Tightened thresholds per Zuur et al. 2010"
         )
     """
@@ -48,12 +51,16 @@ def append_to_run_history(
     results_lines = [f"  - {k}: {v}" for k, v in results.items()]
     results_str = "\n".join(results_lines) if results_lines else "  - (none)"
 
+    # Format log path
+    log_str = log_path if log_path else "(none)"
+
     entry = f"""## {timestamp} — {stage}
 
 - **Config**:
 {config_str}
 - **Results**:
 {results_str}
+- **Log**: {log_str}
 - **Notes**: {notes}
 
 ---

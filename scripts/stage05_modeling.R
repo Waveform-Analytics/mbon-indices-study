@@ -662,10 +662,13 @@ model_summaries <- sapply(names(all_results), function(m) {
 run_entry <- sprintf(
   "## %s — Stage 05: Modeling
 
-- **Config**: pilot_mode=%s, n_responses=%d
-- **Indices**: %d predictors from Stage 01
+- **Config**:
+  - pilot_mode: %s
+  - n_responses: %d
+  - n_indices: %d
 - **Results**:
 %s
+- **Log**: results/logs/modeling_summary.json
 - **Notes**:
 
 ---

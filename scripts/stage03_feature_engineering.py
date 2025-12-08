@@ -26,6 +26,7 @@ from mbon_indices.data import (
     save_summary_json,
 )
 from mbon_indices.utils.logging import setup_stage_logging
+from mbon_indices.utils.run_history import append_to_run_history
 
 
 def create_temporal_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -387,6 +388,24 @@ def main():
         print("Step 9: Saving outputs...")
         save_outputs(root, merged_df, summary)
         print()
+
+        # Append to run history
+        append_to_run_history(
+            root=root,
+            stage="Stage 03: Feature Engineering",
+            config={
+                "final_indices": len(final_indices),
+                "scale_covariates": scale_covariates_flag
+            },
+            results={
+                "rows": len(merged_df),
+                "columns": len(merged_df.columns),
+                "unique_day_ids": summary['grouping']['unique_day_ids'],
+                "unique_month_ids": summary['grouping']['unique_month_ids'],
+                "stations": ", ".join(summary['stations'])
+            },
+            log_path=str(logger.log_path.relative_to(root))
+        )
 
         print("=" * 60)
         print("✓ Stage 03 complete")

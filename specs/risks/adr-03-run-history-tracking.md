@@ -20,6 +20,7 @@ Each entry contains:
 - Timestamp and stage name
 - Key configuration values used
 - Key results (counts, paths, metrics)
+- Path to detailed log file (links to verbose execution log)
 - Optional notes field for manual annotations
 
 ### Implementation
@@ -30,13 +31,13 @@ Each entry contains:
 ### Stages to Update
 | Script | Language | Status |
 |--------|----------|--------|
-| `stage00-a_verify_loaders.py` | Python | Pending |
-| `stage00-b_align.py` | Python | Pending |
-| `stage00-c_generate_qa.py` | Python | Pending |
+| `stage00-a_verify_loaders.py` | Python | Skip (no outputs) |
+| `stage00-b_align.py` | Python | Done |
+| `stage00-c_generate_qa.py` | Python | Done |
 | `stage01_index_reduction.py` | Python | Done |
-| `stage02_community_metrics.py` | Python | Pending |
-| `stage03_feature_engineering.py` | Python | Pending |
-| `stage04_exploratory_viz.py` | Python | Pending |
+| `stage02_community_metrics.py` | Python | Done |
+| `stage03_feature_engineering.py` | Python | Done |
+| `stage04_exploratory_viz.py` | Python | Done |
 | `stage05_modeling.R` | R | Done |
 
 ### Spec Updates

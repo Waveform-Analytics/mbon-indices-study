@@ -10,11 +10,14 @@ to `data/interim/` and prints a JSON summary.
 import sys
 import json
 from pathlib import Path
+from datetime import datetime
 
 import pandas as pd
 
 root = Path(__file__).parent.parent
 sys.path.append(str(root / "src" / "python"))
+
+from mbon_indices.utils.run_history import append_to_run_history
 
 from mbon_indices.config import (
     load_analysis_config,
@@ -150,6 +153,23 @@ def main() -> None:
         },
     }
     print(json.dumps(summary, indent=2))
+
+    # Append to run history (no logger in this script, so no log_path)
+    append_to_run_history(
+        root=root,
+        stage="Stage 00-b: Alignment",
+        config={
+            "resolution_hours": res_hours,
+            "stations": ", ".join(stations),
+            "years": ", ".join(map(str, years))
+        },
+        results={
+            "rows_detections": len(det_aligned),
+            "rows_environment": len(env_aligned),
+            "rows_indices": len(idx_aligned),
+            "rows_base": len(base)
+        }
+    )
 
 
 if __name__ == "__main__":
