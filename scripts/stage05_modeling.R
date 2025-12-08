@@ -5,7 +5,8 @@
 # Purpose:
 #   Fit both GLMM and GAMM for each response metric, compare via AIC, and select
 #   the better-fitting model. Goal is inference (understanding relationships
-#   between acoustic indices and community metrics).
+#   between acoustic indices and community metrics). May expand validation 
+#   later.
 #
 # Inputs:
 #   - data/processed/analysis_ready.parquet
@@ -151,13 +152,14 @@ ensure_dirs <- function() {
 #' @param include_ar1 Logical, whether to include AR1 term
 #' @return A formula object
 build_glmm_formula <- function(response, indices, include_ar1 = TRUE) {
-  # Fixed effects: all indices + covariates + cyclic time terms
+  # Fixed effects: all indices + covariates + cyclic time terms 
+  # (hard-coded bc they're the same for every model)
   fixed_terms <- c(
     indices,
     "temperature", "depth",
     "sin_hour", "cos_hour"
   )
-  fixed_part <- paste(fixed_terms, collapse = " + ")
+  fixed_part <- paste(fixed_terms, collapse = " + ") # like "+".join(list_of_strings)
 
 
   # Random effects
@@ -291,16 +293,18 @@ cat(sprintf("  Loaded %d observations\n", nrow(data)))
 
 # Read the list of final indices (after correlation/VIF pruning in Stage 01)
 indices_df <- read.csv("data/processed/indices_final.csv")
-indices <- indices_df$index_name[indices_df$kept == TRUE]
+indices <- indices_df$index_name[indices_df$kept == "True"]
 cat(sprintf("  Using %d acoustic indices as predictors\n", length(indices)))
 
 # Convert grouping variables to factors (required for random effects)
 # Factors tell R these are categorical, not continuous
+# time_within_day must also be a factor for glmmTMB's ar1() structure
 data <- data %>%
   mutate(
     station = as.factor(station),
     month_id = as.factor(month_id),
-    day_id = as.factor(day_id)
+    day_id = as.factor(day_id),
+    time_within_day = as.factor(time_within_day)
   )
 
 # Check for missing data in predictors
@@ -490,12 +494,19 @@ for (metric in names(responses)) {
     # - EDF > 1: increasingly non-linear
     gamm_summary <- as.data.frame(summary(gamm_fit)$s.table)
     gamm_summary$term <- rownames(gamm_summary)
+
+    # Column names vary by family: Chi.sq for some, F for others (e.g., nb)
+    # We'll rename whatever statistic column exists to "statistic"
+    stat_col <- intersect(c("Chi.sq", "F"), names(gamm_summary))
+    if (length(stat_col) > 0) {
+      names(gamm_summary)[names(gamm_summary) == stat_col[1]] <- "statistic"
+    }
+
     gamm_summary <- gamm_summary %>%
       select(term, everything()) %>%
       rename(
         edf = edf,
         ref_df = Ref.df,
-        chi_sq = `Chi.sq`,
         p_value = `p-value`
       )
 
@@ -636,4 +647,40 @@ cat("\nNext steps:\n")
 cat("1. Review diagnostic plots in results/figures/<metric>/\n")
 cat("2. Check coefficient tables in results/tables/<metric>/\n")
 cat("3. Run `quarto render results/results_summary.qmd` to generate slides\n")
+
+# ------------------------------------------------------------------------------
+# APPEND TO RUN HISTORY
+# ------------------------------------------------------------------------------
+
+# Build a concise summary for each modeled response
+model_summaries <- sapply(names(all_results), function(m) {
+  res <- all_results[[m]]
+  sprintf("%s: %s (ΔAIC=%.1f)", m, toupper(res$selected_model), res$delta_aic)
+})
+
+# Create the run history entry
+run_entry <- sprintf(
+  "## %s — Stage 05: Modeling
+
+- **Config**: pilot_mode=%s, n_responses=%d
+- **Indices**: %d predictors from Stage 01
+- **Results**:
+%s
+- **Notes**:
+
+---
+
+",
+  format(Sys.time(), "%Y-%m-%d %H:%M"),
+  ifelse(pilot_mode, "TRUE", "FALSE"),
+  length(responses),
+  length(indices),
+  paste("  -", model_summaries, collapse = "\n")
+)
+
+# Append to RUN_HISTORY.md
+history_path <- "results/logs/RUN_HISTORY.md"
+cat(run_entry, file = history_path, append = TRUE)
+cat(sprintf("Appended to run history: %s\n", history_path))
+
 cat("\n")

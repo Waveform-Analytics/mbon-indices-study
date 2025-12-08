@@ -49,10 +49,10 @@ autocorrelation:
   sequence_column: time_within_day
 
 thresholds:
-  correlation_r: 0.7
+  correlation_r: 0.6
   correlation_sensitivity_r: 0.8
-  vif: 5
-  vif_fallback: 10
+  vif: 2
+  vif_fallback: 5
   min_coverage_fraction: 0.95
 
 stations:

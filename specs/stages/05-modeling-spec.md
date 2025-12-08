@@ -73,7 +73,7 @@ Breaking this down:
 | Component | What it means | Why we include it |
 |-----------|---------------|-------------------|
 | `response` | The thing we're trying to explain (e.g., fish_activity) | Our dependent variable |
-| `indices` | The 20 acoustic indices (ACI, BI, etc.) | These are our predictors of interest - we want to know if they relate to community metrics |
+| `indices` | The final acoustic indices from Stage 01 (ACI, BI, etc.) | These are our predictors of interest - we want to know if they relate to community metrics |
 | `covariates` | Temperature and depth | Environmental controls - we want to isolate the effect of acoustic indices from confounding environmental variation |
 | `sin_hour + cos_hour` | Cyclic encoding of time of day | Accounts for diel (day/night) patterns in a smooth, continuous way |
 | `(1\|station)` | Random intercept for station | Different stations may have systematically different baseline levels - this accounts for that without "using up" degrees of freedom |
@@ -253,6 +253,7 @@ To support iterative review of results as they're generated, we produce a reveal
 - Downstream: Results interpretation, manuscript
 
 ## Change Record
+- 2025-12-08: Updated indices reference to be generic ("final acoustic indices from Stage 01") rather than hardcoded count. Predictor count depends on upstream Stage 01 thresholds; see `results/logs/RUN_HISTORY.md` for run-specific details.
 - 2025-12-06: Added "Open Question" section for team decision on inference vs prediction framing. Tentative plan: inference + light CV, with operational applications as future work.
 - 2025-12-06: Reorganized for clarity — moved link scale before assumptions, separated Workflow section from Methods. Removed stale "open for discussion" note. Added Quarto slides and output management.
 - 2025-12-05: Created merged spec from stages 05-06. Added detailed explanations of formulas, families, and AIC. Simplified to single stage with AIC comparison. Deferred cross-validation.
