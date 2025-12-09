@@ -31,8 +31,17 @@ predictors:
 covariates:
   temperature: true
   depth: true
-  scale: false
-  to_scale: ["temperature", "depth"]
+
+scaling:
+  enabled: true
+  # Which predictor groups to scale: "indices", "covariates", or explicit list
+  include:
+    - indices
+    - covariates
+  # Predictors to exclude from scaling (already bounded or categorical)
+  exclude:
+    - sin_hour
+    - cos_hour
 
 temporal:
   resolution_hours: 2

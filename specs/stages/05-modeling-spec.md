@@ -267,6 +267,7 @@ To support iterative review of results as they're generated, we produce a reveal
 - `gamm.cyclic_k` — basis dimension for cyclic smooths (default 12)
 - `autocorrelation.glmm_ar1` — whether to include AR1 in GLMM
 - `scaling.enabled` — whether to z-score standardize predictors (default: true)
+- `scaling.include` — which predictor groups to scale: "indices", "covariates", or explicit list
 - `scaling.exclude` — predictors to exclude from scaling (default: sin_hour, cos_hour)
 
 ## Acceptance Criteria

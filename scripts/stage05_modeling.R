@@ -5,7 +5,7 @@
 # Purpose:
 #   Fit both GLMM and GAMM for each response metric, compare via AIC, and select
 #   the better-fitting model. Goal is inference (understanding relationships
-#   between acoustic indices and community metrics). May expand validation 
+#   between acoustic indices and community metrics). May expand validation
 #   later.
 #
 # Inputs:
@@ -19,6 +19,7 @@
 #   - results/tables/<metric>/glmm_summary.csv
 #   - results/tables/<metric>/gamm_summary.csv
 #   - results/tables/<metric>/model_comparison.csv
+#   - results/tables/<metric>/scaling_params.csv
 #   - results/figures/<metric>/glmm_diagnostics.png
 #   - results/figures/<metric>/gamm_smooths.png
 #
@@ -126,6 +127,40 @@ ensure_dirs <- function() {
   }
 }
 
+#' Scale predictors using z-score standardization
+#'
+#' Transforms each predictor to mean=0, SD=1. This is critical for:
+#' 1. Numerical stability: Optimizers struggle with parameters on vastly different scales
+#' 2. Interpretability: Coefficients become "effect per 1-SD change", directly comparable
+#'
+#' @param data Data frame containing the predictors
+#' @param predictors Character vector of column names to scale
+#' @return List with:
+#'   - data: Data frame with scaled predictors (original columns replaced)
+#'   - params: Data frame with mean and sd for each predictor (for back-transformation)
+scale_predictors <- function(data, predictors) {
+  params <- data.frame(
+    predictor = predictors,
+    mean = NA_real_,
+    sd = NA_real_
+  )
+
+  for (i in seq_along(predictors)) {
+    col <- predictors[i]
+    col_mean <- mean(data[[col]], na.rm = TRUE)
+    col_sd <- sd(data[[col]], na.rm = TRUE)
+
+    # Store parameters
+    params$mean[i] <- col_mean
+    params$sd[i] <- col_sd
+
+    # Scale the column
+    data[[col]] <- (data[[col]] - col_mean) / col_sd
+  }
+
+  list(data = data, params = params)
+}
+
 #' Build the GLMM formula
 #'
 #' The GLMM formula has these components:
@@ -134,7 +169,7 @@ ensure_dirs <- function() {
 #'            (1|station) + (1|month_id) + ar1(time_within_day + 0 | day_id)
 #'
 #' Breaking this down:
-#' - indices: The 20 acoustic indices (our predictors of interest)
+#' - indices: The acoustic indices (our predictors of interest)
 #' - covariates: temperature + depth (environmental controls)
 #' - sin_hour + cos_hour: Cyclic encoding of time of day (captures diel patterns)
 #' - (1|station): Random intercept for station (accounts for site differences)
@@ -152,7 +187,7 @@ ensure_dirs <- function() {
 #' @param include_ar1 Logical, whether to include AR1 term
 #' @return A formula object
 build_glmm_formula <- function(response, indices, include_ar1 = TRUE) {
-  # Fixed effects: all indices + covariates + cyclic time terms 
+  # Fixed effects: all indices + covariates + cyclic time terms
   # (hard-coded bc they're the same for every model)
   fixed_terms <- c(
     indices,
@@ -285,7 +320,7 @@ cat("\n=== Loading Data ===\n")
 # - Temporal: hour_of_day, sin_hour, cos_hour, day_of_year
 # - Grouping: day_id, month_id
 # - Sequence: time_within_day (for AR1)
-# - Predictors: 20 acoustic indices
+# - Predictors: acoustic indices
 # - Covariates: temperature, depth
 # - Responses: 9 community metrics
 data <- arrow::read_parquet("data/processed/analysis_ready.parquet")
@@ -306,6 +341,31 @@ data <- data %>%
     day_id = as.factor(day_id),
     time_within_day = as.factor(time_within_day)
   )
+
+# ------------------------------------------------------------------------------
+# SCALING CONFIGURATION
+# ------------------------------------------------------------------------------
+
+# Get scaling settings from config
+scaling_enabled <- config$scaling$enabled %||% TRUE
+scaling_include <- config$scaling$include %||% c("indices", "covariates")
+scaling_exclude <- config$scaling$exclude %||% c("sin_hour", "cos_hour")
+
+# Build list of predictors to scale based on config
+predictors_to_scale <- c()
+if ("indices" %in% scaling_include) {
+  predictors_to_scale <- c(predictors_to_scale, indices)
+}
+if ("covariates" %in% scaling_include) {
+  predictors_to_scale <- c(predictors_to_scale, "temperature", "depth")
+}
+# Remove any excluded predictors
+predictors_to_scale <- setdiff(predictors_to_scale, scaling_exclude)
+
+cat(sprintf("  Scaling enabled: %s\n", scaling_enabled))
+cat(sprintf("  Predictors to scale: %d (%s)\n",
+            length(predictors_to_scale),
+            paste(predictors_to_scale, collapse = ", ")))
 
 # Check for missing data in predictors
 # GLMMs will fail if there are NAs in the model matrix
@@ -347,6 +407,21 @@ for (metric in names(responses)) {
 
   cat(sprintf("  Using %d observations (after dropping NA responses)\n",
               nrow(model_data)))
+
+  # Scale predictors if enabled in config
+  # Coefficients will represent "effect per 1-SD change"
+  if (scaling_enabled && length(predictors_to_scale) > 0) {
+    cat("  Scaling predictors (z-score standardization)...\n")
+    scaled_result <- scale_predictors(model_data, predictors_to_scale)
+    model_data <- scaled_result$data
+    scaling_params <- scaled_result$params
+
+    # Save scaling parameters for back-transformation if needed
+    write.csv(scaling_params,
+              file.path("results/tables", metric, "scaling_params.csv"),
+              row.names = FALSE)
+    cat("  Saved: results/tables/", metric, "/scaling_params.csv\n", sep = "")
+  }
 
   # --------------------------------------------------------------------------
   # FIT GLMM
@@ -623,6 +698,8 @@ cat("Saved: results/tables/model_selection_summary.csv\n")
 log_data <- list(
   timestamp = format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
   pilot_mode = pilot_mode,
+  scaling_enabled = scaling_enabled,
+  predictors_scaled = predictors_to_scale,
   n_responses_modeled = length(responses),
   responses_modeled = names(responses),
   n_indices = length(indices),
@@ -653,9 +730,34 @@ cat("3. Run `quarto render results/results_summary.qmd` to generate slides\n")
 # ------------------------------------------------------------------------------
 
 # Build a concise summary for each modeled response
+# Format: metric: GLMM ✓/✗ (AIC=X) | GAMM ✓/✗ (AIC=Y) | Selected: Z (ΔAIC=W)
 model_summaries <- sapply(names(all_results), function(m) {
   res <- all_results[[m]]
-  sprintf("%s: %s (ΔAIC=%.1f)", m, toupper(res$selected_model), res$delta_aic)
+
+  # GLMM status
+  if (is.na(res$glmm_aic)) {
+    glmm_str <- "GLMM x (failed)"
+  } else {
+    glmm_str <- sprintf("GLMM ok (AIC=%.1f, %.1fmin)", res$glmm_aic, res$glmm_time_mins)
+  }
+
+  # GAMM status
+  if (is.na(res$gamm_aic)) {
+    gamm_str <- "GAMM x (failed)"
+  } else {
+    gamm_str <- sprintf("GAMM ok (AIC=%.1f, %.1fmin)", res$gamm_aic, res$gamm_time_mins)
+  }
+
+  # Selection summary
+  if (is.na(res$selected_model)) {
+    select_str <- "Selected: NONE"
+  } else if (is.na(res$delta_aic)) {
+    select_str <- sprintf("Selected: %s", toupper(res$selected_model))
+  } else {
+    select_str <- sprintf("Selected: %s (dAIC=%.1f)", toupper(res$selected_model), res$delta_aic)
+  }
+
+  sprintf("%s: %s | %s | %s", m, glmm_str, gamm_str, select_str)
 })
 
 # Create the run history entry
@@ -664,6 +766,7 @@ run_entry <- sprintf(
 
 - **Config**:
   - pilot_mode: %s
+  - scaling_enabled: %s
   - n_responses: %d
   - n_indices: %d
 - **Results**:
@@ -676,6 +779,7 @@ run_entry <- sprintf(
 ",
   format(Sys.time(), "%Y-%m-%d %H:%M"),
   ifelse(pilot_mode, "TRUE", "FALSE"),
+  ifelse(scaling_enabled, "TRUE", "FALSE"),
   length(responses),
   length(indices),
   paste("  -", model_summaries, collapse = "\n")
