@@ -37,6 +37,7 @@
 - `results/tables/alignment_schema.csv`
 - `results/figures/alignment_completeness.png`
 - `results/logs/alignment_summary.json` (row counts, missingness, imputation events, unit conversions)
+- Appends summary to `results/logs/RUN_HISTORY.md`
 
 ## Methods
 - Timestamp normalization

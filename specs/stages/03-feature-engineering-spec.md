@@ -23,6 +23,7 @@
 - `results/tables/feature_engineering_schema.csv`
 - `results/figures/temporal_feature_checks.png`
 - `results/logs/feature_engineering_summary.json`
+- Appends summary to `results/logs/RUN_HISTORY.md`
 
 ## Methods
 - Time normalization:

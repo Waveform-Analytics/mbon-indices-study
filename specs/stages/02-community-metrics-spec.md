@@ -22,6 +22,7 @@
     - Vessel presence (binary)
 - `results/tables/community_metrics_schema.csv`
 - `results/logs/community_metrics_summary.json` (counts per station/year, missingness)
+- Appends summary to `results/logs/RUN_HISTORY.md`
 
 ## Methods
 - Use `aligned_detections.parquet` as the canonical timeline; derive metrics by grouping on `station, datetime`.

@@ -16,6 +16,7 @@
 - `results/figures/exploratory/community_metrics_distributions.png` — 9-panel histograms
 - `results/figures/exploratory/scatter/indices_vs_<response>.png` — all indices vs each response (13 files: 9 linear + 4 log-scale for skewed responses)
 - `results/figures/exploratory/heatmaps/heatmap_<variable>.png` — date × hour heatmaps with all 3 stations vertically stacked (31 files: 9 responses + 20 indices + 2 covariates)
+- Appends summary to `results/logs/RUN_HISTORY.md`
 
 ## Methods
 - Descriptive stats:
