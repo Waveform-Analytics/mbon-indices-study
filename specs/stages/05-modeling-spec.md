@@ -55,6 +55,46 @@ We want to understand: **Do acoustic indices predict biological community metric
 
 For example: "Does the Acoustic Complexity Index (ACI) relate to fish calling activity, after accounting for environmental conditions and the structure of our sampling?"
 
+### Predictor Scaling
+
+**Why scale predictors?**
+
+Acoustic indices and environmental covariates are on vastly different scales:
+- `ACTtCount` ranges ~800–8000
+- `KURTt` has SD > 10,000
+- `VARt` has SD ~ 0.0004
+- `temperature` ranges ~10–33
+
+This causes two problems:
+1. **Numerical instability**: Optimizers struggle when parameters span many orders of magnitude, leading to non-positive-definite Hessians and failed convergence
+2. **Coefficient incomparability**: A "1-unit increase" means completely different things for different predictors
+
+**Solution: Z-score standardization**
+
+Before fitting, all continuous predictors (indices + temperature + depth) are standardized:
+
+```
+x_scaled = (x - mean(x)) / sd(x)
+```
+
+This transforms each predictor to mean=0, SD=1.
+
+**Interpretation after scaling:**
+
+Coefficients now represent the effect of a **1-SD increase** in the predictor:
+- Count models: "A 1-SD increase in [index] is associated with a [exp(β)]× change in expected [response]"
+- Binary models: "A 1-SD increase in [index] multiplies the odds of [response] by [exp(β)]"
+
+This actually improves interpretability — effect sizes become directly comparable across predictors.
+
+**Implementation:**
+- Scaling is performed at model-fitting time (not stored in parquet)
+- Scaling parameters (mean, SD) are saved to `results/tables/<metric>/scaling_params.csv` for back-transformation if needed
+- Response variables are NOT scaled (they use appropriate link functions)
+- Cyclic terms (`sin_hour`, `cos_hour`) are NOT scaled (already bounded -1 to 1)
+
+---
+
 ### GLMM (Generalized Linear Mixed Model)
 
 **What it does:** Tests whether acoustic indices have LINEAR relationships with community metrics, while properly handling:
@@ -226,6 +266,8 @@ To support iterative review of results as they're generated, we produce a reveal
 - `gamm.smooth_k` — basis dimension for index/covariate smooths (default 5)
 - `gamm.cyclic_k` — basis dimension for cyclic smooths (default 12)
 - `autocorrelation.glmm_ar1` — whether to include AR1 in GLMM
+- `scaling.enabled` — whether to z-score standardize predictors (default: true)
+- `scaling.exclude` — predictors to exclude from scaling (default: sin_hour, cos_hour)
 
 ## Acceptance Criteria
 - All models converge without errors
@@ -253,6 +295,7 @@ To support iterative review of results as they're generated, we produce a reveal
 - Downstream: Results interpretation, manuscript
 
 ## Change Record
+- 2025-12-09: Added predictor scaling requirement. Acoustic indices and covariates must be z-score standardized before GLMM/GAMM fitting to ensure numerical stability and comparable coefficients. Coefficients now interpretable as "effect per 1-SD change."
 - 2025-12-08: Updated indices reference to be generic ("final acoustic indices from Stage 01") rather than hardcoded count. Predictor count depends on upstream Stage 01 thresholds; see `results/logs/RUN_HISTORY.md` for run-specific details.
 - 2025-12-06: Added "Open Question" section for team decision on inference vs prediction framing. Tentative plan: inference + light CV, with operational applications as future work.
 - 2025-12-06: Reorganized for clarity — moved link scale before assumptions, separated Workflow section from Methods. Removed stale "open for discussion" note. Added Quarto slides and output management.
