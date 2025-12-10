@@ -347,6 +347,7 @@ data <- data %>%
 # ------------------------------------------------------------------------------
 
 # Get scaling settings from config
+# MW: Should we even have "backup" values here? seems like we should just throw an error if the config is incomplete. 
 scaling_enabled <- config$scaling$enabled %||% TRUE
 scaling_include <- config$scaling$include %||% c("indices", "covariates")
 scaling_exclude <- config$scaling$exclude %||% c("sin_hour", "cos_hour")
@@ -402,6 +403,7 @@ for (metric in names(responses)) {
 
   # Prepare data for this metric
   # Drop rows where the response is NA
+  # MW: note for ppl new to R like me! model_data is supposed to include both the responses and the predictors
   model_data <- data %>%
     filter(!is.na(.data[[metric]]))
 
@@ -545,7 +547,7 @@ for (metric in names(responses)) {
       formula = gamm_formula,
       data = model_data,
       family = gamm_family,
-      method = "fREML",  # Fast REML for speed
+      method = "ML",  # Switched to ML for direct comparison w GLMM (from fREML)
       discrete = TRUE,   # Discretization for speed
       select = TRUE      # Shrinkage selection (penalizes unnecessary complexity)
     )
