@@ -215,7 +215,7 @@ Flat lines = shrunk away. Let's zoom in on key ones...
 
 ::: {.columns}
 ::: {.column width="60%"}
-![](../../results/figures/fish_activity/gamm_smooths.png){width="100%"}
+![](../../results/figures/fish_activity/smooth_hour_of_day.png){width="100%"}
 :::
 
 ::: {.column width="40%"}
@@ -243,7 +243,7 @@ Evening/night peaks are typical for many soniferous fish species.
 
 ::: {.columns}
 ::: {.column width="60%"}
-![](../../results/figures/fish_activity/gamm_smooths.png){width="100%"}
+![](../../results/figures/fish_activity/smooth_BI.png){width="100%"}
 :::
 
 ::: {.column width="40%"}
@@ -273,7 +273,7 @@ The negative relationship was confirmed in both GLMM and GAMM.
 
 ::: {.columns}
 ::: {.column width="60%"}
-![](../../results/figures/fish_activity/gamm_smooths.png){width="100%"}
+![](../../results/figures/fish_activity/smooth_VARt.png){width="100%"}
 :::
 
 ::: {.column width="40%"}
