@@ -5,8 +5,9 @@
 # Temporary files
 tmp_*.md
 
-# Generated presentations
+# Generated presentations (but allow specific tracked ones)
 docs/presentations/*.html
+!docs/presentations/biostats-review-2025-12-12.html
 
 # Data (large/unversioned)
 data/raw/
