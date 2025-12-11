@@ -1,3 +1,13 @@
+# IDE
+.idea/
+.vscode/
+
+# Temporary files
+tmp_*.md
+
+# Generated presentations
+docs/presentations/*.html
+
 # Data (large/unversioned)
 data/raw/
 data/interim/
