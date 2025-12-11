@@ -12,6 +12,7 @@ format:
     margin: 0.1
     pdf-separate-fragments: false
     embed-resources: true
+    scrollable: true
 ---
 
 ## Research Question
@@ -389,4 +390,3 @@ If indices vary seasonally (and they do), they may be soaking up that variance.
 
 <br>
 
-**Thank you! Questions?**
