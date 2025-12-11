@@ -538,7 +538,7 @@ for (metric in names(responses)) {
   gamm_family <- get_gam_family(metric_info$family)
 
   # Fit the model using bam() for speed
-  # bam() is optimized for large datasets
+  # bam() is optimized for large datasets - MW: I think results are equivalent to gam() but need to confirm
   # select=TRUE enables automatic smoothness selection (shrinks unneeded wiggles)
   gamm_start <- Sys.time()
 
@@ -547,9 +547,11 @@ for (metric in names(responses)) {
       formula = gamm_formula,
       data = model_data,
       family = gamm_family,
-      method = "ML",  # Switched to ML for direct comparison w GLMM (from fREML)
+      # method = "ML",  # Switched to ML for direct comparison w GLMM (from fREML)
+      method = "fREML",
       discrete = TRUE,   # Discretization for speed
-      select = TRUE      # Shrinkage selection (penalizes unnecessary complexity)
+      select = TRUE,      # Shrinkage selection (penalizes unnecessary complexity)
+      rho = 0.6 # include rho to add AR1 correlation, to match GLMM more closely - MW: how much does this parameter matter? 
     )
   }, error = function(e) {
     cat(sprintf("  ERROR fitting GAMM: %s\n", e$message))
@@ -725,7 +727,7 @@ print(summary_df %>% select(metric, glmm_aic, gamm_aic, delta_aic, selected_mode
 cat("\nNext steps:\n")
 cat("1. Review diagnostic plots in results/figures/<metric>/\n")
 cat("2. Check coefficient tables in results/tables/<metric>/\n")
-cat("3. Run `quarto render results/results_summary.qmd` to generate slides\n")
+cat("3. Coming soon: Run `quarto render results/results_summary.qmd` to generate slides\n")
 
 # ------------------------------------------------------------------------------
 # APPEND TO RUN HISTORY

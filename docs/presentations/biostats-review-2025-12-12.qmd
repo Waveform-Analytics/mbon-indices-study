@@ -1,0 +1,444 @@
+---
+title: "MBON Acoustic Indices Study"
+subtitle: "Biostats Review — Methods & Preliminary Results"
+date: "December 12, 2025"
+format:
+  revealjs:
+    theme: default
+    slide-number: true
+    transition: fade
+    width: 1600
+    height: 900
+    margin: 0.1
+    pdf-separate-fragments: false
+    embed-resources: true
+---
+
+## Research Question
+
+**Can acoustic indices predict biological community metrics in estuarine environments?**
+
+::: {.incremental}
+- **Location:** 3 stations, May River, South Carolina
+- **Period:** 2021 (full year)
+- **Responses:** 9 community metrics
+  - Fish: activity, richness, presence
+  - Dolphins: echolocation, burst pulse, whistle, total activity, presence
+  - Vessels: presence
+- **Predictors:** ~60 acoustic indices (candidates)
+:::
+
+::: {.notes}
+This is a methods/inference study — we want to understand relationships, not just predict.
+The goal is to determine if acoustic indices can serve as proxies for biological activity.
+:::
+
+---
+
+## Data Overview
+
+- **13,102 observations** (2-hour temporal bins)
+- **4 data sources** aligned to common resolution:
+
+| Source | Description |
+|--------|-------------|
+| Detections | Manual annotations of fish/dolphin/vessel presence |
+| Environment | Temperature, depth (sensor data) |
+| Acoustic Indices | ~60 indices across 5 categories |
+| SPL | Sound pressure levels |
+
+- **Index categories:** Amplitude, Complexity, Diversity, Spectral, Temporal
+- **Temporal structure:** station / month / day / hour
+
+::: {.notes}
+All sources were aligned to 2-hour bins at each station.
+The 5 index categories ensure we capture different aspects of the soundscape.
+:::
+
+---
+
+## Pipeline Overview
+
+```
+Stage 00: Data Alignment (4 sources → 2-hour bins)
+    ↓
+Stage 01: Index Reduction (60 → 14 via correlation/VIF)
+    ↓
+Stage 02-03: Response Variables + Feature Engineering
+    ↓
+Stage 05: GLMM vs GAMM Modeling
+```
+
+**Why both models?**
+
+- **GLMM:** Assumes linear predictor-response relationships
+- **GAMM:** Allows non-linear (smooth) relationships
+
+We fit both and compare — if relationships are truly linear, prefer GLMM (simpler); if non-linear, GAMM will fit better.
+
+::: {.notes}
+GAMMs are increasingly common in ecological literature for this type of study.
+We're not committed to either — we let the data decide via AIC comparison.
+:::
+
+---
+
+## Model Specifications
+
+::: {.columns}
+::: {.column width="50%"}
+**GLMM (glmmTMB)**
+
+- Linear fixed effects for all predictors
+- AR1 autocorrelation within days
+- Random intercepts: station, month
+- `REML = FALSE` (for AIC comparison)
+:::
+
+::: {.column width="50%"}
+**GAMM (mgcv::bam)**
+
+- Smooth terms (k=5) for indices & covariates
+- Cyclic splines for hour, day-of-year
+- Random effects: station, month
+- AR1 via `rho` parameter
+:::
+:::
+
+<br>
+
+**Both models:**
+
+- Negative binomial (nbinom2) for count responses
+- Binomial for presence/absence responses
+- **Selection rule:** Prefer simpler model if ΔAIC < 4
+
+::: {.notes}
+The AR1 structure handles temporal autocorrelation — observations close in time are correlated.
+k=5 for smooths allows moderate non-linearity without overfitting.
+:::
+
+---
+
+## Question 1: Index Reduction {.section}
+
+*Is our approach appropriate? Should we reduce further?*
+
+---
+
+## Index Reduction: What We Did
+
+**Step 1: Correlation pruning**
+
+- Removed one index from each pair with |r| > 0.6
+- Result: 60 → 17 indices
+
+**Step 2: VIF screening**
+
+- Iteratively removed indices with VIF > 2
+- Result: 17 → 14 indices
+
+**Outcome:**
+
+- 14 indices retained
+- All 5 categories preserved (Amplitude, Complexity, Diversity, Spectral, Temporal)
+
+::: {.notes}
+Thresholds are strict per Zuur et al. (2010) recommendations for ecological modeling.
+We prioritized category coverage when choosing which index to remove from correlated pairs.
+:::
+
+---
+
+## Index Reduction: Concerns
+
+::: {.incremental}
+1. **Is 14 indices too many?**
+   - 14 predictors for 13K observations (~1:900 ratio)
+   - Some papers use stricter reduction
+
+2. **Is correlation + VIF the right approach?**
+   - Alternatives: PCA, LASSO, elastic net
+   - Would lose direct interpretability
+
+3. **Model shrinkage removed 4 more**
+   - GAMM `select=TRUE` shrunk ADI, BioEnergy, EPS_KURT, MEANt to ~zero
+   - Should we formalize this as a two-stage approach?
+:::
+
+::: {.notes}
+The model effectively did additional selection for us — 4 indices contributed nothing.
+Question: Should we report 14 predictors or 10 "effective" predictors?
+:::
+
+---
+
+## Index Reduction: Questions for Discussion
+
+<br>
+
+**Q1:** Is correlation + VIF standard practice, or would you recommend a different approach?
+
+<br>
+
+**Q2:** Given that GAMM shrinkage removed 4 indices, should we adopt a two-stage approach (VIF → model-based selection)?
+
+<br>
+
+**Q3:** 14 predictors for 13K observations — is this ratio acceptable?
+
+---
+
+## Question 2: Modeling Results {.section}
+
+*What are our results telling us? Any concerns?*
+
+---
+
+## Model Comparison: fish_activity
+
+::: {.columns}
+::: {.column width="60%"}
+| Model | AIC | Time |
+|-------|-----|------|
+| GLMM | 34,903 | 3.0 min |
+| GAMM | 28,833 | 0.8 sec |
+| **ΔAIC** | **6,071** | |
+:::
+
+::: {.column width="40%"}
+**Interpretation:**
+
+- ΔAIC > 10 = strong preference
+- ΔAIC = 6,071 is overwhelming
+- GAMM selected
+:::
+:::
+
+<br>
+
+**Additional evidence:**
+
+- GLMM diagnostics show systematic misfit (next slides)
+- Non-linear relationships justify GAMM
+
+::: {.notes}
+This is pilot mode — fish_activity only. Will expand to all 9 responses.
+The speed difference is because bam() with discrete=TRUE is highly optimized.
+:::
+
+---
+
+## GAMM Results: Significant Predictors
+
+| Term | EDF | p-value | Interpretation |
+|------|-----|---------|----------------|
+| hour_of_day | 8.24 | <0.001 | Strong diel pattern |
+| ACI | 2.66 | <0.001 | Non-linear, positive |
+| BI | 2.82 | <0.001 | Non-linear, **negative** |
+| EAS | 3.08 | <0.001 | Non-linear |
+| VARt | 2.94 | <0.001 | Non-linear |
+| depth | 1.00 | <0.001 | Linear, negative |
+
+<br>
+
+**Shrunk away (not significant):** ADI, BioEnergy, EPS_KURT, MEANt
+
+::: {.notes}
+EDF (effective degrees of freedom): ~1 = linear, >2 = notably curved
+10 of 14 indices were significant — is this too many?
+:::
+
+---
+
+## GAMM Smooth Plots: Overview
+
+![](../../results/figures/fish_activity/gamm_smooths.png){width="95%"}
+
+::: {.notes}
+X-axis is scaled predictor (0 = mean, units are SDs).
+Y-axis is partial effect on log(fish_activity).
+Flat lines = shrunk away. Let's zoom in on key ones...
+:::
+
+---
+
+## Smooth Zoom: hour_of_day
+
+::: {.columns}
+::: {.column width="60%"}
+![](../../results/figures/fish_activity/gamm_smooths.png){width="100%"}
+:::
+
+::: {.column width="40%"}
+**Observations:**
+
+- Strong diel pattern (EDF = 8.2)
+- Peak activity ~8 PM (hour 20)
+- Lowest ~10 AM (hour 10)
+
+**Validation:**
+
+- Matches known fish calling behavior
+- Model is capturing real biology
+:::
+:::
+
+::: {.notes}
+This is exactly what we'd expect from fish chorusing literature.
+Evening/night peaks are typical for many soniferous fish species.
+:::
+
+---
+
+## Smooth Zoom: BI (negative relationship)
+
+::: {.columns}
+::: {.column width="60%"}
+![](../../results/figures/fish_activity/gamm_smooths.png){width="100%"}
+:::
+
+::: {.column width="40%"}
+**Observation:**
+
+- Higher BI → **less** fish activity
+- Counterintuitive?
+
+**Possible explanations:**
+
+- BI elevated when other sources dominate (snapping shrimp?)
+- Fish call when BI is lower
+- Seasonal confounding?
+
+**Question:** Ecologically interpretable or artifact?
+:::
+:::
+
+::: {.notes}
+BI = Bioacoustic Index, designed to measure biotic sound energy.
+The negative relationship was confirmed in both GLMM and GAMM.
+:::
+
+---
+
+## Smooth Zoom: VARt (non-linear)
+
+::: {.columns}
+::: {.column width="60%"}
+![](../../results/figures/fish_activity/gamm_smooths.png){width="100%"}
+:::
+
+::: {.column width="40%"}
+**Observation:**
+
+- "Goldilocks" relationship
+- Fish activity peaks at intermediate VARt
+- Drops at both extremes
+
+**Implication:**
+
+- GLMM can't capture this (needs a line)
+- Justifies GAMM selection
+:::
+:::
+
+::: {.notes}
+VARt = temporal variance in the acoustic signal.
+This type of unimodal relationship is common in ecology.
+:::
+
+---
+
+## Unexpected Results
+
+::: {.columns}
+::: {.column width="50%"}
+**Temperature:**
+
+- GLMM: highly significant (p ≈ 0)
+- GAMM: NOT significant (p = 0.12)
+
+**Day of year:**
+
+- GAMM: NOT significant (p = 0.18)
+- Despite visible seasonality in data →
+:::
+
+::: {.column width="50%"}
+![](../../results/figures/exploratory/heatmaps/heatmap_fish_activity.png){width="100%"}
+:::
+:::
+
+<br>
+
+**Hypothesis:** Acoustic indices absorb the seasonal/temperature signal?
+
+::: {.notes}
+The heatmap clearly shows spring/summer peaks. Why doesn't day_of_year capture this?
+If indices vary seasonally (and they do), they may be soaking up that variance.
+:::
+
+---
+
+## Methodological Concerns
+
+::: {.incremental}
+1. **AR1 comparability**
+   - GLMM: `ar1(time_within_day + 0 | day_id)`
+   - GAMM: `rho` parameter
+   - Are these equivalent structures?
+
+2. **AIC comparison validity**
+   - GLMM uses ML (`REML = FALSE`)
+   - GAMM uses fREML (`method = "fREML"`)
+   - Technically not directly comparable?
+
+3. **10 of 14 indices significant**
+   - Genuine signal or overfitting?
+
+4. **Depth sign flip**
+   - GLMM: positive (+0.23)
+   - GAMM: negative
+   - Suggests GLMM mis-specified?
+:::
+
+---
+
+## GLMM Diagnostics (DHARMa)
+
+![](../../results/figures/fish_activity/glmm_diagnostics.png){width="80%"}
+
+- **KS test:** p = 0 (significant deviation)
+- **Outlier test:** p = 0.0005 (outliers detected)
+- Systematic misfit supports GAMM selection
+
+::: {.notes}
+DHARMa uses simulation to check if residuals are uniformly distributed.
+The hump in the right panel shows the model is consistently off at mid-range predictions.
+:::
+
+---
+
+## Summary: Questions for Discussion
+
+1. **Index reduction:** Is correlation + VIF appropriate? Should we reduce further, or is model shrinkage sufficient?
+
+2. **Model choice:** GAMM strongly preferred by AIC — any concerns? Is fREML vs ML comparison valid?
+
+3. **Autocorrelation:** Is our AR1 handling adequate in both models?
+
+4. **Interpretation:** Temperature/seasonality not significant in GAMM — absorbed by indices, or a problem?
+
+5. **Next steps:** Expand to all 9 responses? Additional diagnostics? Anything we're missing?
+
+---
+
+## Additional Context
+
+- **Pilot mode:** Results shown are for `fish_activity` only — will expand to all 9 responses
+- **MEANt:** No real variation in raw data (numerical noise ~10⁻¹⁹) — model correctly shrunk it away
+- **Repository:** [link] — full specs, code, and data pipeline available
+
+<br>
+
+**Thank you! Questions?**
