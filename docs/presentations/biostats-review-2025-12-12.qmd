@@ -66,52 +66,36 @@ Stage 01: Index Reduction (60 → 14 via correlation/VIF)
     ↓
 Stage 02-03: Response Variables + Feature Engineering
     ↓
-Stage 05: GLMM vs GAMM Modeling
+Stage 05: GAMM modeling (mgcv::bam)
 ```
 
-**Why both models?**
+**Model choice:** GAMM (Generalized Additive Mixed Model)
 
-- **GLMM:** Assumes linear predictor-response relationships
-- **GAMM:** Allows non-linear (smooth) relationships
-
-We fit both and compare — if relationships are truly linear, prefer GLMM (simpler); if non-linear, GAMM will fit better.
+- Allows non-linear (smooth) relationships between predictors and response
+- Increasingly common in ecological literature for this type of study
+- Preliminary comparison with GLMM showed strong GAMM preference (ΔAIC > 6000)
 
 ::: {.notes}
-GAMMs are increasingly common in ecological literature for this type of study.
-We're not committed to either — we let the data decide via AIC comparison.
+We did fit both GLMM and GAMM initially. GAMM was overwhelmingly preferred, so we're focusing on that.
 :::
 
 ---
 
 ## Model Specifications
 
-::: {.columns}
-::: {.column width="50%"}
-**GLMM (glmmTMB)**
-
-- Linear fixed effects for all predictors
-- AR1 autocorrelation within days
-- Random intercepts: station, month
-- `REML = FALSE` (for AIC comparison)
-:::
-
-::: {.column width="50%"}
 **GAMM (mgcv::bam)**
 
 - Smooth terms (k=5) for indices & covariates
 - Cyclic splines for hour, day-of-year
 - Random effects: station, month
 - AR1 via `rho` parameter
-:::
-:::
 
 <br>
 
-**Both models:**
+**Model types:**
 
 - Negative binomial (nbinom2) for count responses
 - Binomial for presence/absence responses
-- **Selection rule:** Prefer simpler model if ΔAIC < 4
 
 ::: {.notes}
 The AR1 structure handles temporal autocorrelation — observations close in time are correlated.
@@ -154,16 +138,14 @@ We prioritized category coverage when choosing which index to remove from correl
 
 ::: {.incremental}
 1. **Is 14 indices too many?**
-   - 14 predictors for 13K observations (~1:900 ratio)
-   - Some papers use stricter reduction
 
 2. **Is correlation + VIF the right approach?**
-   - Alternatives: PCA, LASSO, elastic net
-   - Would lose direct interpretability
+   - Alternatives: PCA, LASSO, elastic net (others?)
 
 3. **Model shrinkage removed 4 more**
    - GAMM `select=TRUE` shrunk ADI, BioEnergy, EPS_KURT, MEANt to ~zero
-   - Should we formalize this as a two-stage approach?
+   - Should we report 14 predictors or 10 "effective" predictors?
+   - Should we formalize this as a two-stage approach? Remove the "shrunk" indices and rerun?
 :::
 
 ::: {.notes}
@@ -177,7 +159,7 @@ Question: Should we report 14 predictors or 10 "effective" predictors?
 
 <br>
 
-**Q1:** Is correlation + VIF standard practice, or would you recommend a different approach?
+**Q1:** Is correlation + VIF standard practice, or is there a more appropriate approach?
 
 <br>
 
@@ -185,47 +167,13 @@ Question: Should we report 14 predictors or 10 "effective" predictors?
 
 <br>
 
-**Q3:** 14 predictors for 13K observations — is this ratio acceptable?
+**Q3:** 14 predictors for 13K observations — but effective sample size is lower due to temporal autocorrelation.
 
 ---
 
 ## Question 2: Modeling Results {.section}
 
 *What are our results telling us? Any concerns?*
-
----
-
-## Model Comparison: fish_activity
-
-::: {.columns}
-::: {.column width="60%"}
-| Model | AIC | Time |
-|-------|-----|------|
-| GLMM | 34,903 | 3.0 min |
-| GAMM | 28,833 | 0.8 sec |
-| **ΔAIC** | **6,071** | |
-:::
-
-::: {.column width="40%"}
-**Interpretation:**
-
-- ΔAIC > 10 = strong preference
-- ΔAIC = 6,071 is overwhelming
-- GAMM selected
-:::
-:::
-
-<br>
-
-**Additional evidence:**
-
-- GLMM diagnostics show systematic misfit (next slides)
-- Non-linear relationships justify GAMM
-
-::: {.notes}
-This is pilot mode — fish_activity only. Will expand to all 9 responses.
-The speed difference is because bam() with discrete=TRUE is highly optimized.
-:::
 
 ---
 
@@ -337,8 +285,8 @@ The negative relationship was confirmed in both GLMM and GAMM.
 
 **Implication:**
 
-- GLMM can't capture this (needs a line)
-- Justifies GAMM selection
+- This non-linear pattern is common in ecology
+- GAMM smooths capture it naturally
 :::
 :::
 
@@ -355,12 +303,11 @@ This type of unimodal relationship is common in ecology.
 ::: {.column width="50%"}
 **Temperature:**
 
-- GLMM: highly significant (p ≈ 0)
-- GAMM: NOT significant (p = 0.12)
+- NOT significant in GAMM (p = 0.12)
 
 **Day of year:**
 
-- GAMM: NOT significant (p = 0.18)
+- NOT significant in GAMM (p = 0.18)
 - Despite visible seasonality in data →
 :::
 
@@ -383,39 +330,42 @@ If indices vary seasonally (and they do), they may be soaking up that variance.
 ## Methodological Concerns
 
 ::: {.incremental}
-1. **AR1 comparability**
-   - GLMM: `ar1(time_within_day + 0 | day_id)`
-   - GAMM: `rho` parameter
-   - Are these equivalent structures?
-
-2. **AIC comparison validity**
-   - GLMM uses ML (`REML = FALSE`)
-   - GAMM uses fREML (`method = "fREML"`)
-   - Technically not directly comparable?
-
-3. **10 of 14 indices significant**
+1. **10 of 14 indices significant**
    - Genuine signal or overfitting?
+   - Large sample size (13K) means small effects can be significant
 
-4. **Depth sign flip**
-   - GLMM: positive (+0.23)
-   - GAMM: negative
-   - Suggests GLMM mis-specified?
+2. **AR1 autocorrelation**
+   - Currently using fixed `rho = 0.6`
+   - Should we estimate rho from the data?
+
+3. **Indices absorbing environmental signal?**
+   - Temperature and seasonality not significant
+   - But indices vary with both — collinearity concern?
 :::
 
 ---
 
-## GLMM Diagnostics (DHARMa)
+## Question 3: Validation Approach {.section}
 
-![](../../results/figures/fish_activity/glmm_diagnostics.png){width="80%"}
+*How much validation do we need for a journal paper?*
 
-- **KS test:** p = 0 (significant deviation)
-- **Outlier test:** p = 0.0005 (outliers detected)
-- Systematic misfit supports GAMM selection
+---
 
-::: {.notes}
-DHARMa uses simulation to check if residuals are uniformly distributed.
-The hump in the right panel shows the model is consistently off at mid-range predictions.
-:::
+## Inference vs Prediction: Options
+
+| Approach | What it means | Pros | Cons |
+|----------|---------------|------|------|
+| **Inference only** | Full-data GAMM, report coefficients | Simpler, answers "are there relationships?" | Reviewers may question generalizability |
+| **Inference + light CV** | Add leave-one-station-out validation | Shows relationships are robust | Slightly more work |
+| **Full predictive** | Extensive CV, prediction metrics | Strongest for "applied monitoring" framing | Scope creep |
+
+<br>
+
+**Our tentative plan:** Inference + light CV
+
+- Primary: Understanding which indices relate to community metrics
+- Supporting: Simple CV showing relationships generalize
+- Future work: Operational prediction applications
 
 ---
 
@@ -423,13 +373,11 @@ The hump in the right panel shows the model is consistently off at mid-range pre
 
 1. **Index reduction:** Is correlation + VIF appropriate? Should we reduce further, or is model shrinkage sufficient?
 
-2. **Model choice:** GAMM strongly preferred by AIC — any concerns? Is fREML vs ML comparison valid?
+2. **Interpretation:** Temperature/seasonality not significant — absorbed by indices, or a problem?
 
-3. **Autocorrelation:** Is our AR1 handling adequate in both models?
+3. **Validation:** Is inference + light CV sufficient for publication? What kind of CV would reviewers expect?
 
-4. **Interpretation:** Temperature/seasonality not significant in GAMM — absorbed by indices, or a problem?
-
-5. **Next steps:** Expand to all 9 responses? Additional diagnostics? Anything we're missing?
+4. **Next steps:** Expand to all 9 responses? Additional diagnostics?
 
 ---
 

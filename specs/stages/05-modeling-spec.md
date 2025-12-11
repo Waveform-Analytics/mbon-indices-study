@@ -36,7 +36,8 @@ Per response metric:
 - `results/tables/<metric>/gamm_summary.csv` — smooth terms with EDFs
 - `results/tables/<metric>/model_comparison.csv` — AIC comparison, selected model
 - `results/figures/<metric>/glmm_diagnostics.png` — residual diagnostics
-- `results/figures/<metric>/gamm_smooths.png` — smooth term plots
+- `results/figures/<metric>/gamm_smooths.png` — overview grid of all smooth terms
+- `results/figures/<metric>/smooth_<term>.png` — individual smooth plots per term
 
 Summary outputs:
 - `results/tables/model_selection_summary.csv` — all responses, which model won, ΔAIC

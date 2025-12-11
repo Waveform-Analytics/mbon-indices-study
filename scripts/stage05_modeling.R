@@ -21,7 +21,8 @@
 #   - results/tables/<metric>/model_comparison.csv
 #   - results/tables/<metric>/scaling_params.csv
 #   - results/figures/<metric>/glmm_diagnostics.png
-#   - results/figures/<metric>/gamm_smooths.png
+#   - results/figures/<metric>/gamm_smooths.png (overview grid)
+#   - results/figures/<metric>/smooth_<term>.png (individual smooth plots)
 #
 # Summary outputs:
 #   - results/tables/model_selection_summary.csv
@@ -597,16 +598,30 @@ for (metric in names(responses)) {
     # Generate smooth plots
     cat("  Generating GAMM smooth plots...\n")
 
+    # Main overview plot (all smooths in a grid, no repeated title)
     png(file.path("results/figures", metric, "gamm_smooths.png"),
         width = 2000, height = 1500, res = 120)
-
-    # Plot all smooth terms in a grid
-    # This shows the estimated non-linear relationships
-    plot(gamm_fit, pages = 1, all.terms = FALSE, shade = TRUE,
-         main = paste(metric, "- GAMM Smooth Terms"))
-
+    plot(gamm_fit, pages = 1, all.terms = FALSE, shade = TRUE)
     dev.off()
     cat("  Saved: results/figures/", metric, "/gamm_smooths.png\n", sep = "")
+
+    # Generate individual smooth plots for key terms
+    # Extract smooth term names from the model
+    smooth_terms <- sapply(gamm_fit$smooth, function(s) s$label)
+
+    for (i in seq_along(smooth_terms)) {
+      term_label <- smooth_terms[i]
+      # Create a clean filename from the term label
+      # e.g., "s(hour_of_day)" -> "smooth_hour_of_day.png"
+      term_name <- gsub("s\\(|\\)|,.*", "", term_label)  # Remove s(), ), and anything after comma
+      filename <- paste0("smooth_", term_name, ".png")
+
+      png(file.path("results/figures", metric, filename),
+          width = 800, height = 600, res = 120)
+      plot(gamm_fit, select = i, shade = TRUE, main = term_label)
+      dev.off()
+    }
+    cat("  Saved:", length(smooth_terms), "individual smooth plots\n")
 
     # Get AIC
     gamm_aic <- AIC(gamm_fit)
