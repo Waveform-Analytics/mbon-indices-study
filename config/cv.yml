@@ -1,10 +1,9 @@
-# Cross-validation configuration (stub)
+# Cross-validation configuration
 
 primary_strategy:
-  name: within_month_split
-  train_days: 1-21
-  test_days: 22-end
-  min_month_rows: 20
+  name: week_based_kfold
+  fold_by: iso_week
+  min_fold_rows: 20
 
 secondary_strategy:
   name: leave_one_station_out
@@ -17,3 +16,6 @@ metrics:
 
 seeds:
   cv: 2025
+
+# Optional diagnostics (not yet implemented)
+# hour_of_day_stratification: true

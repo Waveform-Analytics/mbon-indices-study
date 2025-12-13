@@ -140,17 +140,7 @@ MW:
 
 5. **Next steps:** Expand to all 9 responses? Additional diagnostics? Anything we're missing?
 
----
 
-## Supporting Materials to Include
-
-- [ ] Model comparison table (model_comparison.csv)
-- [ ] GAMM summary table (gamm_summary.csv) — formatted nicely
-- [ ] GAMM smooth plots (gamm_smooths.png + individual zooms)
-- [ ] GLMM diagnostics (glmm_diagnostics.png)
-- [ ] Heatmaps: fish_activity (to show the pattern we're predicting)
-- [ ] Index reduction summary (from Stage 01 — correlation matrix? VIF table?)
-- [ ] Link to repository for specs/code
 
 ---
 

@@ -8,8 +8,9 @@
   - 02 Community Metrics: ✅ Implemented (2025-12-03) — 9 response variables
   - 03 Feature Engineering: ✅ Implemented (2025-12-03) — Analysis-ready dataset
   - 04 Exploratory Visualization: ✅ Implemented (2025-12-05) — Heatmaps, scatter plots, distributions
-  - 05 Modeling (GLMM + GAMM): 🔄 In Progress — Merged from stages 05-06; includes AIC comparison
-  - ~~06-08~~: Merged/deferred — CV deferred; model selection integrated into Stage 05
+  - 05a Modeling (GLMM + GAMM): 🔄 In Progress — Model fitting, AIC comparison
+  - 05b Validation: 📋 Spec Ready — AR1 validation, week-based k-fold CV
+  - ~~06-08~~: Merged — Model selection in 05; validation in 05b
   - 09 Results Presentation: Draft — Quarto slides for interpretation
   - 10 Reporting: Draft — Manuscript preparation
 

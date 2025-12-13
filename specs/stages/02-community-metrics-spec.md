@@ -32,6 +32,7 @@
   - Activity: sum intensity columns per bin; missing treated as zero only when absence is explicit; otherwise leave missing and report.
   - Richness: count unique species detected (>0) per bin.
   - Presence: binary indicator if any fish species present.
+  - **Activity metric rationale**: Fish calling intensity is recorded on an ordinal scale (0-1-many-chorus) that is not strictly interval-scaled — the difference between "many" and "chorus" is not necessarily equal to the difference between "1" and "many." However, for this prediction-focused analysis, we treat the summed intensity as a pseudo-continuous count. This is a pragmatic choice that enables species aggregation and is common in applied acoustic ecology. The limitation is acknowledged; presence/absence responses provide a cleaner binary alternative for inference-focused questions.
 - Dolphin metrics:
   - Columns: Bottlenose dolphin echolocation, burst pulses, whistles (convert first two from string to numeric).
   - Counts: extract the 3 call type counts from detections; presence if any call type > 0.
@@ -65,5 +66,6 @@
 - Downstream: Stage 04 Exploratory Visualization; Stage 05 GLMM; Stage 06 GAMM.
 
 ## Change Record
+- 2025-12-12: Added rationale for treating ordinal activity scores as pseudo-continuous counts per statistical consultation.
 - 2025‑12‑03: **IMPLEMENTED** - Computed community metrics from aligned detections. Outputs: 26,250 observations (3 stations, 2018-2021), 11 columns (keys + 9 metrics). Fish presence ~51%, dolphin presence 7-50% by station, vessel presence 5-38%. All validation passed: non-negative counts, binary flags, deterministic derivation.
 - 2025‑11‑21: Draft created; metrics defined per overview and aligned detections; parameters now reference config; renumbered to Stage 02.

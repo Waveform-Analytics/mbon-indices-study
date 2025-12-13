@@ -28,6 +28,9 @@
   - Previous run logs.
 
 ## Methods
+
+### Correlation and VIF Pruning
+
 - Correlation pruning:
   - Standardize each index (z‑score) within station‑year.
   - Compute pairwise Pearson correlations across all data.
@@ -40,6 +43,18 @@
 - Domain coverage check:
   - Ensure representation of categories: spectral energy, temporal modulation, complexity/entropy.
   - If pruning removes a whole category, reintroduce the best candidate with lowest correlation/VIF.
+
+### Sensitivity Analysis
+
+To assess robustness of pair selection, run index reduction twice:
+1. **Primary run**: Keep first index from correlated pairs (current approach: coverage → alphabetical)
+2. **Alternate run**: Keep second index from correlated pairs
+
+Compare final index sets between runs. If sets differ substantially, document which indices swapped and whether downstream model results are affected.
+
+**Outputs:**
+- `results/indices/index_final_list_alternate.json` — alternate selection
+- `results/tables/index_sensitivity_comparison.csv` — side-by-side comparison
 
 ## Parameters
 - `correlation_threshold`: see `config/analysis.yml -> thresholds.correlation_r`.
@@ -72,6 +87,7 @@
 - Downstream: Stage 02 Feature Engineering expects `indices_final.csv` list and metadata categories.
 
 ## Change Record
+- 2025-12-12: Added sensitivity analysis for pair selection robustness check per statistical consultation.
 - 2025‑12‑08: Tightened thresholds to |r| > 0.6 and VIF ≤ 2 per ecological best practices (Zuur et al. 2010, Graham 2003). Stricter VIF recommended for GLMM stability. Updated acceptance criteria to 10-15 indices. See `results/logs/RUN_HISTORY.md` for run-specific outcomes.
 - 2025‑12‑02: **IMPLEMENTED** - Completed VIF analysis and output generation. Note: `FrequencyResolution` removed from indices loader (constant metadata field, not an index). Note: `aROI` and `nROI` indices present in raw data but missing from metadata file `Updated_Index_Categories_v2.csv`; retained as legitimate indices pending documentation update.
 - 2025‑12‑02: Added correlation pruning with greedy algorithm. Simplified decision rules to: (1) coverage (fewer missing values), (2) alphabetical tiebreaker. Rationale: interpretability is subjective and hard to operationalize; using VIF in pairwise decisions creates circular dependency with subsequent VIF analysis step; alphabetical provides deterministic, reproducible tiebreaker. Manual review of dropped indices remains available if domain knowledge suggests reconsideration. Added timestamped logging with archiving: `results/logs/stage01_index_reduction_YYYYMMDD_HHMMSS.txt` captures all steps, decisions, and outputs for audit trail and debugging.
