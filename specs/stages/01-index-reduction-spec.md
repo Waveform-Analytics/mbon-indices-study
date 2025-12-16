@@ -14,14 +14,12 @@
 ## Outputs
 - `data/processed/indices_final.csv`
   - Columns: `index_name`, `kept` (bool), `reason`, `category`, `band`.
-- `results/figures/index_correlation_heatmap.png`
-- `results/figures/index_correlation_sensitivity_0_8.png`
+- `results/figures/index_vif_progression.png`
+  - Shows VIF reduction across iterations.
 - `results/tables/index_reduction_report.csv`
-  - Pairwise correlation summary and VIF table.
+  - VIF history and final values.
 - `results/indices/index_final_list.json`
-  - Ordered list of ~10 indices with rationale and categories.
-- `results/indices/index_final_list_8kHz.json`
-- `results/indices/index_final_list_FullBW.json`
+  - Ordered list of final indices with categories.
 - `results/logs/stage01_index_reduction_YYYYMMDD_HHMMSS.txt`
   - Timestamped execution log with all steps, decisions, and outputs.
 - `results/logs/archive/`
@@ -29,67 +27,46 @@
 
 ## Methods
 
-### Correlation and VIF Pruning
+### VIF-Based Reduction
 
-- Correlation pruning:
-  - Standardize each index (z‑score) within station‑year.
-  - Compute pairwise Pearson correlations across all data.
-  - Primary threshold: drop one index from each pair with `|r| > 0.6`.
-  - Greedy selection: process pairs sorted by correlation strength (highest first); for each pair where both indices remain, keep one using decision rules.
-  - Selection rule within correlated pairs (priority): coverage (fewer missing values) → alphabetical tiebreaker (deterministic).
-- VIF analysis:
-  - Compute VIF on remaining set; iteratively remove indices with `VIF > 2`.
-  - Fallback policy: if achieving `VIF <= 2` would violate category coverage or reduce the final list below 5, allow `VIF <= 5` for specific indices with explicit justification recorded in the report.
-- Domain coverage check:
-  - Ensure representation of categories: spectral energy, temporal modulation, complexity/entropy.
-  - If pruning removes a whole category, reintroduce the best candidate with lowest correlation/VIF.
+Index reduction uses Variance Inflation Factor (VIF) as the sole criterion. VIF measures multicollinearity in a multivariate sense — how well each index can be predicted by all other indices combined. This approach is fully deterministic with no arbitrary tiebreaker decisions.
 
-### Sensitivity Analysis
+**Procedure:**
+1. Standardize each index (z‑score) within station‑year (for numerical stability)
+2. Compute VIF for all indices
+3. Iteratively remove the index with highest VIF until all remaining indices have `VIF <= 2`
+4. Fallback policy: if achieving `VIF <= 2` would reduce the final list below 5 indices, allow `VIF <= 5` for specific indices with explicit justification
 
-To assess whether arbitrary tiebreaker choices during correlation pruning materially affect model conclusions, a separate sensitivity analysis script is provided. This runs **after the main pipeline completes** (after Stage 05) and does NOT affect main pipeline outputs.
+**Why VIF-only (no pairwise correlation pruning):**
+- VIF captures multicollinearity more holistically than pairwise correlations
+- VIF pruning is fully deterministic — always remove the highest VIF index
+- No arbitrary tiebreaker decisions required
+- High pairwise correlations inherently inflate VIF, so correlated pairs are addressed
 
-The sensitivity analysis:
-1. Runs index reduction with both tiebreakers (primary: keep first; alternate: keep second)
-2. Prepares analysis-ready datasets for both index sets
-3. Fits GLMM models using both sets (subset of responses for efficiency)
-4. Compares model outputs (AIC, significant predictors)
+**Domain coverage check:**
+- After VIF pruning, verify representation across categories (spectral, temporal, complexity, diversity, amplitude)
+- If a category is unrepresented, this is noted in the report for manual review
 
-**Script:** `scripts/sensitivity_analysis_index_reduction.py`
+### Historical: Sensitivity Analysis Script
 
-**Outputs** (in `results/sensitivity/`):
-- `sensitivity_summary.json` — full comparison with robustness assessment
-- `index_swaps.csv` — details on which indices differ between runs
-- `primary_data.parquet`, `alternate_data.parquet` — prepared datasets
-- `*_model_results.json` — R model outputs
-
-**Robustness categories:**
-- `identical`: Tiebreaker choice has no effect on index selection
-- `highly_robust`: Models are equivalent (all AIC differences < 2)
-- `moderately_robust`: Models show minor differences (AIC differences < 10)
-- `sensitive`: Models show meaningful differences — investigate further
-
-**Note:** This is a "side quest" analysis. Future simplification could avoid early index culling entirely, keeping all candidates through feature engineering and selecting at model time. This would make sensitivity analysis trivial (just change which columns are used).
+A sensitivity analysis script (`scripts/sensitivity_analysis_index_reduction.py`) exists from when the pipeline used correlation-based pruning with arbitrary tiebreakers. This script demonstrated that tiebreaker choices materially affected model outcomes, which motivated the switch to VIF-only reduction. The script is retained for reference but is no longer needed since VIF-only reduction is deterministic.
 
 ## Parameters
-- `correlation_threshold`: see `config/analysis.yml -> thresholds.correlation_r`.
-- `vif_threshold`: see `config/analysis.yml -> thresholds.vif`.
-- `vif_threshold_fallback`: see `config/analysis.yml -> thresholds.vif_fallback`.
-- `min_coverage_fraction`: see `config/analysis.yml -> thresholds.min_coverage_fraction`.
-- `bands_policy`: see `config/analysis.yml -> predictors.band_policy`.
-- `analysis_band`: see `config/analysis.yml -> predictors.analysis_band`.
+- `vif_threshold`: see `config/analysis.yml -> thresholds.vif` (default: 2)
+- `vif_threshold_fallback`: see `config/analysis.yml -> thresholds.vif_fallback` (default: 5)
+- `min_coverage_fraction`: see `config/analysis.yml -> thresholds.min_coverage_fraction`
 
 ## Acceptance Criteria
-- Final list size is between approximately 10-15 indices.
-- No pair among final indices has `|r| > correlation_threshold`.
-- All final indices have `VIF <= vif_threshold`; if not achievable without violating coverage or list-size constraints, allow up to `vif_threshold_fallback` with per-index justification captured in the report.
-- Each major category (spectral/temporal/complexity) is represented by ≥1 index.
-- Indices chosen are present for ≥`min_coverage_fraction` of records across stations and years.
-- Heatmap and report generated; rationale documented for each dropped/kept index.
+- Final list size is approximately 15-20 indices (VIF-only typically retains more than correlation+VIF)
+- All final indices have `VIF <= vif_threshold`; if not achievable without reducing below 5 indices, allow up to `vif_threshold_fallback` with justification
+- Each major category (spectral, temporal, complexity, diversity, amplitude) is represented by ≥1 index
+- Indices chosen are present for ≥`min_coverage_fraction` of records across stations and years
+- VIF report generated; rationale documented for each removed index
 
 ## Edge Cases
-- Missing `datetime` or station mismatches → exclude affected rows; report fraction excluded.
-- Station/year coverage imbalance → weight correlations by station/year to avoid dominance; document approach.
-- Highly similar indices across bands → choose single band unless justified (document).
+- Missing `datetime` or station mismatches → exclude affected rows; report fraction excluded
+- Near-perfect collinearity (VIF = infinity) → remove first, then continue iteration
+- Minimum list size → stop at 5 indices even if VIF threshold not met
 
 ## Performance
 - Target runtime: < 10 minutes on full dataset; < 1 minute on sample.
@@ -105,11 +82,12 @@ The sensitivity analysis:
 **Code structure:**
 - Core reduction functions are in `src/python/mbon_indices/reduction.py` (reusable module)
 - Main pipeline script: `scripts/stage01_index_reduction.py` (imports from reduction module)
-- Sensitivity analysis: `scripts/sensitivity_analysis_index_reduction.py` (standalone, runs after Stage 05)
+- Historical sensitivity analysis: `scripts/sensitivity_analysis_index_reduction.py` (retained for reference)
 
-**Standardization note:** The `standardize_indices` function in the reduction module applies z-score standardization within station-year groups for correlation/VIF calculations. This is internal to Stage 01 only — the standardized values are NOT saved. Downstream stages receive raw index values and apply their own standardization for model fitting. This internal standardization may be unnecessary (Pearson correlation is scale-invariant) and could be removed in a future simplification.
+**Standardization note:** The `standardize_indices` function in the reduction module applies z-score standardization within station-year groups for VIF calculations. This is internal to Stage 01 only — the standardized values are NOT saved. Downstream stages receive raw index values and apply their own standardization for model fitting.
 
 ## Change Record
+- 2025-12-16: **Switched to VIF-only reduction** — removed correlation-based pruning step. Sensitivity analysis revealed that arbitrary tiebreaker choices during correlation pruning materially affected model outcomes (different indices selected, AIC differences >200 for some responses). VIF-only approach is fully deterministic and captures multicollinearity holistically. Expected final count ~17 indices (vs ~14 with correlation+VIF). See `scripts/sensitivity_analysis_index_reduction.py` for the analysis that motivated this change.
 - 2025-12-16: Refactored implementation — extracted core reduction functions into `src/python/mbon_indices/reduction.py` module for reuse. Updated sensitivity analysis to be a comprehensive post-pipeline script that includes model comparison (not just index list comparison). Added implementation notes section.
 - 2025-12-12: Added sensitivity analysis for pair selection robustness check per statistical consultation.
 - 2025‑12‑08: Tightened thresholds to |r| > 0.6 and VIF ≤ 2 per ecological best practices (Zuur et al. 2010, Graham 2003). Stricter VIF recommended for GLMM stability. Updated acceptance criteria to 10-15 indices. See `results/logs/RUN_HISTORY.md` for run-specific outcomes.

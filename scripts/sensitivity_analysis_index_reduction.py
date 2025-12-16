@@ -354,16 +354,27 @@ def compare_model_results(primary_results: dict, alternate_results: dict) -> dic
             }
             continue
 
-        # AIC comparison
-        aic_diff = alt["AIC"] - pri["AIC"]
+        # AIC comparison (convert from string if needed, handle NA)
+        try:
+            pri_aic = float(pri["AIC"])
+            alt_aic = float(alt["AIC"])
+            aic_diff = alt_aic - pri_aic
+        except (ValueError, TypeError):
+            # AIC might be "NA" or None if model had issues
+            comparison[response] = {
+                "primary_AIC": pri.get("AIC"),
+                "alternate_AIC": alt.get("AIC"),
+                "error": "Could not compare AIC (NA or invalid value)",
+            }
+            continue
 
         # Significant predictors comparison
         pri_sig = set(pri.get("significant_predictors", []))
         alt_sig = set(alt.get("significant_predictors", []))
 
         comparison[response] = {
-            "primary_AIC": pri["AIC"],
-            "alternate_AIC": alt["AIC"],
+            "primary_AIC": pri_aic,
+            "alternate_AIC": alt_aic,
             "AIC_difference": aic_diff,
             "AIC_interpretation": interpret_aic_diff(aic_diff),
             "primary_significant": sorted(pri_sig),
