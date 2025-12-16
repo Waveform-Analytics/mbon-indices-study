@@ -46,15 +46,29 @@
 
 ### Sensitivity Analysis
 
-To assess robustness of pair selection, run index reduction twice:
-1. **Primary run**: Keep first index from correlated pairs (current approach: coverage → alphabetical)
-2. **Alternate run**: Keep second index from correlated pairs
+To assess whether arbitrary tiebreaker choices during correlation pruning materially affect model conclusions, a separate sensitivity analysis script is provided. This runs **after the main pipeline completes** (after Stage 05) and does NOT affect main pipeline outputs.
 
-Compare final index sets between runs. If sets differ substantially, document which indices swapped and whether downstream model results are affected.
+The sensitivity analysis:
+1. Runs index reduction with both tiebreakers (primary: keep first; alternate: keep second)
+2. Prepares analysis-ready datasets for both index sets
+3. Fits GLMM models using both sets (subset of responses for efficiency)
+4. Compares model outputs (AIC, significant predictors)
 
-**Outputs:**
-- `results/indices/index_final_list_alternate.json` — alternate selection
-- `results/tables/index_sensitivity_comparison.csv` — side-by-side comparison
+**Script:** `scripts/sensitivity_analysis_index_reduction.py`
+
+**Outputs** (in `results/sensitivity/`):
+- `sensitivity_summary.json` — full comparison with robustness assessment
+- `index_swaps.csv` — details on which indices differ between runs
+- `primary_data.parquet`, `alternate_data.parquet` — prepared datasets
+- `*_model_results.json` — R model outputs
+
+**Robustness categories:**
+- `identical`: Tiebreaker choice has no effect on index selection
+- `highly_robust`: Models are equivalent (all AIC differences < 2)
+- `moderately_robust`: Models show minor differences (AIC differences < 10)
+- `sensitive`: Models show meaningful differences — investigate further
+
+**Note:** This is a "side quest" analysis. Future simplification could avoid early index culling entirely, keeping all candidates through feature engineering and selecting at model time. This would make sensitivity analysis trivial (just change which columns are used).
 
 ## Parameters
 - `correlation_threshold`: see `config/analysis.yml -> thresholds.correlation_r`.
@@ -86,7 +100,17 @@ Compare final index sets between runs. If sets differ substantially, document wh
 - Upstream: Stage 00 aligned indices (`data/interim/aligned_indices.parquet`) and metadata.
 - Downstream: Stage 02 Feature Engineering expects `indices_final.csv` list and metadata categories.
 
+## Implementation Notes
+
+**Code structure:**
+- Core reduction functions are in `src/python/mbon_indices/reduction.py` (reusable module)
+- Main pipeline script: `scripts/stage01_index_reduction.py` (imports from reduction module)
+- Sensitivity analysis: `scripts/sensitivity_analysis_index_reduction.py` (standalone, runs after Stage 05)
+
+**Standardization note:** The `standardize_indices` function in the reduction module applies z-score standardization within station-year groups for correlation/VIF calculations. This is internal to Stage 01 only — the standardized values are NOT saved. Downstream stages receive raw index values and apply their own standardization for model fitting. This internal standardization may be unnecessary (Pearson correlation is scale-invariant) and could be removed in a future simplification.
+
 ## Change Record
+- 2025-12-16: Refactored implementation — extracted core reduction functions into `src/python/mbon_indices/reduction.py` module for reuse. Updated sensitivity analysis to be a comprehensive post-pipeline script that includes model comparison (not just index list comparison). Added implementation notes section.
 - 2025-12-12: Added sensitivity analysis for pair selection robustness check per statistical consultation.
 - 2025‑12‑08: Tightened thresholds to |r| > 0.6 and VIF ≤ 2 per ecological best practices (Zuur et al. 2010, Graham 2003). Stricter VIF recommended for GLMM stability. Updated acceptance criteria to 10-15 indices. See `results/logs/RUN_HISTORY.md` for run-specific outcomes.
 - 2025‑12‑02: **IMPLEMENTED** - Completed VIF analysis and output generation. Note: `FrequencyResolution` removed from indices loader (constant metadata field, not an index). Note: `aROI` and `nROI` indices present in raw data but missing from metadata file `Updated_Index_Categories_v2.csv`; retained as legitimate indices pending documentation update.
