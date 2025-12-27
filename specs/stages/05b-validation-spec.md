@@ -10,9 +10,10 @@ This spec covers validation steps that follow model fitting (Stage 05a).
 ---
 
 ## Inputs
-- Fitted models from Stage 05a: `results/models/<metric>/glmm.rds`, `results/models/<metric>/gamm.rds`
+- Fitted GAMM models from Stage 05a: `results/models/<metric>/gamm.rds`
 - Analysis-ready data: `data/processed/analysis_ready.parquet`
-- Model summaries: `results/tables/<metric>/glmm_summary.csv`
+- Model summaries: `results/tables/<metric>/gamm_summary.csv`
+- Model summary with rho values: `results/tables/model_summary.csv`
 
 ---
 
@@ -33,21 +34,23 @@ This spec covers validation steps that follow model fitting (Stage 05a).
 
 ### AR1 Autocorrelation Validation
 
-The GLMM uses AR1 correlation structure to handle temporal autocorrelation within days. To validate this structure:
+The GAMM uses an AR1 correlation structure via the `rho` parameter in `bam()`. In Stage 05a, rho is estimated using preliminary model residuals. This validation step confirms the AR1 structure is adequate.
 
-1. **Compute empirical ACF**: Calculate autocorrelation function on model residuals at lags 1, 2, 3... up to ~12 (24 hours at 2-hour resolution)
-2. **Plot ACF**: Visualize decay pattern — expect exponential decay if AR1 is appropriate
-3. **Extract estimated rho**: glmmTMB estimates rho from data; extract and compare across responses
+**Validation procedure:**
+
+1. **Review estimated rho values**: Check `results/tables/model_summary.csv` for per-response rho values
+2. **Compute residual ACF**: Calculate autocorrelation function on final model residuals at lags 1, 2, 3... up to ~12 (24 hours at 2-hour resolution)
+3. **Compare pre/post AR1**: If residual ACF at lag-1 is near zero, the AR1 correction is working
 
 **Interpretation:**
-- If lag-1 autocorrelation is near zero, AR1 may be unnecessary
-- If ACF shows non-exponential decay (e.g., oscillation), AR1 may be misspecified
-- Consistent rho estimates across responses (~0.4–0.7 typical for ecological time series) suggests appropriate structure
+- Lag-1 ACF of final model residuals should be near zero (AR1 absorbed the autocorrelation)
+- If residual ACF still shows strong autocorrelation, rho may be underestimated
+- Rho values typically range 0.3–0.8 for ecological time series; values outside this range warrant investigation
 
 **Implementation:**
-- Use `acf()` on DHARMa residuals or Pearson residuals
-- Extract rho from fitted glmmTMB object via `glmmTMB::VarCorr()`
-- Plot ACF with confidence bands
+- Extract rho values from `model_summary.csv` (logged during Stage 05a)
+- Use `acf()` on deviance residuals from fitted GAMM
+- Plot ACF with confidence bands to visualize residual autocorrelation
 
 ---
 
@@ -129,4 +132,5 @@ Stratify CV performance metrics by hour-of-day to assess whether prediction accu
 ---
 
 ## Change Record
+- 2025-12-16: Updated for GAMM-only approach. Removed GLMM/glmmTMB references. AR1 validation now confirms rho estimates from Stage 05a are adequate.
 - 2025-12-12: Created spec. AR1 validation via ACF and data-driven rho estimation. Week-based k-fold CV per statistical consultation (Tiago). Hour-of-day stratification marked as future work.

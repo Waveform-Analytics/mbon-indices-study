@@ -57,9 +57,9 @@ The analysis proceeds through a series of stages:
 Align all data sources to a common 2-hour temporal resolution and standardize formats across stations and years.
 
 ### Stage 1: Index Reduction
-Reduce ~60 acoustic indices to a smaller, non-redundant set using correlation analysis and variance inflation factor (VIF) screening. This avoids multicollinearity issues in downstream models.
+Reduce ~60 acoustic indices to a smaller, non-redundant set using variance inflation factor (VIF) screening. VIF captures multicollinearity holistically and the approach is fully deterministic.
 
-**Current result**: 20 final indices representing spectral, temporal, and complexity dimensions of the soundscape.
+**Current result**: ~17 final indices representing spectral, temporal, and complexity dimensions of the soundscape.
 
 ### Stage 2: Community Metrics
 Derive biological response variables from manual detections:
@@ -70,24 +70,29 @@ Derive biological response variables from manual detections:
 ### Stage 3: Feature Engineering
 Create temporal features (time of day, day of year) and grouping variables needed for mixed-effects modeling.
 
-### Stages 4–6: Statistical Modeling
-Fit Generalized Linear Mixed Models (GLMM) and Generalized Additive Mixed Models (GAMM) to assess which indices predict each community metric, accounting for:
+### Stages 4–5: Statistical Modeling
+Fit Generalized Additive Mixed Models (GAMMs) to assess which indices predict each community metric, accounting for:
 - Station-level variation (random effects)
-- Temporal autocorrelation
-- Non-linear relationships (GAMM smooth terms)
+- Temporal autocorrelation (AR1 with data-driven rho estimation)
+- Non-linear relationships (smooth terms)
 
-### Stages 7–10: Model Selection & Reporting
-Compare models via cross-validation, select best predictors, and generate visualizations and reports.
+GAMMs were chosen over GLMMs because initial analysis revealed non-linear relationships between acoustic indices and community metrics.
+
+### Stages 6–10: Validation & Reporting
+Validate models via cross-validation and generate visualizations and reports.
 
 ## Current Progress
 
 | Stage | Description | Status |
 |-------|-------------|--------|
 | 00 | Data Prep & Alignment | Complete |
-| 01 | Index Reduction | Complete (20 indices) |
+| 01 | Index Reduction | Complete (~17 indices via VIF-only) |
 | 02 | Community Metrics | Complete (9 response variables) |
-| 03 | Feature Engineering | Ready to implement |
-| 04–10 | Modeling & Reporting | Planned |
+| 03 | Feature Engineering | Complete |
+| 04 | Exploratory Visualization | Complete |
+| 05a | GAMM Modeling | In Progress |
+| 05b | Validation | Spec Ready |
+| 06–10 | Reporting | Planned |
 
 ## Project Organization
 

@@ -54,8 +54,9 @@ random_effects:
   - day_id
 
 autocorrelation:
-  glmm_ar1: true
-  sequence_column: time_within_day
+  # GAMM uses rho parameter in bam() for AR1 correlation
+  # Rho is estimated data-driven from preliminary model residuals (see Stage 05a)
+  gamm_ar1: true
 
 thresholds:
   correlation_r: 0.6

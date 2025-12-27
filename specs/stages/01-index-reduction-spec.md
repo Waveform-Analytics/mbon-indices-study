@@ -1,7 +1,7 @@
 # 01 Index Reduction — Stage Spec
 
 ## Purpose
-- Reduce ~60 acoustic indices to a distinct, low-collinearity subset suitable for GLMM/GAMM modeling while preserving coverage of spectral, temporal, and complexity aspects of the soundscape.
+- Reduce ~60 acoustic indices to a distinct, low-collinearity subset suitable for GAMM modeling while preserving coverage of spectral, temporal, and complexity aspects of the soundscape.
 
 ## Inputs
 - Aligned indices: `data/interim/aligned_indices.parquet`
@@ -90,7 +90,7 @@ A sensitivity analysis script (`scripts/sensitivity_analysis_index_reduction.py`
 - 2025-12-16: **Switched to VIF-only reduction** — removed correlation-based pruning step. Sensitivity analysis revealed that arbitrary tiebreaker choices during correlation pruning materially affected model outcomes (different indices selected, AIC differences >200 for some responses). VIF-only approach is fully deterministic and captures multicollinearity holistically. Expected final count ~17 indices (vs ~14 with correlation+VIF). See `scripts/sensitivity_analysis_index_reduction.py` for the analysis that motivated this change.
 - 2025-12-16: Refactored implementation — extracted core reduction functions into `src/python/mbon_indices/reduction.py` module for reuse. Updated sensitivity analysis to be a comprehensive post-pipeline script that includes model comparison (not just index list comparison). Added implementation notes section.
 - 2025-12-12: Added sensitivity analysis for pair selection robustness check per statistical consultation.
-- 2025‑12‑08: Tightened thresholds to |r| > 0.6 and VIF ≤ 2 per ecological best practices (Zuur et al. 2010, Graham 2003). Stricter VIF recommended for GLMM stability. Updated acceptance criteria to 10-15 indices. See `results/logs/RUN_HISTORY.md` for run-specific outcomes.
+- 2025‑12‑08: Tightened thresholds to |r| > 0.6 and VIF ≤ 2 per ecological best practices (Zuur et al. 2010, Graham 2003). Stricter VIF recommended for model stability. Updated acceptance criteria to 10-15 indices. See `results/logs/RUN_HISTORY.md` for run-specific outcomes.
 - 2025‑12‑02: **IMPLEMENTED** - Completed VIF analysis and output generation. Note: `FrequencyResolution` removed from indices loader (constant metadata field, not an index). Note: `aROI` and `nROI` indices present in raw data but missing from metadata file `Updated_Index_Categories_v2.csv`; retained as legitimate indices pending documentation update.
 - 2025‑12‑02: Added correlation pruning with greedy algorithm. Simplified decision rules to: (1) coverage (fewer missing values), (2) alphabetical tiebreaker. Rationale: interpretability is subjective and hard to operationalize; using VIF in pairwise decisions creates circular dependency with subsequent VIF analysis step; alphabetical provides deterministic, reproducible tiebreaker. Manual review of dropped indices remains available if domain knowledge suggests reconsideration. Added timestamped logging with archiving: `results/logs/stage01_index_reduction_YYYYMMDD_HHMMSS.txt` captures all steps, decisions, and outputs for audit trail and debugging.
 - 2025‑11‑21: Adopted per station‑year Pearson aggregation by median |r|; added 0.8 sensitivity artifact; set final target to 5–10 indices; thresholds remain 0.7 and VIF 5 (fallback 10).
