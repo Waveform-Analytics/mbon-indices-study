@@ -1,5 +1,9 @@
 # Analysis configuration (stub)
 
+run:
+  pilot_mode: false
+  pilot_responses: ["fish_activity"]
+
 responses:
   fish_activity:
     family: nbinom2

@@ -73,12 +73,15 @@ responses <- list(
   vessel_presence = list(family = "binomial", type = "binary")
 )
 
-# For pilot mode, we only run fish_activity
-# TODO: Add command-line argument parsing to control this
-pilot_mode <- TRUE
+# Check if we're in pilot mode (run subset of responses for testing)
+pilot_mode <- config$run$pilot_mode %||% FALSE
+pilot_responses <- config$run$pilot_responses %||% c("fish_activity")
+
 if (pilot_mode) {
-  responses <- responses["fish_activity"]
-  cat("Running in PILOT MODE: fish_activity only\n")
+  responses <- responses[names(responses) %in% pilot_responses]
+  cat(sprintf("Running in PILOT MODE: %s only\n", paste(pilot_responses, collapse = ", ")))
+} else {
+  cat(sprintf("Running FULL MODE: all %d responses\n", length(responses)))
 }
 
 # ------------------------------------------------------------------------------
