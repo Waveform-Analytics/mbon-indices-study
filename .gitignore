@@ -2,6 +2,10 @@
 .idea/
 .vscode/
 
+# Quarto rendered output (built by GitHub Actions)
+docs/results-viewer.html
+docs/results-viewer_files/
+
 # Temporary files
 tmp_*.md
 
