@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'docs/**'
+      - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:  # Allow manual trigger
 
 permissions:
