@@ -1,0 +1,342 @@
+---
+title: "MBON Acoustic Indices Study: Results Viewer"
+subtitle: "May River Estuary — Modeling Results & Validation"
+author: "MBON-USC Team"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    number-sections: false
+    theme: cosmo
+    code-fold: true
+    self-contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(knitr)
+```
+
+## Overview {#overview}
+
+**The question:** Can acoustic indices — automated summaries of soundscape characteristics — predict biological activity in an estuary?
+
+**The short answer:** Yes, for presence/absence. Less reliably for activity levels.
+
+::: {.callout-note}
+## Elevator Pitch
+
+Acoustic indices can tell you *whether* biological activity is happening (presence), but they can't reliably tell you *how much* (activity levels). Vessel detection is excellent (AUC = 0.92), biological presence detection is moderate (AUC ~0.75), and activity/count prediction doesn't generalize well across time periods.
+:::
+
+### Study Design
+
+- **Data:** 13,102 observations across 3 monitoring stations (9M, 14M, 37M), 2 years (2018, 2021), at 2-hour resolution
+- **Predictors:** 17 acoustic indices + temperature, depth, time of day, day of year, station
+- **Responses:** 9 metrics — fish (activity, richness, presence), dolphins (burst pulse, echolocation, whistle, activity, presence), vessels (presence)
+- **Models:** Generalized Additive Mixed Models (GAMMs) with AR1 autocorrelation structure
+
+---
+
+## Model Summary {#model-summary}
+
+### Convergence & Technical Soundness
+
+All 9 models converged successfully.
+
+| Metric | AR1 (ρ) | AIC | Type |
+|--------|---------|-----|------|
+| fish_activity | 0.196 | 33,897 | Count |
+| fish_richness | 0.185 | 22,472 | Count |
+| fish_presence | 0.144 | 9,413 | Binary |
+| dolphin_burst_pulse | 0.064 | 8,187 | Count |
+| dolphin_echolocation | 0.128 | 30,765 | Count |
+| dolphin_whistle | 0.107 | 3,189 | Count |
+| dolphin_activity | 0.129 | 32,367 | Count |
+| dolphin_presence | 0.110 | 10,949 | Binary |
+| vessel_presence | 0.077 | 6,961 | Binary |
+
+**AR1 (ρ) interpretation:** Measures temporal "stickiness" — how much knowing the current state tells you about the next 2-hour window. Values of 0.06–0.20 indicate modest persistence, which is appropriate for these data.
+
+---
+
+## Which Indices Predict Which Responses? {#index-significance}
+
+The table below shows which acoustic indices significantly predict each response (p < 0.05).
+
+| Index | Fish Act. | Fish Rich. | Fish Pres. | Dolph. BP | Dolph. Echo | Dolph. Whis. | Dolph. Act. | Dolph. Pres. | Vessel |
+|-------|:---------:|:----------:|:----------:|:---------:|:-----------:|:------------:|:-----------:|:------------:|:------:|
+| **ACI** | | ✓ | ✓ | ✓ | | | | | ✓ |
+| **BI** | | | ✓ | ✓ | ✓ | | ✓ | ✓ | ✓ |
+| **BioEnergy** | | | ✓ | | | | | ✓ | |
+| **ECV** | | | | | ✓ | ✓ | ✓ | ✓ | |
+| **EPS_KURT** | | ✓ | ✓ | ✓ | ✓ | | ✓ | | |
+| **EVNtCount** | | ✓ | ✓ | | | | ✓ | ✓ | ✓ |
+| **EVNtMean** | | | ✓ | | | | | ✓ | |
+| **H_Havrda** | | | ✓ | ✓ | | | ✓ | | ✓ |
+| **KURTt** | | | ✓ | | | | | ✓ | ✓ |
+| **NBPEAKS** | | | | ✓ | ✓ | | ✓ | ✓ | |
+| **ROU** | | ✓ | ✓ | | ✓ | | ✓ | | |
+| **SKEWt** | | ✓ | | | | | | | |
+| **TFSD** | | | | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| **VARt** | | | ✓ | | | | | | |
+| **ZCR** | ✓ | ✓ | ✓ | | | ✓ | | | ✓ |
+| **nROI** | | ✓ | ✓ | ✓ | ✓ | | ✓ | ✓ | ✓ |
+
+### Key Patterns
+
+- **Broadly predictive indices:** TFSD (6/9), nROI (7/9), BI (6/9), EVNtCount (5/9)
+- **Fish-specific:** ZCR predicts all 3 fish metrics but no dolphin metrics
+- **Dolphin-specific:** ECV predicts dolphins (4/5) but not fish
+- **Presence is easier to predict:** Fish presence has 12 significant predictors; fish activity has only 1
+
+---
+
+## Results by Metric {.tabset}
+
+### fish_activity {#fish-activity}
+
+**Response type:** Count (negative binomial)
+
+**Key predictors:** ZCR, hour_of_day, day_of_year
+
+**CV Performance:** RMSE = 1.14, R² = 0.01 (poor generalization)
+
+#### Smooth Terms Overview
+![](figures/fish_activity/gamm_smooths.png){width=100%}
+
+#### Diagnostics
+![](figures/fish_activity/gamm_diagnostics.png){width=100%}
+
+#### Interpretation
+
+Fish activity shows strong diel patterns (hour_of_day EDF = 6.81) but weak index associations. Only ZCR is significant among the acoustic indices. The model fits the training data but doesn't generalize well to held-out weeks.
+
+
+### fish_richness {#fish-richness}
+
+**Response type:** Count (negative binomial)
+
+**Key predictors:** ACI, EPS_KURT, EVNtCount, ROU, SKEWt, ZCR, nROI, depth, hour_of_day
+
+**CV Performance:** RMSE = 0.56, R² = 0.02 (low error, poor R²)
+
+#### Smooth Terms Overview
+![](figures/fish_richness/gamm_smooths.png){width=100%}
+
+#### Diagnostics
+![](figures/fish_richness/gamm_diagnostics.png){width=100%}
+
+#### Interpretation
+
+Fish richness has more significant index predictors than fish activity. Indices related to acoustic complexity (ACI, EVNtCount, nROI) are significant — consistent with the idea that more fish species create a more diverse soundscape. Depth (tidal proxy) is strongly significant: higher richness at high tide.
+
+
+### fish_presence {#fish-presence}
+
+**Response type:** Binary (binomial)
+
+**Key predictors:** 12 of 17 indices significant, plus temperature, depth, hour_of_day, day_of_year, station
+
+**CV Performance:** AUC = 0.75 (moderate — useful signal)
+
+#### Smooth Terms Overview
+![](figures/fish_presence/gamm_smooths.png){width=100%}
+
+#### Diagnostics
+![](figures/fish_presence/gamm_diagnostics.png){width=100%}
+
+#### Interpretation
+
+Fish presence is the most predictable fish metric. Many indices pick it up — detecting "something is there" is easier than quantifying how much. Strong seasonal pattern (day_of_year EDF = 9.36) with spring peak. The model generalizes moderately well (AUC = 0.75).
+
+
+### dolphin_burst_pulse {#dolphin-burst-pulse}
+
+**Response type:** Count (negative binomial)
+
+**Key predictors:** ACI, BI, EPS_KURT, H_Havrda, NBPEAKS, TFSD, nROI, temperature, depth, hour_of_day
+
+**CV Performance:** RMSE = 1.54, R² = -0.13 (doesn't generalize)
+
+#### Smooth Terms Overview
+![](figures/dolphin_burst_pulse/gamm_smooths.png){width=100%}
+
+#### Diagnostics
+![](figures/dolphin_burst_pulse/gamm_diagnostics.png){width=100%}
+
+#### Interpretation
+
+Burst pulses are foraging-related — discrete hunting events. Indices sensitive to impulsive sounds (TFSD, NBPEAKS, nROI) are predictive. Temperature is significant (more activity in cooler water). The model has the lowest AR1 (ρ = 0.06) — these are event-like, not persistent.
+
+
+### dolphin_echolocation {#dolphin-echolocation}
+
+**Response type:** Count (negative binomial)
+
+**Key predictors:** BI, ECV, EPS_KURT, NBPEAKS, ROU, TFSD, nROI, temperature, depth
+
+**CV Performance:** RMSE = 11.0, R² = -455 (outlier folds dominating)
+
+#### Smooth Terms Overview
+![](figures/dolphin_echolocation/gamm_smooths.png){width=100%}
+
+#### Diagnostics
+![](figures/dolphin_echolocation/gamm_diagnostics.png){width=100%}
+
+#### Interpretation
+
+Echolocation clicks are broadband with distinctive temporal structure — reflected in significant BI, TFSD, NBPEAKS. The extremely negative R² in CV is due to a few outlier weeks with high activity; the model can't predict these spikes.
+
+
+### dolphin_whistle {#dolphin-whistle}
+
+**Response type:** Count (negative binomial)
+
+**Key predictors:** ECV, TFSD, ZCR, temperature, depth, hour_of_day, station
+
+**CV Performance:** RMSE = 0.78, R² = -∞ (rare events)
+
+#### Smooth Terms Overview
+![](figures/dolphin_whistle/gamm_smooths.png){width=100%}
+
+#### Diagnostics
+![](figures/dolphin_whistle/gamm_diagnostics.png){width=100%}
+
+#### Interpretation
+
+Whistles are tonal social signals — only 3 indices (ECV, TFSD, ZCR) are significant. These capture spectral and temporal characteristics of whistles. The R² = -∞ reflects that most observations are zeros (rare events); predicting *when* whistles occur is very hard.
+
+
+### dolphin_activity {#dolphin-activity}
+
+**Response type:** Count (negative binomial)
+
+**Key predictors:** BI, ECV, EPS_KURT, EVNtCount, H_Havrda, NBPEAKS, ROU, TFSD, nROI, temperature, depth, hour_of_day, station
+
+**CV Performance:** RMSE = 7.22, R² = -48 (poor generalization)
+
+#### Smooth Terms Overview
+![](figures/dolphin_activity/gamm_smooths.png){width=100%}
+
+#### Diagnostics
+![](figures/dolphin_activity/gamm_diagnostics.png){width=100%}
+
+#### Interpretation
+
+Dolphin activity (total vocalizations) has many significant predictors — it aggregates across call types. Temperature is the dominant environmental driver (more activity in cooler water). Like other count models, it doesn't generalize well to held-out weeks.
+
+
+### dolphin_presence {#dolphin-presence}
+
+**Response type:** Binary (binomial)
+
+**Key predictors:** BI, BioEnergy, ECV, EVNtCount, EVNtMean, KURTt, NBPEAKS, TFSD, nROI, temperature, depth, station
+
+**CV Performance:** AUC = 0.74 (moderate — useful signal)
+
+#### Smooth Terms Overview
+![](figures/dolphin_presence/gamm_smooths.png){width=100%}
+
+#### Diagnostics
+![](figures/dolphin_presence/gamm_diagnostics.png){width=100%}
+
+#### Interpretation
+
+Dolphin presence is moderately predictable (AUC = 0.74), similar to fish presence. Many indices contribute. Temperature is significant — dolphins more likely present in cooler water. The binary framing (present/absent) is more predictable than count models.
+
+
+### vessel_presence {#vessel-presence}
+
+**Response type:** Binary (binomial)
+
+**Key predictors:** ACI, BI, EVNtCount, H_Havrda, KURTt, TFSD, ZCR, nROI, hour_of_day, day_of_year
+
+**CV Performance:** AUC = 0.92 (excellent)
+
+#### Smooth Terms Overview
+![](figures/vessel_presence/gamm_smooths.png){width=100%}
+
+#### Diagnostics
+![](figures/vessel_presence/gamm_diagnostics.png){width=100%}
+
+#### Interpretation
+
+Vessel presence is the best-predicted metric. Boats are loud, broadband, and create distinctive temporal patterns — 8 indices are significant. Strong diel pattern (morning peak). Notably, temperature and depth are NOT significant — vessel detection is purely acoustic, not environmentally mediated.
+
+---
+
+## Validation Results {#validation}
+
+### AR1 Autocorrelation Check
+
+We checked if the AR1 correction removed temporal autocorrelation from residuals.
+
+![](figures/acf_residuals.png){width=100%}
+
+**Finding:** Residual ACF(1) ≈ estimated ρ, meaning the AR1 correction is not fully absorbing autocorrelation. This is a known limitation of the `bam()` approach. The autocorrelation levels are modest (0.06–0.20), so results are still interpretable but p-values should be treated conservatively.
+
+### Cross-Validation Performance
+
+![](figures/cv_performance_by_metric.png){width=100%}
+
+#### Binary Metrics (AUC)
+
+| Metric | Mean AUC | SD | Interpretation |
+|--------|----------|-----|----------------|
+| vessel_presence | **0.92** | 0.03 | Excellent |
+| fish_presence | 0.75 | 0.11 | Moderate |
+| dolphin_presence | 0.74 | 0.13 | Moderate |
+
+#### Count Metrics (RMSE / R²)
+
+| Metric | Mean RMSE | Mean R² | Interpretation |
+|--------|-----------|---------|----------------|
+| fish_richness | 0.56 | 0.02 | Low error, poor R² |
+| fish_activity | 1.14 | 0.01 | Same |
+| dolphin_whistle | 0.78 | -∞ | Rare events |
+| dolphin_burst_pulse | 1.54 | -0.13 | Poor |
+| dolphin_echolocation | 11.0 | -455 | Outlier folds |
+| dolphin_activity | 7.22 | -48 | Poor |
+
+::: {.callout-warning}
+## Count Models Don't Generalize
+
+The negative R² values for count models mean predictions are worse than simply predicting the mean. This is common in time series CV — weekly patterns don't transfer. The fitted relationships are real but shouldn't be used for prediction without caution.
+:::
+
+---
+
+## Conclusions {#conclusions}
+
+### What Works
+
+1. **Vessel detection** (AUC = 0.92) — Acoustic indices reliably distinguish vessel presence. Useful for anthropogenic noise monitoring.
+
+2. **Biological presence** (AUC ~0.75) — Fish and dolphin presence models show moderate predictive power. Indices contain real signal about whether activity is occurring.
+
+3. **Index-response associations** — Multiple indices significantly predict biological metrics, with ecologically interpretable patterns (e.g., ZCR for fish, ECV for dolphins).
+
+### What Doesn't Work
+
+1. **Activity/count prediction** — Models don't generalize to held-out weeks. Good for describing patterns, not for forecasting.
+
+2. **Full AR1 correction** — Residual autocorrelation remains; interpret significance conservatively.
+
+### The Bottom Line
+
+Acoustic indices are useful for **screening** ("is there activity?") but not for **quantification** ("how much activity?"). For presence/absence monitoring, they provide real value. For activity levels, they describe patterns but don't predict reliably.
+
+---
+
+## Downloads {#downloads}
+
+- [Model Summary (CSV)](tables/model_summary.csv)
+- [CV Performance Summary (CSV)](tables/cv_performance_summary.csv)
+- [AR1 Validation (CSV)](tables/ar1_validation.csv)
+
+---
+
+*Generated: `r Sys.Date()`*

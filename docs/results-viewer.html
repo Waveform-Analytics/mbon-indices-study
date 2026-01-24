@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="MBON-USC Team">
+<meta name="dcterms.date" content="2026-01-24">
+
+<title>MBON Acoustic Indices Study: Results Viewer</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="results-viewer_files/libs/clipboard/clipboard.min.js"></script>
+<script src="results-viewer_files/libs/quarto-html/quarto.js"></script>
+<script src="results-viewer_files/libs/quarto-html/popper.min.js"></script>
+<script src="results-viewer_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="results-viewer_files/libs/quarto-html/anchor.min.js"></script>
+<link href="results-viewer_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="results-viewer_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="results-viewer_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="results-viewer_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="results-viewer_files/libs/bootstrap/bootstrap-10daa034703793678e481cc8cee6d76f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a>
+  <ul class="collapse">
+  <li><a href="#study-design" id="toc-study-design" class="nav-link" data-scroll-target="#study-design">Study Design</a></li>
+  </ul></li>
+  <li><a href="#model-summary" id="toc-model-summary" class="nav-link" data-scroll-target="#model-summary">Model Summary</a>
+  <ul class="collapse">
+  <li><a href="#convergence-technical-soundness" id="toc-convergence-technical-soundness" class="nav-link" data-scroll-target="#convergence-technical-soundness">Convergence &amp; Technical Soundness</a></li>
+  </ul></li>
+  <li><a href="#index-significance" id="toc-index-significance" class="nav-link" data-scroll-target="#index-significance">Which Indices Predict Which Responses?</a>
+  <ul class="collapse">
+  <li><a href="#key-patterns" id="toc-key-patterns" class="nav-link" data-scroll-target="#key-patterns">Key Patterns</a></li>
+  </ul></li>
+  <li><a href="#results-by-metric" id="toc-results-by-metric" class="nav-link" data-scroll-target="#results-by-metric">Results by Metric</a>
+  <ul class="collapse">
+  <li><a href="#fish-activity" id="toc-fish-activity" class="nav-link" data-scroll-target="#fish-activity">fish_activity</a></li>
+  <li><a href="#fish-richness" id="toc-fish-richness" class="nav-link" data-scroll-target="#fish-richness">fish_richness</a></li>
+  <li><a href="#fish-presence" id="toc-fish-presence" class="nav-link" data-scroll-target="#fish-presence">fish_presence</a></li>
+  <li><a href="#dolphin-burst-pulse" id="toc-dolphin-burst-pulse" class="nav-link" data-scroll-target="#dolphin-burst-pulse">dolphin_burst_pulse</a></li>
+  <li><a href="#dolphin-echolocation" id="toc-dolphin-echolocation" class="nav-link" data-scroll-target="#dolphin-echolocation">dolphin_echolocation</a></li>
+  <li><a href="#dolphin-whistle" id="toc-dolphin-whistle" class="nav-link" data-scroll-target="#dolphin-whistle">dolphin_whistle</a></li>
+  <li><a href="#dolphin-activity" id="toc-dolphin-activity" class="nav-link" data-scroll-target="#dolphin-activity">dolphin_activity</a></li>
+  <li><a href="#dolphin-presence" id="toc-dolphin-presence" class="nav-link" data-scroll-target="#dolphin-presence">dolphin_presence</a></li>
+  <li><a href="#vessel-presence" id="toc-vessel-presence" class="nav-link" data-scroll-target="#vessel-presence">vessel_presence</a></li>
+  </ul></li>
+  <li><a href="#validation" id="toc-validation" class="nav-link" data-scroll-target="#validation">Validation Results</a>
+  <ul class="collapse">
+  <li><a href="#ar1-autocorrelation-check" id="toc-ar1-autocorrelation-check" class="nav-link" data-scroll-target="#ar1-autocorrelation-check">AR1 Autocorrelation Check</a></li>
+  <li><a href="#cross-validation-performance" id="toc-cross-validation-performance" class="nav-link" data-scroll-target="#cross-validation-performance">Cross-Validation Performance</a></li>
+  </ul></li>
+  <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions">Conclusions</a>
+  <ul class="collapse">
+  <li><a href="#what-works" id="toc-what-works" class="nav-link" data-scroll-target="#what-works">What Works</a></li>
+  <li><a href="#what-doesnt-work" id="toc-what-doesnt-work" class="nav-link" data-scroll-target="#what-doesnt-work">What Doesn’t Work</a></li>
+  <li><a href="#the-bottom-line" id="toc-the-bottom-line" class="nav-link" data-scroll-target="#the-bottom-line">The Bottom Line</a></li>
+  </ul></li>
+  <li><a href="#downloads" id="toc-downloads" class="nav-link" data-scroll-target="#downloads">Downloads</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">MBON Acoustic Indices Study: Results Viewer</h1>
+<p class="subtitle lead">May River Estuary — Modeling Results &amp; Validation</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>MBON-USC Team </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 24, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p><strong>The question:</strong> Can acoustic indices — automated summaries of soundscape characteristics — predict biological activity in an estuary?</p>
+<p><strong>The short answer:</strong> Yes, for presence/absence. Less reliably for activity levels.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Elevator Pitch
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Acoustic indices can tell you <em>whether</em> biological activity is happening (presence), but they can’t reliably tell you <em>how much</em> (activity levels). Vessel detection is excellent (AUC = 0.92), biological presence detection is moderate (AUC ~0.75), and activity/count prediction doesn’t generalize well across time periods.</p>
+</div>
+</div>
+<section id="study-design" class="level3">
+<h3 class="anchored" data-anchor-id="study-design">Study Design</h3>
+<ul>
+<li><strong>Data:</strong> 13,102 observations across 3 monitoring stations (9M, 14M, 37M), 2 years (2018, 2021), at 2-hour resolution</li>
+<li><strong>Predictors:</strong> 17 acoustic indices + temperature, depth, time of day, day of year, station</li>
+<li><strong>Responses:</strong> 9 metrics — fish (activity, richness, presence), dolphins (burst pulse, echolocation, whistle, activity, presence), vessels (presence)</li>
+<li><strong>Models:</strong> Generalized Additive Mixed Models (GAMMs) with AR1 autocorrelation structure</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="model-summary" class="level2">
+<h2 class="anchored" data-anchor-id="model-summary">Model Summary</h2>
+<section id="convergence-technical-soundness" class="level3">
+<h3 class="anchored" data-anchor-id="convergence-technical-soundness">Convergence &amp; Technical Soundness</h3>
+<p>All 9 models converged successfully.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>AR1 (ρ)</th>
+<th>AIC</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>fish_activity</td>
+<td>0.196</td>
+<td>33,897</td>
+<td>Count</td>
+</tr>
+<tr class="even">
+<td>fish_richness</td>
+<td>0.185</td>
+<td>22,472</td>
+<td>Count</td>
+</tr>
+<tr class="odd">
+<td>fish_presence</td>
+<td>0.144</td>
+<td>9,413</td>
+<td>Binary</td>
+</tr>
+<tr class="even">
+<td>dolphin_burst_pulse</td>
+<td>0.064</td>
+<td>8,187</td>
+<td>Count</td>
+</tr>
+<tr class="odd">
+<td>dolphin_echolocation</td>
+<td>0.128</td>
+<td>30,765</td>
+<td>Count</td>
+</tr>
+<tr class="even">
+<td>dolphin_whistle</td>
+<td>0.107</td>
+<td>3,189</td>
+<td>Count</td>
+</tr>
+<tr class="odd">
+<td>dolphin_activity</td>
+<td>0.129</td>
+<td>32,367</td>
+<td>Count</td>
+</tr>
+<tr class="even">
+<td>dolphin_presence</td>
+<td>0.110</td>
+<td>10,949</td>
+<td>Binary</td>
+</tr>
+<tr class="odd">
+<td>vessel_presence</td>
+<td>0.077</td>
+<td>6,961</td>
+<td>Binary</td>
+</tr>
+</tbody>
+</table>
+<p><strong>AR1 (ρ) interpretation:</strong> Measures temporal “stickiness” — how much knowing the current state tells you about the next 2-hour window. Values of 0.06–0.20 indicate modest persistence, which is appropriate for these data.</p>
+<hr>
+</section>
+</section>
+<section id="index-significance" class="level2">
+<h2 class="anchored" data-anchor-id="index-significance">Which Indices Predict Which Responses?</h2>
+<p>The table below shows which acoustic indices significantly predict each response (p &lt; 0.05).</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 9%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 12%">
+<col style="width: 11%">
+<col style="width: 12%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Index</th>
+<th style="text-align: center;">Fish Act.</th>
+<th style="text-align: center;">Fish Rich.</th>
+<th style="text-align: center;">Fish Pres.</th>
+<th style="text-align: center;">Dolph. BP</th>
+<th style="text-align: center;">Dolph. Echo</th>
+<th style="text-align: center;">Dolph. Whis.</th>
+<th style="text-align: center;">Dolph. Act.</th>
+<th style="text-align: center;">Dolph. Pres.</th>
+<th style="text-align: center;">Vessel</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>ACI</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="even">
+<td><strong>BI</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="odd">
+<td><strong>BioEnergy</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td><strong>ECV</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td><strong>EPS_KURT</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td><strong>EVNtCount</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="odd">
+<td><strong>EVNtMean</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td><strong>H_Havrda</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="odd">
+<td><strong>KURTt</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="even">
+<td><strong>NBPEAKS</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td><strong>ROU</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td><strong>SKEWt</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td><strong>TFSD</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="even">
+<td><strong>VARt</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td><strong>ZCR</strong></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="even">
+<td><strong>nROI</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+</tbody>
+</table>
+<section id="key-patterns" class="level3">
+<h3 class="anchored" data-anchor-id="key-patterns">Key Patterns</h3>
+<ul>
+<li><strong>Broadly predictive indices:</strong> TFSD (6/9), nROI (7/9), BI (6/9), EVNtCount (5/9)</li>
+<li><strong>Fish-specific:</strong> ZCR predicts all 3 fish metrics but no dolphin metrics</li>
+<li><strong>Dolphin-specific:</strong> ECV predicts dolphins (4/5) but not fish</li>
+<li><strong>Presence is easier to predict:</strong> Fish presence has 12 significant predictors; fish activity has only 1</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="results-by-metric" class="level2 tabset">
+<h2 class="tabset anchored" data-anchor-id="results-by-metric">Results by Metric</h2>
+<section id="fish-activity" class="level3">
+<h3 class="anchored" data-anchor-id="fish-activity">fish_activity</h3>
+<p><strong>Response type:</strong> Count (negative binomial)</p>
+<p><strong>Key predictors:</strong> ZCR, hour_of_day, day_of_year</p>
+<p><strong>CV Performance:</strong> RMSE = 1.14, R² = 0.01 (poor generalization)</p>
+<section id="smooth-terms-overview" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview">Smooth Terms Overview</h4>
+<p><img src="figures/fish_activity/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics">Diagnostics</h4>
+<p><img src="figures/fish_activity/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation">Interpretation</h4>
+<p>Fish activity shows strong diel patterns (hour_of_day EDF = 6.81) but weak index associations. Only ZCR is significant among the acoustic indices. The model fits the training data but doesn’t generalize well to held-out weeks.</p>
+</section>
+</section>
+<section id="fish-richness" class="level3">
+<h3 class="anchored" data-anchor-id="fish-richness">fish_richness</h3>
+<p><strong>Response type:</strong> Count (negative binomial)</p>
+<p><strong>Key predictors:</strong> ACI, EPS_KURT, EVNtCount, ROU, SKEWt, ZCR, nROI, depth, hour_of_day</p>
+<p><strong>CV Performance:</strong> RMSE = 0.56, R² = 0.02 (low error, poor R²)</p>
+<section id="smooth-terms-overview-1" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-1">Smooth Terms Overview</h4>
+<p><img src="figures/fish_richness/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-1" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-1">Diagnostics</h4>
+<p><img src="figures/fish_richness/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-1" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-1">Interpretation</h4>
+<p>Fish richness has more significant index predictors than fish activity. Indices related to acoustic complexity (ACI, EVNtCount, nROI) are significant — consistent with the idea that more fish species create a more diverse soundscape. Depth (tidal proxy) is strongly significant: higher richness at high tide.</p>
+</section>
+</section>
+<section id="fish-presence" class="level3">
+<h3 class="anchored" data-anchor-id="fish-presence">fish_presence</h3>
+<p><strong>Response type:</strong> Binary (binomial)</p>
+<p><strong>Key predictors:</strong> 12 of 17 indices significant, plus temperature, depth, hour_of_day, day_of_year, station</p>
+<p><strong>CV Performance:</strong> AUC = 0.75 (moderate — useful signal)</p>
+<section id="smooth-terms-overview-2" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-2">Smooth Terms Overview</h4>
+<p><img src="figures/fish_presence/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-2" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-2">Diagnostics</h4>
+<p><img src="figures/fish_presence/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-2" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-2">Interpretation</h4>
+<p>Fish presence is the most predictable fish metric. Many indices pick it up — detecting “something is there” is easier than quantifying how much. Strong seasonal pattern (day_of_year EDF = 9.36) with spring peak. The model generalizes moderately well (AUC = 0.75).</p>
+</section>
+</section>
+<section id="dolphin-burst-pulse" class="level3">
+<h3 class="anchored" data-anchor-id="dolphin-burst-pulse">dolphin_burst_pulse</h3>
+<p><strong>Response type:</strong> Count (negative binomial)</p>
+<p><strong>Key predictors:</strong> ACI, BI, EPS_KURT, H_Havrda, NBPEAKS, TFSD, nROI, temperature, depth, hour_of_day</p>
+<p><strong>CV Performance:</strong> RMSE = 1.54, R² = -0.13 (doesn’t generalize)</p>
+<section id="smooth-terms-overview-3" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-3">Smooth Terms Overview</h4>
+<p><img src="figures/dolphin_burst_pulse/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-3" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-3">Diagnostics</h4>
+<p><img src="figures/dolphin_burst_pulse/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-3" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-3">Interpretation</h4>
+<p>Burst pulses are foraging-related — discrete hunting events. Indices sensitive to impulsive sounds (TFSD, NBPEAKS, nROI) are predictive. Temperature is significant (more activity in cooler water). The model has the lowest AR1 (ρ = 0.06) — these are event-like, not persistent.</p>
+</section>
+</section>
+<section id="dolphin-echolocation" class="level3">
+<h3 class="anchored" data-anchor-id="dolphin-echolocation">dolphin_echolocation</h3>
+<p><strong>Response type:</strong> Count (negative binomial)</p>
+<p><strong>Key predictors:</strong> BI, ECV, EPS_KURT, NBPEAKS, ROU, TFSD, nROI, temperature, depth</p>
+<p><strong>CV Performance:</strong> RMSE = 11.0, R² = -455 (outlier folds dominating)</p>
+<section id="smooth-terms-overview-4" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-4">Smooth Terms Overview</h4>
+<p><img src="figures/dolphin_echolocation/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-4" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-4">Diagnostics</h4>
+<p><img src="figures/dolphin_echolocation/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-4" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-4">Interpretation</h4>
+<p>Echolocation clicks are broadband with distinctive temporal structure — reflected in significant BI, TFSD, NBPEAKS. The extremely negative R² in CV is due to a few outlier weeks with high activity; the model can’t predict these spikes.</p>
+</section>
+</section>
+<section id="dolphin-whistle" class="level3">
+<h3 class="anchored" data-anchor-id="dolphin-whistle">dolphin_whistle</h3>
+<p><strong>Response type:</strong> Count (negative binomial)</p>
+<p><strong>Key predictors:</strong> ECV, TFSD, ZCR, temperature, depth, hour_of_day, station</p>
+<p><strong>CV Performance:</strong> RMSE = 0.78, R² = -∞ (rare events)</p>
+<section id="smooth-terms-overview-5" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-5">Smooth Terms Overview</h4>
+<p><img src="figures/dolphin_whistle/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-5" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-5">Diagnostics</h4>
+<p><img src="figures/dolphin_whistle/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-5" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-5">Interpretation</h4>
+<p>Whistles are tonal social signals — only 3 indices (ECV, TFSD, ZCR) are significant. These capture spectral and temporal characteristics of whistles. The R² = -∞ reflects that most observations are zeros (rare events); predicting <em>when</em> whistles occur is very hard.</p>
+</section>
+</section>
+<section id="dolphin-activity" class="level3">
+<h3 class="anchored" data-anchor-id="dolphin-activity">dolphin_activity</h3>
+<p><strong>Response type:</strong> Count (negative binomial)</p>
+<p><strong>Key predictors:</strong> BI, ECV, EPS_KURT, EVNtCount, H_Havrda, NBPEAKS, ROU, TFSD, nROI, temperature, depth, hour_of_day, station</p>
+<p><strong>CV Performance:</strong> RMSE = 7.22, R² = -48 (poor generalization)</p>
+<section id="smooth-terms-overview-6" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-6">Smooth Terms Overview</h4>
+<p><img src="figures/dolphin_activity/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-6" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-6">Diagnostics</h4>
+<p><img src="figures/dolphin_activity/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-6" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-6">Interpretation</h4>
+<p>Dolphin activity (total vocalizations) has many significant predictors — it aggregates across call types. Temperature is the dominant environmental driver (more activity in cooler water). Like other count models, it doesn’t generalize well to held-out weeks.</p>
+</section>
+</section>
+<section id="dolphin-presence" class="level3">
+<h3 class="anchored" data-anchor-id="dolphin-presence">dolphin_presence</h3>
+<p><strong>Response type:</strong> Binary (binomial)</p>
+<p><strong>Key predictors:</strong> BI, BioEnergy, ECV, EVNtCount, EVNtMean, KURTt, NBPEAKS, TFSD, nROI, temperature, depth, station</p>
+<p><strong>CV Performance:</strong> AUC = 0.74 (moderate — useful signal)</p>
+<section id="smooth-terms-overview-7" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-7">Smooth Terms Overview</h4>
+<p><img src="figures/dolphin_presence/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-7" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-7">Diagnostics</h4>
+<p><img src="figures/dolphin_presence/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-7" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-7">Interpretation</h4>
+<p>Dolphin presence is moderately predictable (AUC = 0.74), similar to fish presence. Many indices contribute. Temperature is significant — dolphins more likely present in cooler water. The binary framing (present/absent) is more predictable than count models.</p>
+</section>
+</section>
+<section id="vessel-presence" class="level3">
+<h3 class="anchored" data-anchor-id="vessel-presence">vessel_presence</h3>
+<p><strong>Response type:</strong> Binary (binomial)</p>
+<p><strong>Key predictors:</strong> ACI, BI, EVNtCount, H_Havrda, KURTt, TFSD, ZCR, nROI, hour_of_day, day_of_year</p>
+<p><strong>CV Performance:</strong> AUC = 0.92 (excellent)</p>
+<section id="smooth-terms-overview-8" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-8">Smooth Terms Overview</h4>
+<p><img src="figures/vessel_presence/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-8" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-8">Diagnostics</h4>
+<p><img src="figures/vessel_presence/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-8" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-8">Interpretation</h4>
+<p>Vessel presence is the best-predicted metric. Boats are loud, broadband, and create distinctive temporal patterns — 8 indices are significant. Strong diel pattern (morning peak). Notably, temperature and depth are NOT significant — vessel detection is purely acoustic, not environmentally mediated.</p>
+<hr>
+</section>
+</section>
+</section>
+<section id="validation" class="level2">
+<h2 class="anchored" data-anchor-id="validation">Validation Results</h2>
+<section id="ar1-autocorrelation-check" class="level3">
+<h3 class="anchored" data-anchor-id="ar1-autocorrelation-check">AR1 Autocorrelation Check</h3>
+<p>We checked if the AR1 correction removed temporal autocorrelation from residuals.</p>
+<p><img src="figures/acf_residuals.png" class="img-fluid" style="width:100.0%"></p>
+<p><strong>Finding:</strong> Residual ACF(1) ≈ estimated ρ, meaning the AR1 correction is not fully absorbing autocorrelation. This is a known limitation of the <code>bam()</code> approach. The autocorrelation levels are modest (0.06–0.20), so results are still interpretable but p-values should be treated conservatively.</p>
+</section>
+<section id="cross-validation-performance" class="level3">
+<h3 class="anchored" data-anchor-id="cross-validation-performance">Cross-Validation Performance</h3>
+<p><img src="figures/cv_performance_by_metric.png" class="img-fluid" style="width:100.0%"></p>
+<section id="binary-metrics-auc" class="level4">
+<h4 class="anchored" data-anchor-id="binary-metrics-auc">Binary Metrics (AUC)</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Mean AUC</th>
+<th>SD</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>vessel_presence</td>
+<td><strong>0.92</strong></td>
+<td>0.03</td>
+<td>Excellent</td>
+</tr>
+<tr class="even">
+<td>fish_presence</td>
+<td>0.75</td>
+<td>0.11</td>
+<td>Moderate</td>
+</tr>
+<tr class="odd">
+<td>dolphin_presence</td>
+<td>0.74</td>
+<td>0.13</td>
+<td>Moderate</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="count-metrics-rmse-r²" class="level4">
+<h4 class="anchored" data-anchor-id="count-metrics-rmse-r²">Count Metrics (RMSE / R²)</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Mean RMSE</th>
+<th>Mean R²</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>fish_richness</td>
+<td>0.56</td>
+<td>0.02</td>
+<td>Low error, poor R²</td>
+</tr>
+<tr class="even">
+<td>fish_activity</td>
+<td>1.14</td>
+<td>0.01</td>
+<td>Same</td>
+</tr>
+<tr class="odd">
+<td>dolphin_whistle</td>
+<td>0.78</td>
+<td>-∞</td>
+<td>Rare events</td>
+</tr>
+<tr class="even">
+<td>dolphin_burst_pulse</td>
+<td>1.54</td>
+<td>-0.13</td>
+<td>Poor</td>
+</tr>
+<tr class="odd">
+<td>dolphin_echolocation</td>
+<td>11.0</td>
+<td>-455</td>
+<td>Outlier folds</td>
+</tr>
+<tr class="even">
+<td>dolphin_activity</td>
+<td>7.22</td>
+<td>-48</td>
+<td>Poor</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Count Models Don’t Generalize
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The negative R² values for count models mean predictions are worse than simply predicting the mean. This is common in time series CV — weekly patterns don’t transfer. The fitted relationships are real but shouldn’t be used for prediction without caution.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+</section>
+<section id="conclusions" class="level2">
+<h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
+<section id="what-works" class="level3">
+<h3 class="anchored" data-anchor-id="what-works">What Works</h3>
+<ol type="1">
+<li><p><strong>Vessel detection</strong> (AUC = 0.92) — Acoustic indices reliably distinguish vessel presence. Useful for anthropogenic noise monitoring.</p></li>
+<li><p><strong>Biological presence</strong> (AUC ~0.75) — Fish and dolphin presence models show moderate predictive power. Indices contain real signal about whether activity is occurring.</p></li>
+<li><p><strong>Index-response associations</strong> — Multiple indices significantly predict biological metrics, with ecologically interpretable patterns (e.g., ZCR for fish, ECV for dolphins).</p></li>
+</ol>
+</section>
+<section id="what-doesnt-work" class="level3">
+<h3 class="anchored" data-anchor-id="what-doesnt-work">What Doesn’t Work</h3>
+<ol type="1">
+<li><p><strong>Activity/count prediction</strong> — Models don’t generalize to held-out weeks. Good for describing patterns, not for forecasting.</p></li>
+<li><p><strong>Full AR1 correction</strong> — Residual autocorrelation remains; interpret significance conservatively.</p></li>
+</ol>
+</section>
+<section id="the-bottom-line" class="level3">
+<h3 class="anchored" data-anchor-id="the-bottom-line">The Bottom Line</h3>
+<p>Acoustic indices are useful for <strong>screening</strong> (“is there activity?”) but not for <strong>quantification</strong> (“how much activity?”). For presence/absence monitoring, they provide real value. For activity levels, they describe patterns but don’t predict reliably.</p>
+<hr>
+</section>
+</section>
+<section id="downloads" class="level2">
+<h2 class="anchored" data-anchor-id="downloads">Downloads</h2>
+<ul>
+<li><a href="tables/model_summary.csv">Model Summary (CSV)</a></li>
+<li><a href="tables/cv_performance_summary.csv">CV Performance Summary (CSV)</a></li>
+<li><a href="tables/ar1_validation.csv">AR1 Validation (CSV)</a></li>
+</ul>
+<hr>
+<p><em>Generated: 2026-01-24</em></p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
