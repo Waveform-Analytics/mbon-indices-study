@@ -4,6 +4,8 @@
 
 This project investigates whether **acoustic indices** — summary statistics computed from underwater sound recordings — can predict **biological community metrics** in estuarine environments. We analyze passive acoustic monitoring data from three sites along the May River, South Carolina to understand relationships between soundscape characteristics and the presence/activity of fish, dolphins, and vessels.
 
+For a more complete documentation of the analysis and data pipeline, please see specs/stages/*. 
+
 ## Study Sites
 
 Data were collected at three stations along the May River estuary:
