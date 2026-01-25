@@ -44,4 +44,5 @@ renv/staging/
 
 # OS/Editor
 .DS_Store
+Rplots.pdf
 results/

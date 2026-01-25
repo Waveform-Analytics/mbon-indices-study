@@ -90,8 +90,8 @@ Validate models via cross-validation and generate visualizations and reports.
 | 02 | Community Metrics | Complete (9 response variables) |
 | 03 | Feature Engineering | Complete |
 | 04 | Exploratory Visualization | Complete |
-| 05a | GAMM Modeling | In Progress |
-| 05b | Validation | Spec Ready |
+| 05a | GAMM Modeling | Complete |
+| 05b | Validation | Complete |
 | 06–10 | Reporting | Planned |
 
 ## Project Organization
