@@ -22,7 +22,7 @@ Data were collected at three stations along the May River estuary:
 
 ## Species and Metrics
 
-### Fish (8 species)
+### Fish (8 species of interest)
 - Silver perch
 - Oyster toadfish (boat whistle and grunt calls)
 - Black drum
@@ -130,10 +130,6 @@ mbon-indices-study/
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, coding conventions, and workflow details.
-
-## Acknowledgments
-
-*To be added*
 
 ## License
 
