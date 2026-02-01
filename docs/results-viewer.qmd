@@ -309,6 +309,58 @@ The negative R² values for count models mean predictions are worse than simply 
 
 ---
 
+## Diagnostic Checks {#diagnostic-checks}
+
+These checks provide context for interpreting the main results — which effects are practically meaningful, why count models struggle, and how to read the significance table.
+
+### Effect Sizes: What Actually Matters?
+
+Statistical significance (p < 0.05) tells us an effect isn't zero. Effect size tells us whether it's large enough to matter. With 13,102 observations, even trivial effects can be "significant."
+
+The plot below shows the change in detection probability when each index moves from its 10th to 90th percentile (holding other predictors at median values). Dotted lines mark ±0.10 as a rough threshold for "meaningful" effects.
+
+![](figures/effect_sizes_presence.png){width=100%}
+
+**Key findings:**
+
+- **Vessel presence** has the largest practical effects — nROI alone shifts detection probability by +45 percentage points
+- **Fish presence** has moderate effects from BioEnergy (−36 pp), ZCR (+19 pp), and ROU (+17 pp)
+- **Dolphin presence** effects are all small (< 7 pp) despite statistical significance
+
+This explains why vessel detection works so well (AUC = 0.92) — the index associations are genuinely strong. For dolphins, the indices provide weak signal even when "significant."
+
+### Zero-Inflation: Why Count Models Struggle
+
+Count models assume a negative binomial distribution, but the data has far more zeros than this distribution expects. The models think activity should occur more often than it actually does.
+
+![](figures/zero_inflation_gap.png){width=100%}
+
+**Interpretation:** Dolphins are rare and bursty — most 2-hour windows have zero detections. The Dolphin Activity model expects only 17% zeros but observes 77% (a 59 percentage point gap). This mismatch explains the poor cross-validation performance (negative R²). The model structure doesn't fit the data-generating process.
+
+For applications requiring activity counts, a zero-inflated model or hurdle model might be more appropriate. For presence/absence detection, the current binary models avoid this issue entirely.
+
+### Concurvity: Interpreting the Significance Table
+
+Concurvity is the GAM equivalent of multicollinearity. High concurvity (> 0.8) means smooth terms explain similar variance — they're partially redundant.
+
+Most index terms in these models have concurvity > 0.8. This means:
+
+- The many "significant" indices in the results table aren't independent signals
+- If ZCR predicts fish, correlated indices (ACI, EVNtCount) will also appear significant
+- Effects can't be cleanly attributed to specific indices
+
+**Practical implication:** Think of the indices as capturing "acoustic characteristics" broadly, not as 17 independent predictors. The indices that matter most are those with large effect sizes, not just statistical significance.
+
+::: {.callout-note}
+## Diagnostic Summary
+
+- **Effect sizes** show vessel and fish presence have practically meaningful index associations; dolphin effects are small even when statistically significant
+- **Zero-inflation** explains why count models don't generalize — too many zeros for the assumed distribution
+- **Concurvity** means significant indices are correlated, not independent predictors
+:::
+
+---
+
 ## Conclusions {#conclusions}
 
 ### What Works
@@ -336,6 +388,8 @@ Acoustic indices are useful for **screening** ("is there activity?") but not for
 - [Model Summary (CSV)](tables/model_summary.csv)
 - [CV Performance Summary (CSV)](tables/cv_performance_summary.csv)
 - [AR1 Validation (CSV)](tables/ar1_validation.csv)
+- [Effect Sizes (CSV)](tables/effect_sizes.csv)
+- [Zero-Inflation Check (CSV)](tables/zero_inflation_check.csv)
 
 ---
 

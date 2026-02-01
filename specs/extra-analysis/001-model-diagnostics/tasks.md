@@ -24,10 +24,10 @@
 
 **Purpose**: Create script structure and helper functions
 
-- [ ] T001 Create `scripts/stage05c_diagnostics.R` with header, package loading, and argument parsing
-- [ ] T002 Add configuration loading from `config/analysis.yml` (response metrics, index columns)
-- [ ] T003 [P] Add helper function `load_model(metric)` to load GAMM from `results/models/<metric>/gamm.rds`
-- [ ] T004 [P] Add helper function `check_convergence(model)` to verify model converged before processing
+- [x] T001 Create `scripts/stage05c_diagnostics.R` with header, package loading, and argument parsing
+- [x] T002 Add configuration loading from `config/analysis.yml` (response metrics, index columns)
+- [x] T003 [P] Add helper function `load_model(metric)` to load GAMM from `results/models/<metric>/gamm.rds`
+- [x] T004 [P] Add helper function `check_convergence(model)` to verify model converged before processing
 
 **Checkpoint**: Script skeleton ready with model loading capability
 
@@ -37,9 +37,9 @@
 
 **Purpose**: Core functions used across multiple user stories
 
-- [ ] T005 Add helper function `get_index_columns()` to extract acoustic index column names from config
-- [ ] T006 [P] Add helper function `get_model_type(metric)` to classify as "presence" or "count"
-- [ ] T007 [P] Add output directory creation logic for `results/tables/<metric>/` and `results/figures/<metric>/`
+- [x] T005 Add helper function `get_index_columns()` to extract acoustic index column names from config
+- [x] T006 [P] Add helper function `get_model_type(metric)` to classify as "presence" or "count"
+- [x] T007 [P] Add output directory creation logic for `results/tables/<metric>/` and `results/figures/<metric>/`
 
 **Checkpoint**: Foundation ready - all helper functions available for user story implementation
 
@@ -53,13 +53,13 @@
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Implement `calculate_effect_sizes(model, data, index_cols, model_type)` function in `scripts/stage05c_diagnostics.R`
+- [x] T008 [US1] Implement `calculate_effect_sizes(model, data, index_cols, model_type)` function in `scripts/stage05c_diagnostics.R`
   - For each index: create newdata at 10th and 90th percentile, other vars at median
   - Predict response at both points
   - Calculate effect: probability_change for presence, fold_change for counts
-- [ ] T009 [US1] Add effect size loop over all 9 metrics in main script body
-- [ ] T010 [US1] Implement CSV export to `results/tables/effect_sizes.csv` with columns: metric, index, low_value, high_value, low_pred, high_pred, effect_size, effect_type
-- [ ] T011 [US1] Add console output summarizing largest effect sizes per metric
+- [x] T009 [US1] Add effect size loop over all 9 metrics in main script body
+- [x] T010 [US1] Implement CSV export to `results/tables/effect_sizes.csv` with columns: metric, index, low_value, high_value, low_pred, high_pred, effect_size, effect_type
+- [x] T011 [US1] Add console output summarizing largest effect sizes per metric
 
 **Checkpoint**: Effect sizes table complete - can communicate practical significance to stakeholders
 
@@ -73,21 +73,21 @@
 
 ### Implementation for User Story 2
 
-- [ ] T012 [P] [US2] Implement `check_concurvity(model, threshold = 0.8)` function in `scripts/stage05c_diagnostics.R`
+- [x] T012 [P] [US2] Implement `check_concurvity(model, threshold = 0.8)` function in `scripts/stage05c_diagnostics.R`
   - Run `mgcv::concurvity(model, full=TRUE)`
   - Extract worst-case values for each smooth term
   - Flag terms exceeding threshold
-- [ ] T013 [US2] Add concurvity loop and export to `results/tables/<metric>/concurvity.csv`
-- [ ] T014 [P] [US2] Implement `check_zero_inflation(model, data, response_col)` function
+- [x] T013 [US2] Add concurvity loop and export to `results/tables/<metric>/concurvity.csv`
+- [x] T014 [P] [US2] Implement `check_zero_inflation(model, data, response_col)` function
   - Calculate observed zero proportion from data
   - Calculate predicted zero proportion from model
   - Flag if gap > 10%
-- [ ] T015 [US2] Add zero-inflation loop (count models only) and export to `results/tables/zero_inflation_check.csv`
-- [ ] T016 [P] [US2] Implement `plot_random_effects_qq(model, metric)` function
+- [x] T015 [US2] Add zero-inflation loop (count models only) and export to `results/tables/zero_inflation_check.csv`
+- [x] T016 [P] [US2] Implement `plot_random_effects_qq(model, metric)` function
   - Extract station and month_id random effect estimates
   - Generate QQ plots for each
   - Combine into 2-panel figure
-- [ ] T017 [US2] Add random effects QQ loop and save to `results/figures/<metric>/random_effects_qq.png`
+- [x] T017 [US2] Add random effects QQ loop and save to `results/figures/<metric>/random_effects_qq.png`
 
 **Checkpoint**: All assumption diagnostics complete - model validity confirmed or issues flagged
 
@@ -101,12 +101,12 @@
 
 ### Implementation for User Story 3
 
-- [ ] T018 [US3] Implement `plot_residuals_by_station(model, data, metric)` function in `scripts/stage05c_diagnostics.R`
+- [x] T018 [US3] Implement `plot_residuals_by_station(model, data, metric)` function in `scripts/stage05c_diagnostics.R`
   - Extract deviance residuals
   - Join with station from data
   - Create ggplot with residuals vs fitted, faceted by station
-- [ ] T019 [US3] Add residuals-by-station loop and save to `results/figures/<metric>/residuals_by_station.png`
-- [ ] T020 [US3] Add summary statistics per station (mean residual, SD) to console output
+- [x] T019 [US3] Add residuals-by-station loop and save to `results/figures/<metric>/residuals_by_station.png`
+- [x] T020 [US3] Add summary statistics per station (mean residual, SD) to console output
 
 **Checkpoint**: Station-level diagnostics complete - any systematic issues by location are visible
 
@@ -116,11 +116,11 @@
 
 **Purpose**: Final integration and documentation
 
-- [ ] T021 Add main execution block that runs all diagnostics in sequence
-- [ ] T022 Add `--metric` argument support for single-model testing
-- [ ] T023 Add summary log output showing counts: models processed, flags raised, files created
-- [ ] T024 Update `results/logs/` with diagnostics run metadata (timestamp, metrics processed)
-- [ ] T025 Run full script and verify all outputs generated correctly
+- [x] T021 Add main execution block that runs all diagnostics in sequence
+- [x] T022 Add `--metric` argument support for single-model testing
+- [x] T023 Add summary log output showing counts: models processed, flags raised, files created
+- [x] T024 Update `results/logs/` with diagnostics run metadata (timestamp, metrics processed)
+- [x] T025 Run full script and verify all outputs generated correctly
 
 ---
 

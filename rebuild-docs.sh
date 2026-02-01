@@ -38,6 +38,10 @@ done
 cp results/figures/acf_residuals.png docs/figures/ 2>/dev/null || true
 cp results/figures/cv_performance_by_metric.png docs/figures/ 2>/dev/null || true
 
+# Copy diagnostic figures
+cp results/figures/effect_sizes_presence.png docs/figures/ 2>/dev/null || true
+cp results/figures/zero_inflation_gap.png docs/figures/ 2>/dev/null || true
+
 echo "  Copied $(find docs/figures -name '*.png' | wc -l | tr -d ' ') PNG files"
 
 # Step 2: Copy tables (for reference/download)
@@ -47,6 +51,8 @@ mkdir -p docs/tables
 cp results/tables/model_summary.csv docs/tables/
 cp results/tables/cv_performance_summary.csv docs/tables/
 cp results/tables/ar1_validation.csv docs/tables/
+cp results/tables/effect_sizes.csv docs/tables/ 2>/dev/null || true
+cp results/tables/zero_inflation_check.csv docs/tables/ 2>/dev/null || true
 echo "  Copied summary tables"
 
 # Step 3: Render Quarto
