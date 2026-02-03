@@ -517,6 +517,14 @@ for (metric in names(responses)) {
     }
     cat("  Saved:", length(smooth_terms), "individual smooth plots\n")
 
+    # Generate standard diagnostic plot (4-panel: QQ, histogram, residuals vs fitted, response vs fitted)
+    png(file.path("results/figures", metric, "gamm_diagnostics.png"),
+        width = 1200, height = 1000, res = 120)
+    par(mfrow = c(2, 2))
+    gam.check(gamm_fit, pch = 20, cex = 0.5)
+    dev.off()
+    cat("  Saved: results/figures/", metric, "/gamm_diagnostics.png\n", sep = "")
+
     # Get AIC
     gamm_aic <- AIC(gamm_fit)
     cat(sprintf("  GAMM AIC: %.2f\n", gamm_aic))

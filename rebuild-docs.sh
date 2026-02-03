@@ -32,6 +32,8 @@ for metric in fish_activity fish_richness fish_presence \
   mkdir -p "docs/figures/$metric"
   cp "results/figures/$metric/gamm_smooths.png" "docs/figures/$metric/" 2>/dev/null || true
   cp "results/figures/$metric/gamm_diagnostics.png" "docs/figures/$metric/" 2>/dev/null || true
+  cp "results/figures/$metric/random_effects_qq.png" "docs/figures/$metric/" 2>/dev/null || true
+  cp "results/figures/$metric/residuals_by_station.png" "docs/figures/$metric/" 2>/dev/null || true
 done
 
 # Copy validation/summary figures
