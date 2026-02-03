@@ -43,6 +43,7 @@ def save_outputs(
     coverage: dict,
     metadata_df: pd.DataFrame,
     vif_threshold: float,
+    vif_enabled: bool = True,
 ):
     """Save all Stage 01 outputs per spec."""
 
@@ -68,13 +69,15 @@ def save_outputs(
             {"index": idx, "category": category, "description": description}
         )
 
+    method = "All indices (VIF disabled)" if not vif_enabled else "VIF-only (no correlation pruning)"
     save_summary_json(
         {
             "final_indices": final_list_data,
             "count": len(final_indices),
             "coverage": coverage,
-            "vif_threshold": vif_threshold,
-            "method": "VIF-only (no correlation pruning)",
+            "vif_threshold": vif_threshold if vif_enabled else None,
+            "vif_enabled": vif_enabled,
+            "method": method,
         },
         final_list_path,
     )
@@ -82,12 +85,13 @@ def save_outputs(
 
     # 2. Save indices_final.csv
     indices_final_path = root / "data" / "processed" / "indices_final.csv"
+    reason = "VIF disabled - all indices retained" if not vif_enabled else f"Passed VIF threshold (VIF <= {vif_threshold})"
     final_df = pd.DataFrame(
         [
             {
                 "index_name": item["index"],
                 "kept": True,
-                "reason": f"Passed VIF threshold (VIF <= {vif_threshold})",
+                "reason": reason,
                 "category": item["category"],
                 "band": "Full",
             }
@@ -160,16 +164,22 @@ def main():
 
         # Load configuration
         cfg = load_analysis_config(root)
+        vif_enabled = cfg["thresholds"].get("vif_enabled", True)
         vif_threshold = cfg["thresholds"]["vif"]
         vif_fallback = cfg["thresholds"]["vif_fallback"]
 
         print("Configuration:")
+        print(f"  VIF filtering enabled: {vif_enabled}")
         print(f"  VIF threshold: {vif_threshold}")
         print(f"  VIF fallback: {vif_fallback}")
         print()
-        print("Method: VIF-only reduction (no correlation pruning)")
-        print("  - Fully deterministic, no arbitrary tiebreaker decisions")
-        print("  - Iteratively remove highest VIF index until all VIF <= threshold")
+        if vif_enabled:
+            print("Method: VIF-only reduction (no correlation pruning)")
+            print("  - Fully deterministic, no arbitrary tiebreaker decisions")
+            print("  - Iteratively remove highest VIF index until all VIF <= threshold")
+        else:
+            print("Method: VIF filtering DISABLED - retaining all indices")
+            print("  - GAMM select=TRUE will handle regularization")
         print()
 
         # Load data
@@ -188,11 +198,16 @@ def main():
 
         # VIF-based reduction (starting from ALL indices)
         print("Step 3: VIF-based reduction...")
-        print(f"  Starting VIF pruning from {len(index_cols)} indices")
 
-        final_indices, vif_history = prune_by_vif(
-            indices_std, index_cols, metadata_df, vif_threshold, vif_fallback
-        )
+        if not vif_enabled:
+            print(f"  VIF filtering DISABLED - keeping all {len(index_cols)} indices")
+            final_indices = index_cols
+            vif_history = []
+        else:
+            print(f"  Starting VIF pruning from {len(index_cols)} indices")
+            final_indices, vif_history = prune_by_vif(
+                indices_std, index_cols, metadata_df, vif_threshold, vif_fallback
+            )
         print()
 
         # Category coverage check
@@ -224,18 +239,24 @@ def main():
             coverage,
             metadata_df,
             vif_threshold,
+            vif_enabled,
         )
 
-        # Compute final VIF for run history
-        final_vif_df = compute_vif(indices_std, final_indices)
-        max_vif_row = final_vif_df.loc[final_vif_df["vif"].idxmax()]
+        # Compute final VIF for run history (only meaningful if VIF filtering occurred)
+        if vif_enabled:
+            final_vif_df = compute_vif(indices_std, final_indices)
+            max_vif_row = final_vif_df.loc[final_vif_df["vif"].idxmax()]
+            max_vif_str = f"{max_vif_row['vif']:.2f} ({max_vif_row['index']})"
+        else:
+            max_vif_str = "N/A (VIF disabled)"
 
         # Append to run history
         append_to_run_history(
             root=root,
             stage="Stage 01: Index Reduction",
             config={
-                "method": "VIF-only",
+                "method": "All indices (VIF disabled)" if not vif_enabled else "VIF-only",
+                "vif_enabled": vif_enabled,
                 "vif": vif_threshold,
                 "vif_fallback": vif_fallback,
             },
@@ -245,7 +266,7 @@ def main():
                 "n_removed": len(index_cols) - len(final_indices),
                 "final_indices": ", ".join(sorted(final_indices)),
                 "categories": f"{len(coverage['categories'])} ({', '.join(sorted(coverage['categories']))})",
-                "max_vif": f"{max_vif_row['vif']:.2f} ({max_vif_row['index']})",
+                "max_vif": max_vif_str,
             },
             log_path=str(logger.log_path.relative_to(root)),
         )
@@ -254,7 +275,10 @@ def main():
         print("=" * 60)
         print("Stage 01 complete")
         print(f"  Started with: {len(index_cols)} indices")
-        print(f"  Removed (VIF): {len(index_cols) - len(final_indices)} indices")
+        if vif_enabled:
+            print(f"  Removed (VIF): {len(index_cols) - len(final_indices)} indices")
+        else:
+            print("  VIF filtering: DISABLED (all indices retained)")
         print(f"  Final list size: {len(final_indices)} indices")
         print("=" * 60)
         print()

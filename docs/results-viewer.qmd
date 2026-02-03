@@ -1,6 +1,6 @@
 ---
 title: "MBON Acoustic Indices Study: Results Viewer"
-subtitle: "May River Estuary — Modeling Results & Validation"
+subtitle: "May River Estuary — Modeling Results & Validation (v2: 60-Index Analysis)"
 author: "MBON-USC Team"
 date: today
 format:
@@ -28,15 +28,20 @@ library(knitr)
 ::: {.callout-note}
 ## Elevator Pitch
 
-Acoustic indices can tell you *whether* biological activity is happening (presence), but they can't reliably tell you *how much* (activity levels). Vessel detection is excellent (AUC = 0.92), biological presence detection is moderate (AUC ~0.75), and activity/count prediction doesn't generalize well across time periods.
+Acoustic indices can tell you *whether* biological activity is happening (presence), but they can't reliably tell you *how much* (activity levels). Vessel detection is excellent (AUC = 0.93), biological presence detection is moderate (AUC ~0.77), and activity/count prediction doesn't generalize well across time periods.
+:::
+
+::: {.callout-tip}
+## Version Note
+This is **v2** of the analysis, using all 60 acoustic indices with GAMM regularization (`select=TRUE`). The previous v1 analysis used 17 VIF-filtered indices. [View the v1 PDF archive](results-viewer-v1.pdf) for comparison. Post-hoc validation showed 60-index models consistently outperform 17-index models.
 :::
 
 ### Study Design
 
-- **Data:** 13,102 observations across 3 monitoring stations (9M, 14M, 37M), 2 years (2018, 2021), at 2-hour resolution
-- **Predictors:** 17 acoustic indices + temperature, depth, time of day, day of year, station
+- **Data:** 13,102 observations across 3 monitoring stations (9M, 14M, 37M), 2021, at 2-hour resolution
+- **Predictors:** 60 acoustic indices + temperature, depth, time of day, day of year, station
 - **Responses:** 9 metrics — fish (activity, richness, presence), dolphins (burst pulse, echolocation, whistle, activity, presence), vessels (presence)
-- **Models:** Generalized Additive Mixed Models (GAMMs) with AR1 autocorrelation structure
+- **Models:** Generalized Additive Mixed Models (GAMMs) with AR1 autocorrelation structure and automatic smoothness selection (`select=TRUE`)
 
 ---
 
@@ -44,53 +49,92 @@ Acoustic indices can tell you *whether* biological activity is happening (presen
 
 ### Convergence & Technical Soundness
 
-All 9 models converged successfully.
+All 9 models converged successfully with 60 acoustic indices (smooth k=3).
 
-| Metric | AR1 (ρ) | AIC | Type |
-|--------|---------|-----|------|
-| fish_activity | 0.196 | 33,897 | Count |
-| fish_richness | 0.185 | 22,472 | Count |
-| fish_presence | 0.144 | 9,413 | Binary |
-| dolphin_burst_pulse | 0.064 | 8,187 | Count |
-| dolphin_echolocation | 0.128 | 30,765 | Count |
-| dolphin_whistle | 0.107 | 3,189 | Count |
-| dolphin_activity | 0.129 | 32,367 | Count |
-| dolphin_presence | 0.110 | 10,949 | Binary |
-| vessel_presence | 0.077 | 6,961 | Binary |
+| Metric | AR1 (ρ) | AIC | Dev. Expl. | Type |
+|--------|---------|-----|------------|------|
+| fish_activity | 0.169 | 33,450 | 55.3% | Count |
+| fish_richness | 0.160 | 22,334 | 51.4% | Count |
+| fish_presence | 0.124 | 9,077 | 49.4% | Binary |
+| dolphin_burst_pulse | 0.060 | 8,046 | 26.7% | Count |
+| dolphin_echolocation | 0.102 | 30,565 | 21.8% | Count |
+| dolphin_whistle | 0.114 | 3,117 | 33.8% | Count |
+| dolphin_activity | 0.102 | 32,128 | 20.8% | Count |
+| dolphin_presence | 0.093 | 10,693 | 25.0% | Binary |
+| vessel_presence | 0.064 | 6,435 | 52.4% | Binary |
 
-**AR1 (ρ) interpretation:** Measures temporal "stickiness" — how much knowing the current state tells you about the next 2-hour window. Values of 0.06–0.20 indicate modest persistence, which is appropriate for these data.
+**AR1 (ρ) interpretation:** Measures temporal "stickiness" — how much knowing the current state tells you about the next 2-hour window. Values of 0.06–0.17 indicate modest persistence, which is appropriate for these data.
+
+**Dev. Expl. (Deviance Explained):** The proportion of variation explained by the model. Fish metrics and vessel presence explain ~50% of variation; dolphin metrics explain 20-34%.
+
+---
+
+## Do Indices Add Value? {#baseline-comparison}
+
+We compared full models (with 60 acoustic indices) against baseline models (temporal/environmental predictors only) to quantify how much acoustic indices contribute.
+
+| Metric | Full AIC | Baseline AIC | ΔAIC | Dev. Expl. Gain |
+|--------|----------|--------------|------|-----------------|
+| **vessel_presence** | 6,435 | 8,065 | **1,630** | +12.8 pp |
+| **fish_activity** | 33,450 | 34,477 | **1,027** | +3.8 pp |
+| **fish_presence** | 9,077 | 9,985 | **908** | +5.4 pp |
+| dolphin_presence | 10,693 | 11,347 | 655 | +4.9 pp |
+| fish_richness | 22,334 | 22,839 | 505 | +4.1 pp |
+| dolphin_activity | 32,128 | 32,611 | 482 | +6.5 pp |
+| dolphin_echolocation | 30,565 | 30,998 | 434 | +6.0 pp |
+| dolphin_burst_pulse | 8,046 | 8,265 | 219 | +12.0 pp |
+| dolphin_whistle | 3,117 | 3,189 | 72 | +12.0 pp |
+
+::: {.callout-important}
+## Key Finding
+All 9 metrics show **strong evidence** that acoustic indices add predictive value (ΔAIC > 70 for all). Vessel detection benefits most (ΔAIC = 1,630), followed by fish metrics.
+:::
+
+### Per-Station Consistency
+
+We verified that indices add value at each individual station, not just when pooled:
+
+| Metric | 14M ΔAIC | 37M ΔAIC | 9M ΔAIC |
+|--------|----------|----------|---------|
+| fish_presence | 115 | 199 | 211 |
+| dolphin_presence | 50 | 99 | 75 |
+| vessel_presence | 385 | 551 | 257 |
+
+**Interpretation:** Strong evidence at all stations — robust findings, not artifacts of station pooling.
 
 ---
 
 ## Which Indices Predict Which Responses? {#index-significance}
 
-The table below shows which acoustic indices significantly predict each response (p < 0.05).
+With 60 indices and GAMM's `select=TRUE` regularization, many indices are shrunk toward zero (EDF ≈ 0). Below are the **top 3 indices by effect size** for each metric.
 
-| Index | Fish Act. | Fish Rich. | Fish Pres. | Dolph. BP | Dolph. Echo | Dolph. Whis. | Dolph. Act. | Dolph. Pres. | Vessel |
-|-------|:---------:|:----------:|:----------:|:---------:|:-----------:|:------------:|:-----------:|:------------:|:------:|
-| **ACI** | | ✓ | ✓ | ✓ | | | | | ✓ |
-| **BI** | | | ✓ | ✓ | ✓ | | ✓ | ✓ | ✓ |
-| **BioEnergy** | | | ✓ | | | | | ✓ | |
-| **ECV** | | | | | ✓ | ✓ | ✓ | ✓ | |
-| **EPS_KURT** | | ✓ | ✓ | ✓ | ✓ | | ✓ | | |
-| **EVNtCount** | | ✓ | ✓ | | | | ✓ | ✓ | ✓ |
-| **EVNtMean** | | | ✓ | | | | | ✓ | |
-| **H_Havrda** | | | ✓ | ✓ | | | ✓ | | ✓ |
-| **KURTt** | | | ✓ | | | | | ✓ | ✓ |
-| **NBPEAKS** | | | | ✓ | ✓ | | ✓ | ✓ | |
-| **ROU** | | ✓ | ✓ | | ✓ | | ✓ | | |
-| **SKEWt** | | ✓ | | | | | | | |
-| **TFSD** | | | | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| **VARt** | | | ✓ | | | | | | |
-| **ZCR** | ✓ | ✓ | ✓ | | | ✓ | | | ✓ |
-| **nROI** | | ✓ | ✓ | ✓ | ✓ | | ✓ | ✓ | ✓ |
+### Top Predictors by Metric
+
+| Metric | Top 3 Indices (by effect size) |
+|--------|--------------------------------|
+| **fish_activity** | SNRt (2.3× fold change), BGNt (2.1×), EVNtCount (1.7×) |
+| **fish_richness** | EVNtCount (2.1× fold change), aROI (1.5×), LFC (1.4×) |
+| **fish_presence** | LFC (+24 pp), Hf (+23 pp), AGI (+15 pp) |
+| **dolphin_burst_pulse** | EPS (12.7× fold change), ACTspMean (5.1×), H_gamma (2.1×) |
+| **dolphin_echolocation** | ACTspCount (2378×), ACTspFract (19×), EPS (1.9×) |
+| **dolphin_whistle** | ZCR (3.4× fold change), EVNspMean (3.0×), BGNf (2.7×) |
+| **dolphin_activity** | ACTspCount (11650×), ACTspFract (17×), EPS (2.2×) |
+| **dolphin_presence** | ACTspFract (+97 pp), HFC (−21 pp), EVNspCount (−19 pp) |
+| **vessel_presence** | HFC (+94 pp), aROI (−82 pp), nROI (+76 pp) |
+
+*pp = percentage point change in probability; fold change = multiplicative effect on count*
 
 ### Key Patterns
 
-- **Broadly predictive indices:** TFSD (6/9), nROI (7/9), BI (6/9), EVNtCount (5/9)
-- **Fish-specific:** ZCR predicts all 3 fish metrics but no dolphin metrics
-- **Dolphin-specific:** ECV predicts dolphins (4/5) but not fish
-- **Presence is easier to predict:** Fish presence has 12 significant predictors; fish activity has only 1
+- **Temporal activity indices** (ACTspCount, ACTspFract, ACTtCount) are top predictors for dolphins
+- **Spectral complexity** (EPS, HFC, LFC) matters for most responses
+- **Event counts** (EVNtCount, EVNspCount, nROI) are broadly predictive
+- **Vessel detection** relies heavily on high-frequency content (HFC) and region-of-interest indices
+
+::: {.callout-note}
+## High Concurvity Warning
+Most index terms have concurvity > 0.8, meaning they're partially redundant. Effects can't be cleanly attributed to individual indices. See [Diagnostics](#diagnostic-checks) for details.
+:::
 
 ---
 
@@ -286,20 +330,20 @@ We checked if the AR1 correction removed temporal autocorrelation from residuals
 
 | Metric | Mean AUC | SD | Interpretation |
 |--------|----------|-----|----------------|
-| vessel_presence | **0.92** | 0.03 | Excellent |
-| fish_presence | 0.75 | 0.11 | Moderate |
-| dolphin_presence | 0.74 | 0.13 | Moderate |
+| vessel_presence | **0.93** | 0.03 | Excellent |
+| fish_presence | 0.77 | 0.11 | Moderate |
+| dolphin_presence | 0.77 | 0.12 | Moderate |
 
 #### Count Metrics (RMSE / R²)
 
 | Metric | Mean RMSE | Mean R² | Interpretation |
 |--------|-----------|---------|----------------|
-| fish_richness | 0.56 | 0.02 | Low error, poor R² |
-| fish_activity | 1.14 | 0.01 | Same |
-| dolphin_whistle | 0.78 | -∞ | Rare events |
-| dolphin_burst_pulse | 1.54 | -0.13 | Poor |
-| dolphin_echolocation | 11.0 | -455 | Outlier folds |
-| dolphin_activity | 7.22 | -48 | Poor |
+| fish_richness | 0.55 | 0.05 | Low error, poor R² |
+| fish_activity | 1.11 | 0.04 | Same |
+| dolphin_whistle | 1.22 | -∞ | Rare events |
+| dolphin_burst_pulse | 46.7 | -44,154 | Outlier folds (one extreme week) |
+| dolphin_echolocation | 4.06 | -1.6 | Poor |
+| dolphin_activity | 5.78 | -1.8 | Poor |
 
 ::: {.callout-warning}
 ## Count Models Don't Generalize
@@ -385,11 +429,20 @@ Acoustic indices are useful for **screening** ("is there activity?") but not for
 
 ## Downloads {#downloads}
 
+### Model Results
 - [Model Summary (CSV)](tables/model_summary.csv)
+- [Effect Sizes (CSV)](tables/effect_sizes.csv) — 60 indices × 9 metrics
+- [Zero-Inflation Check (CSV)](tables/zero_inflation_check.csv)
+
+### Validation
 - [CV Performance Summary (CSV)](tables/cv_performance_summary.csv)
 - [AR1 Validation (CSV)](tables/ar1_validation.csv)
-- [Effect Sizes (CSV)](tables/effect_sizes.csv)
-- [Zero-Inflation Check (CSV)](tables/zero_inflation_check.csv)
+- [Baseline Comparison (CSV)](tables/baseline_comparison.csv) — indices vs no-indices
+- [Per-Station Baseline (CSV)](tables/baseline_comparison_bystation.csv)
+- [VIF Validation (CSV)](tables/vif_validation.csv) — 17 vs 60 indices
+
+### Archive
+- [v1 Results (17 indices, PDF)](results-viewer-v1.pdf)
 
 ---
 

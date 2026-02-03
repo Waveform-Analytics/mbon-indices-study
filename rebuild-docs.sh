@@ -53,6 +53,9 @@ cp results/tables/cv_performance_summary.csv docs/tables/
 cp results/tables/ar1_validation.csv docs/tables/
 cp results/tables/effect_sizes.csv docs/tables/ 2>/dev/null || true
 cp results/tables/zero_inflation_check.csv docs/tables/ 2>/dev/null || true
+cp results/tables/baseline_comparison.csv docs/tables/ 2>/dev/null || true
+cp results/tables/baseline_comparison_bystation.csv docs/tables/ 2>/dev/null || true
+cp results/tables/vif_validation.csv docs/tables/ 2>/dev/null || true
 echo "  Copied summary tables"
 
 # Step 3: Render Quarto

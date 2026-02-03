@@ -57,6 +57,11 @@ set.seed(1234)
 # Read the analysis config
 config <- yaml::read_yaml("config/analysis.yml")
 
+# Get GAMM settings from config
+smooth_k <- config$gamm$smooth_k %||% 5
+cyclic_k <- config$gamm$cyclic_k %||% 12
+cat(sprintf("GAMM smooth_k: %d (from config)\n", smooth_k))
+
 # Define which responses to model and their distribution families
 # Family determines the likelihood function:
 #   - nbinom2: Negative binomial (for overdispersed counts)
@@ -164,13 +169,13 @@ scale_predictors <- function(data, predictors) {
 #'
 #' The GAMM formula uses smooth terms to capture non-linear relationships:
 #'
-#' response ~ s(index1, k=5) + s(index2, k=5) + ... +
-#'            s(temperature, k=5) + s(depth, k=5) +
+#' response ~ s(index1, k=K) + s(index2, k=K) + ... +
+#'            s(temperature, k=K) + s(depth, k=K) +
 #'            s(hour_of_day, bs="cc", k=12) + s(day_of_year, bs="cc", k=12) +
 #'            s(station, bs="re") + s(month_id, bs="re")
 #'
 #' Key components:
-#' - s(x, k=5): Smooth function of x with up to ~4 degrees of wiggliness
+#' - s(x, k=K): Smooth function of x with up to ~K-1 degrees of wiggliness
 #'   If the true relationship is linear, the smooth will estimate a line
 #' - bs="cc": Cyclic cubic spline (wraps around, so hour 23 connects to hour 0)
 #' - bs="re": Random effect smooth (equivalent to random intercept)
@@ -179,26 +184,27 @@ scale_predictors <- function(data, predictors) {
 #'
 #' @param response Character string, the response variable name
 #' @param indices Character vector of index column names
+#' @param smooth_k Integer, basis dimension for smooth terms (from config)
+#' @param cyclic_k Integer, basis dimension for cyclic terms (from config)
 #' @return A formula object
-build_gamm_formula <- function(response, indices) {
-  # Smooth terms for indices (k=5 allows moderate non-linearity)
+build_gamm_formula <- function(response, indices, smooth_k = 5, cyclic_k = 12) {
+  # Smooth terms for indices
   index_terms <- sapply(indices, function(idx) {
-    sprintf("s(%s, k=5)", idx)
+    sprintf("s(%s, k=%d)", idx, smooth_k)
   })
 
 
   # Smooth terms for covariates
   covariate_terms <- c(
-    "s(temperature, k=5)",
-    "s(depth, k=5)"
+    sprintf("s(temperature, k=%d)", smooth_k),
+    sprintf("s(depth, k=%d)", smooth_k)
   )
 
   # Cyclic smooths for temporal terms
   # bs="cc" means cyclic cubic spline - the curve wraps around
-  # k=12 allows more flexibility for diel/seasonal patterns
   temporal_terms <- c(
-    "s(hour_of_day, bs='cc', k=12)",
-    "s(day_of_year, bs='cc', k=12)"
+    sprintf("s(hour_of_day, bs='cc', k=%d)", cyclic_k),
+    sprintf("s(day_of_year, bs='cc', k=%d)", cyclic_k)
   )
 
   # Random effects as smooth terms
@@ -415,7 +421,7 @@ for (metric in names(responses)) {
   cat("\nFitting GAMM...\n")
 
   # Build formula
-  gamm_formula <- build_gamm_formula(metric, indices)
+  gamm_formula <- build_gamm_formula(metric, indices, smooth_k, cyclic_k)
   cat(sprintf("  Formula: %s\n", deparse(gamm_formula, width.cutoff = 500)))
 
   # Get the appropriate family

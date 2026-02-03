@@ -63,6 +63,7 @@ autocorrelation:
   gamm_ar1: true
 
 thresholds:
+  vif_enabled: false  # Skip VIF filtering - use all indices with GAMM select=TRUE
   correlation_r: 0.6
   correlation_sensitivity_r: 0.8
   vif: 2
@@ -84,7 +85,7 @@ exploratory:
   heatmap_midnight_center: true
 
 gamm:
-  smooth_k: 5
+  smooth_k: 3  # Reduced from 5 for 60-index convergence
   cyclic_k: 12
   method: fREML
   discrete: true
