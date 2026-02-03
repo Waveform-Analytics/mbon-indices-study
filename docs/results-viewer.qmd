@@ -152,7 +152,8 @@ Most index terms have concurvity > 0.8, meaning they're partially redundant. Eff
 ![](figures/fish_activity/gamm_smooths.png){width=100%}
 
 #### Diagnostics
-![](figures/fish_activity/gamm_diagnostics.png){width=100%}
+
+*See [Diagnostic Checks](#diagnostic-checks) section for model diagnostics.*
 
 #### Interpretation
 
@@ -171,7 +172,7 @@ Fish activity shows strong diel patterns (hour_of_day EDF = 6.81) but weak index
 ![](figures/fish_richness/gamm_smooths.png){width=100%}
 
 #### Diagnostics
-![](figures/fish_richness/gamm_diagnostics.png){width=100%}
+*See [Diagnostic Checks](#diagnostic-checks) section for model diagnostics.*
 
 #### Interpretation
 
@@ -190,7 +191,7 @@ Fish richness has more significant index predictors than fish activity. Indices 
 ![](figures/fish_presence/gamm_smooths.png){width=100%}
 
 #### Diagnostics
-![](figures/fish_presence/gamm_diagnostics.png){width=100%}
+*See [Diagnostic Checks](#diagnostic-checks) section for model diagnostics.*
 
 #### Interpretation
 
@@ -209,7 +210,7 @@ Fish presence is the most predictable fish metric. Many indices pick it up — d
 ![](figures/dolphin_burst_pulse/gamm_smooths.png){width=100%}
 
 #### Diagnostics
-![](figures/dolphin_burst_pulse/gamm_diagnostics.png){width=100%}
+*See [Diagnostic Checks](#diagnostic-checks) section for model diagnostics.*
 
 #### Interpretation
 
@@ -228,7 +229,7 @@ Burst pulses are foraging-related — discrete hunting events. Indices sensitive
 ![](figures/dolphin_echolocation/gamm_smooths.png){width=100%}
 
 #### Diagnostics
-![](figures/dolphin_echolocation/gamm_diagnostics.png){width=100%}
+*See [Diagnostic Checks](#diagnostic-checks) section for model diagnostics.*
 
 #### Interpretation
 
@@ -247,7 +248,7 @@ Echolocation clicks are broadband with distinctive temporal structure — reflec
 ![](figures/dolphin_whistle/gamm_smooths.png){width=100%}
 
 #### Diagnostics
-![](figures/dolphin_whistle/gamm_diagnostics.png){width=100%}
+*See [Diagnostic Checks](#diagnostic-checks) section for model diagnostics.*
 
 #### Interpretation
 
@@ -266,7 +267,7 @@ Whistles are tonal social signals — only 3 indices (ECV, TFSD, ZCR) are signif
 ![](figures/dolphin_activity/gamm_smooths.png){width=100%}
 
 #### Diagnostics
-![](figures/dolphin_activity/gamm_diagnostics.png){width=100%}
+*See [Diagnostic Checks](#diagnostic-checks) section for model diagnostics.*
 
 #### Interpretation
 
@@ -285,7 +286,7 @@ Dolphin activity (total vocalizations) has many significant predictors — it ag
 ![](figures/dolphin_presence/gamm_smooths.png){width=100%}
 
 #### Diagnostics
-![](figures/dolphin_presence/gamm_diagnostics.png){width=100%}
+*See [Diagnostic Checks](#diagnostic-checks) section for model diagnostics.*
 
 #### Interpretation
 
@@ -304,7 +305,7 @@ Dolphin presence is moderately predictable (AUC = 0.74), similar to fish presenc
 ![](figures/vessel_presence/gamm_smooths.png){width=100%}
 
 #### Diagnostics
-![](figures/vessel_presence/gamm_diagnostics.png){width=100%}
+*See [Diagnostic Checks](#diagnostic-checks) section for model diagnostics.*
 
 #### Interpretation
 
