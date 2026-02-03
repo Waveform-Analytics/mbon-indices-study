@@ -1,50 +1,52 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# MBON Acoustic Indices Study Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Research-First Workflow
+This is a data analysis project, not a software product. Priorities:
+- Reproducibility over abstraction
+- Interpretable outputs over elegant code
+- Manual verification over automated tests
+- Step-by-step collaboration with user review
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Script Naming Convention
+Analysis scripts follow staged naming:
+- `stage0X_purpose.R` - main pipeline stages
+- `stage0Xb_purpose.R`, `stage0Xc_purpose.R` - sub-stages
+- `generate_*.R`, `visualize_*.R` - output generation helpers
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Output Structure
+All outputs go to `results/` with consistent subdirectories:
+- `results/models/<metric>/` - fitted model objects (.rds)
+- `results/tables/` - CSV outputs for analysis results
+- `results/figures/` - PNG visualizations
+- `results/logs/` - execution metadata (JSON)
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Configuration-Driven
+- All analysis parameters in `config/analysis.yml`
+- Response variables, thresholds, model settings defined once
+- Scripts read config, don't hardcode parameters
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Data Flow
+```
+data/raw/ → data/interim/ → data/processed/analysis_ready.parquet
+                                    ↓
+                            results/{models,tables,figures}/
+                                    ↓
+                            docs/results-viewer.qmd
+```
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Quality Gates
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+- **Convergence check**: All models must converge before downstream analysis
+- **Output verification**: Review generated tables/figures before proceeding
+- **Documentation sync**: Update `rebuild-docs.sh` when adding new outputs
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Scope
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+- 9 response variables (3 presence, 6 count)
+- 17 VIF-filtered acoustic indices
+- 3 stations (9M, 14M, 37M)
+- GAMMs with AR1 autocorrelation via mgcv::bam()
 
-## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
-
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
-
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0 | **Created**: 2026-02-02
