@@ -500,40 +500,24 @@ plot_top_smooths <- function(model, effect_sizes, metric, top_n = 8) {
     return(NULL)
   }
 
-  # Fixed 3x4 grid for 12 panels
-  n_cols <- 4
-  n_rows <- 3
-
-  # Create the plot with nice formatting like v1
+  # Create the plot using mgcv's native pages=1 formatting (like v1)
+  # Trick: temporarily subset the model's smooth list to only include our selected terms
   out_path <- file.path("results", "figures", metric, "gamm_smooths_top12.png")
 
-  png(out_path, width = 1600, height = 1200, res = 120)
+  # Save original smooth list
+  original_smooth <- model$smooth
 
-  # Set up layout with title space
-  par(mfrow = c(n_rows, n_cols),
-      mar = c(4, 4, 3, 1),   # margins: bottom, left, top, right
-      oma = c(0, 0, 2, 0))   # outer margins for main title
+  # Subset to only the smooths we want
+  model$smooth <- original_smooth[select_indices]
 
-  # Plot each selected smooth
-  for (i in select_indices) {
-    var_name <- smooth_vars[i]
-    edf <- round(edf_values[i], 2)
+  # Use mgcv's native multi-panel plot (this gives the nice v1 formatting)
+  # Note: plot.gam with pages=1 handles device management internally
+  png(out_path, width = 2000, height = 1500, res = 120)
+  plot(model, pages = 1, all.terms = FALSE, shade = TRUE)
+  # Don't call dev.off() - plot.gam(pages=1) closes the device itself
 
-    # Create title with variable name and EDF
-    title_text <- var_name
-    subtitle_text <- sprintf("EDF=%.2g", edf)
-
-    plot(model, select = i, shade = TRUE,
-         main = title_text, cex.main = 1.1,
-         xlab = var_name, ylab = "Effect")
-
-    # Add EDF as subtitle
-    mtext(subtitle_text, side = 3, line = 0.2, cex = 0.8, col = "gray40")
-  }
-
-  # Add main title
-  mtext(paste0(metric, " — Smooth Terms (Top 8 + Temporal)"),
-        outer = TRUE, cex = 1.2, font = 2)
+  # Restore original smooth list
+  model$smooth <- original_smooth
 
   dev.off()
 
