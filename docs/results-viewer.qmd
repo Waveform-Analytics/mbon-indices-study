@@ -687,6 +687,7 @@ Acoustic indices can tell you *whether* biological activity is happening, but no
 - [AR1 Validation (CSV)](tables/ar1_validation.csv)
 - [Baseline Comparison (CSV)](tables/baseline_comparison.csv) — indices vs no-indices
 - [Per-Station Baseline (CSV)](tables/baseline_comparison_bystation.csv)
+- [Per-Station Index Significance (CSV)](tables/bystation_significance_summary.csv) — which indices matter at each station
 - [VIF Validation (CSV)](tables/vif_validation.csv) — 17 vs 60 indices
 
 ### Archive
@@ -780,6 +781,60 @@ The main results show only the top 8 indices by effect size plus 4 temporal/envi
 ![](figures/vessel_presence/gamm_smooths.png){width=100%}
 
 :::
+
+---
+
+## Appendix C: Per-Station Index Significance {#appendix-bystation}
+
+The main analysis pools data across all three monitoring stations (9M, 14M, 37M). But do the same indices matter at each location, or are some effects station-specific?
+
+To answer this, we fit separate GAMM models for each station and extracted which indices were statistically significant (p < 0.05) at each location.
+
+### Indices That Matter Everywhere
+
+These indices were significant at **all three stations** — suggesting robust, location-independent relationships:
+
+| Metric | Indices Significant at All Stations |
+|--------|-------------------------------------|
+| **fish_presence** | EVNtMean, LFC, NDSI, VARf, aROI, rBA |
+| **vessel_presence** | LFC, MFC, aROI, nROI |
+| **dolphin_presence** | ACI, LEQt, TFSD, aROI |
+
+**What these indices have in common:** Most capture broad acoustic characteristics — aROI (area of regions of interest) appears in all three, suggesting that the overall "acoustic activity" level is a universal predictor. LFC (low-frequency content) is important for both fish and vessels, which makes sense given both produce low-frequency sounds.
+
+### How Many Indices Are Significant by Station?
+
+| Metric | 9M | 14M | 37M | Notes |
+|--------|-----|------|------|-------|
+| vessel_presence | 19 | 21 | 23 | Consistent across stations |
+| fish_presence | 19 | 20 | 21 | Consistent across stations |
+| fish_richness | 13 | 14 | 13 | Consistent across stations |
+| dolphin_presence | 14 | 21 | 14 | More indices matter at 14M |
+| dolphin_activity | 9 | 10 | 21 | **37M has 2× more** |
+| dolphin_echolocation | 10 | 14 | 18 | More indices at deeper stations |
+| dolphin_burst_pulse | 11 | 11 | 17 | More indices at 37M |
+| dolphin_whistle | 8 | **0** | 6 | Nothing significant at 14M |
+| fish_activity | N/A | 17 | 17 | 9M model failed |
+
+**Patterns:**
+
+- **Fish and vessel metrics** are consistent — similar numbers of significant indices at all stations
+- **Dolphin metrics vary by station** — 37M (the deepest site) tends to have more significant indices, possibly because dolphins are more acoustically active in deeper water
+- **dolphin_whistle at 14M** is an outlier — zero significant indices, compared to 6-8 at other stations. This could indicate station-specific dolphin behavior or acoustic conditions that make whistle detection harder at 14M
+
+### Station-Specific Effects
+
+Many indices show effects at only 1-2 stations. For example:
+
+- **BGNt** (background noise temporal) predicts dolphin_activity at 37M but not at shallower stations
+- **BioEnergy** predicts vessel_presence at 14M and 37M but not at 9M
+- **NBPEAKS** (number of spectral peaks) predicts dolphin_activity at 9M but not elsewhere
+
+This suggests that while some acoustic characteristics are universally informative, others depend on local acoustic conditions, depth, or species behavior at each site.
+
+### Downloads
+
+- [Per-Station Index Significance (CSV)](tables/bystation_significance_summary.csv) — Wide format with EDF and p-values for each station
 
 ---
 
