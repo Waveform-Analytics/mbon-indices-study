@@ -39,8 +39,9 @@ This is **v2** of the analysis, using all 60 acoustic indices with GAMM regulari
 ### Study Design
 
 - **Data:** 13,102 observations across 3 monitoring stations (9M, 14M, 37M), 2021, at 2-hour resolution
-- **Predictors:** 60 acoustic indices + temperature, depth, time of day, day of year, station
+- **Predictors:** 60 acoustic indices + temperature (9.7–33.0°C), depth (3.4–11.0 m), time of day, day of year, station
 - **Responses:** 9 metrics — fish (activity, richness, presence), dolphins (burst pulse, echolocation, whistle, activity, presence), vessels (presence)
+- **Presence definition:** For fish and dolphins, presence = 1 if at least one sound was detected in the 2-hour window. For vessels, presence was annotated as binary (0/1) in the original data.
 - **Models:** Generalized Additive Mixed Models (GAMMs) with AR1 autocorrelation structure and automatic smoothness selection (`select=TRUE`)
 
 ---
@@ -192,8 +193,8 @@ Each panel shows how one predictor (acoustic index or environmental variable) re
 
 **What "effect size" means here:**
 
-- For **presence/absence** metrics: How much does detection probability change when the index goes from low (10th percentile) to high (90th percentile)?
-- For **count** metrics: How many times more/fewer detections when the index goes from low to high?
+- For **presence/absence** metrics: Effect sizes are in **percentage points (pp)** — how much detection probability changes when the index goes from low (10th percentile) to high (90th percentile). For example, "+24 pp" means detection probability increases by 24 percentage points (e.g., from 50% to 74%).
+- For **count** metrics: Effect sizes are **fold changes (×)** — how many times more/fewer detections when the index goes from low to high. For example, "2.3×" means 2.3 times as many detections; "0.36×" means about one-third as many (a 64% reduction).
 
 We show only the top 8 indices because with 60 indices, most have tiny or zero effects. The ones shown here are the indices that actually matter for each metric.
 
@@ -445,6 +446,16 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **Practical implication:** For dolphin monitoring, ACTspFract alone may be sufficient as a presence indicator. The other indices add relatively little predictive value.
 
+::: {.callout-warning}
+## A Note on Circularity
+
+The dominance of ACTspFract raises an important question: Is this model "predicting" dolphin presence, or simply *detecting* it through a proxy measurement?
+
+Dolphin clicks and whistles directly increase spectral activity — so ACTspFract is essentially measuring whether dolphin-like sounds are present. This is useful for **automated detection** (flagging recordings that likely contain dolphins), but it's somewhat circular as a "prediction" model. The index isn't predicting dolphin *behavior* from independent soundscape features; it's detecting the acoustic signature of dolphins themselves.
+
+For practical monitoring, this circularity may not matter — if ACTspFract reliably flags dolphin presence, it's a useful tool regardless of the mechanism. But for understanding *what environmental conditions attract dolphins*, you'd need to look at the secondary predictors (temperature, depth, time of day) rather than the acoustic indices.
+:::
+
 
 ### vessel_presence {#vessel-presence}
 
@@ -495,17 +506,17 @@ We use two complementary validation approaches:
 
 **The problem we're solving:** Time series data has "memory." If dolphins were clicking at 2pm, they're probably still clicking at 4pm. Standard statistical models assume observations are independent, which would make us overconfident in patterns that are really just temporal persistence.
 
-**Our solution:** We added an AR1 (first-order autoregressive) structure to account for this. The model learns a correlation parameter (ρ) that represents how much each observation is influenced by the previous one.
+**Our solution:** We added an AR1 (first-order autoregressive) structure to account for this. The model estimates a correlation parameter (ρ) that represents how similar consecutive observations tend to be, then adjusts the statistical calculations accordingly.
 
-**Did it work?** Partially.
+**Did it work?** Only partially — and here's how to tell.
 
 ![](figures/acf_residuals.png){width=100%}
 
-The plot shows "residual autocorrelation" — how much temporal pattern remains *after* our correction. If the AR1 perfectly removed all autocorrelation, these values would be zero.
+The plot shows "residual autocorrelation" — how much temporal pattern remains in the model's errors *after* our correction. **If the AR1 correction worked perfectly, these values would be near zero** (the correction would have accounted for all the temporal structure).
 
-**What we see:** The residual correlation roughly equals our estimated ρ values. This means the AR1 correction captured *some* of the temporal structure but not all of it. The remaining autocorrelation is modest (0.06–0.20), so our results are still interpretable.
+**What we actually see:** The residual autocorrelation is still present at levels of 0.06–0.20. This means the AR1 correction didn't fully remove the temporal dependence — some "memory" in the data wasn't captured by the simple AR1 structure.
 
-**Practical implication:** Treat p-values conservatively. When the model says something is significant at p = 0.04, it might actually be p = 0.06 if we perfectly accounted for temporal structure. Highly significant results (p < 0.001) are still trustworthy; borderline cases deserve skepticism.
+**Why this matters:** When autocorrelation remains in residuals, p-values become optimistic — effects may appear more statistically significant than they truly are. A result reported as p = 0.04 might actually be p = 0.06 or higher if we fully accounted for the temporal structure. **Bottom line:** Highly significant results (p < 0.001) are still trustworthy; borderline cases deserve skepticism.
 
 ### Cross-Validation: Can We Predict the Future?
 
@@ -818,7 +829,7 @@ The smooth plots above show the *shape* of each relationship, but not the *magni
 
 The main analysis pools data across all three monitoring stations (9M, 14M, 37M). But do the same indices matter at each location, or are some effects station-specific?
 
-To answer this, we fit separate GAMM models for each station and calculated **effect sizes** (probability change when moving from 10th to 90th percentile of each index).
+To answer this, we fit separate GAMM models for each station and calculated **effect sizes** (probability change when moving from 10th to 90th percentile of each index). Note: Sample sizes are roughly equal across all three stations, so differences in effects reflect genuine station-level variation rather than sampling imbalance.
 
 ### Top 5 Indices by Effect Size at Each Station
 
