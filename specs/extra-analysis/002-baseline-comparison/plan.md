@@ -1,7 +1,7 @@
 # Implementation Plan: Baseline Model Comparison & VIF Validation
 
 **Branch**: `002-baseline-comparison` | **Date**: 2026-02-02 | **Spec**: [spec.md](spec.md)
-**Input**: Feature specification from `specs/002-baseline-comparison/spec.md`
+**Input**: Feature specification from `specs/extra-analysis/002-baseline-comparison/spec.md`
 
 ## Summary
 
@@ -43,7 +43,7 @@ No violations to justify.
 ### Documentation (this feature)
 
 ```text
-specs/002-baseline-comparison/
+specs/extra-analysis/002-baseline-comparison/
 ├── spec.md              # Feature specification
 ├── plan.md              # This file
 ├── research.md          # Phase 0 output

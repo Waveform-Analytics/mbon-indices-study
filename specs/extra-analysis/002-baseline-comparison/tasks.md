@@ -1,6 +1,6 @@
 # Tasks: Baseline Model Comparison & VIF Validation
 
-**Input**: Design documents from `/specs/002-baseline-comparison/`
+**Input**: Design documents from `/specs/extra-analysis/002-baseline-comparison/`
 **Prerequisites**: plan.md (required), spec.md (required), research.md
 
 **Tests**: Not requested for this feature (data analysis script with manual verification)
