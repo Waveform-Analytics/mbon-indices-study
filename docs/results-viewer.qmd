@@ -140,19 +140,19 @@ This turns out to be tricky to answer precisely, and here's why: many acoustic i
 
 That said, we can identify which indices have the **largest effects** for each response. The table below shows the top 3 indices by effect size:
 
-### Top Predictors by Metric
+### Top Predictors by Metric (by Effect Size)
 
-| Metric | Top 3 Indices | What these indices measure |
-|--------|---------------|---------------------------|
-| **fish_activity** | SNRt, BGNt, EVNtCount | Signal-to-noise, background noise levels, acoustic event counts |
-| **fish_richness** | EVNtCount, aROI, LFC | Event counts, activity regions, low-frequency content |
-| **fish_presence** | LFC, Hf, AGI | Low-frequency content, spectral entropy, acoustic gradients |
-| **dolphin_burst_pulse** | EPS, ACTspMean, H_gamma | Spectral entropy, activity intensity, information content |
-| **dolphin_echolocation** | ACTspCount, ACTspFract, EPS | Activity counts and fractions, spectral entropy |
-| **dolphin_whistle** | ZCR, EVNspMean, BGNf | Zero-crossing rate, spectral events, frequency-band noise |
-| **dolphin_activity** | ACTspCount, ACTspFract, EPS | Activity counts and fractions, spectral entropy |
-| **dolphin_presence** | ACTspFract, HFC, EVNspCount | Activity fraction, high-frequency content, spectral events |
-| **vessel_presence** | HFC, aROI, nROI | High-frequency content, activity regions |
+| Metric | Top 3 Indices | Effect Magnitude | What these indices measure |
+|--------|---------------|------------------|---------------------------|
+| **fish_activity** | HFC, ACTtFraction, SNRt | 0.4–2.3× fold change | High-frequency content, temporal activity fraction, signal-to-noise |
+| **fish_richness** | HFC, EVNtCount, ACTtFraction | 0.4–2.1× fold change | High-frequency content, event counts, temporal activity |
+| **fish_presence** | LFC, Hf, AGI | 15–24 pp change | Low-frequency content, spectral entropy, acoustic gradients |
+| **dolphin_burst_pulse** | MFC, HFC, EPS | 0.01–13× fold change | Mid/high frequency content, spectral entropy |
+| **dolphin_echolocation** | ACTspCount, HFC, ACTspFract | 0.01–2400× fold change | Spectral activity counts/fraction, high-frequency content |
+| **dolphin_whistle** | Ht, SNRt, MFC | 0.02–3.4× fold change | Temporal entropy, signal-to-noise, mid-frequency content |
+| **dolphin_activity** | ACTspCount, HFC, ACTspFract | 0.01–11650× fold change | Spectral activity counts/fraction, high-frequency content |
+| **dolphin_presence** | **ACTspFract**, HFC, EVNspCount | **+97 pp**, −21 pp, −19 pp | Activity fraction dominates; high-freq and event counts secondary |
+| **vessel_presence** | HFC, aROI, nROI | +94 pp, −82 pp, +76 pp | High-frequency content, activity regions — all massive effects |
 
 ### What Patterns Emerge?
 
@@ -212,7 +212,7 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **Response type:** Count (negative binomial)
 
-**Key predictors:** ZCR, hour_of_day, day_of_year
+**Top indices by effect size:** HFC (0.36×), ACTtFraction (0.42×), SNRt (2.3×), BGNt (2.1×), LEQt (0.56×), MEANf (0.57×), EVNtCount (1.7×), EVNtFraction (1.6×)
 
 **CV Performance:** RMSE = 1.14, R² = 0.01 (poor generalization)
 
@@ -224,22 +224,23 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 #### Interpretation
 
-**The big picture:** Fish activity (total number of fish sounds detected) is hard to predict from acoustic indices. Most indices have little effect — you can see this from the many flat or nearly-flat lines in the smooth plots.
+**The big picture:** Fish activity (total number of fish sounds detected) shows moderate relationships with several acoustic indices, though the model doesn't generalize well to new data.
 
-**What does predict fish activity:**
+**What predicts fish activity (by effect size):**
 
-- **Time of day matters a lot** (look at hour_of_day — the wiggly curve with EDF=6.5 shows a complex daily pattern)
+- **HFC and ACTtFraction show inverse relationships** (0.36× and 0.42× fold change) — when these indices are high, fish activity tends to be lower
+- **SNRt and BGNt show positive relationships** (2.3× and 2.1× fold change) — higher signal-to-noise and background noise levels associate with more fish activity
+- **Time of day matters a lot** (look at hour_of_day — the wiggly curve shows a complex daily pattern)
 - **Season matters** (day_of_year shows activity peaking in spring/summer)
-- **ZCR (zero-crossing rate)** is the only acoustic index with a meaningful effect
 
-**Why the poor CV performance:** The R² of 0.01 means the model explains almost none of the variation when tested on new data. Fish activity is highly variable and unpredictable — knowing the acoustic environment doesn't tell you much about how many fish sounds you'll hear.
+**Why the poor CV performance:** The R² of 0.01 means the model explains almost none of the variation when tested on new data. Fish activity is highly variable week-to-week — the patterns found in training data don't transfer well to new time periods.
 
 
 ### fish_richness {#fish-richness}
 
 **Response type:** Count (negative binomial)
 
-**Key predictors:** ACI, EPS_KURT, EVNtCount, ROU, SKEWt, ZCR, nROI, depth, hour_of_day
+**Top indices by effect size:** HFC (0.36×), EVNtCount (2.1×), ACTtFraction (0.55×), aROI (1.5×), LEQt (0.70×), LFC (1.4×), nROI (0.74×), ACTtMean (1.3×)
 
 **CV Performance:** RMSE = 0.56, R² = 0.02 (low error, poor R²)
 
@@ -253,10 +254,12 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **The big picture:** Fish richness (number of different fish sound types) is slightly more predictable than raw activity counts, but still doesn't generalize well (R² = 0.02). The low RMSE (0.56) just means typical richness values are small, not that predictions are accurate.
 
-**What predicts fish richness:**
+**What predicts fish richness (by effect size):**
 
-- **Acoustic complexity indices matter** — ACI, EVNtCount, and nROI all show effects. This makes intuitive sense: more fish species calling = more complex soundscape
-- **Depth/tide is important** — higher richness at high tide, likely because more fish move into shallow areas
+- **HFC shows the largest effect** (0.36× fold change) — high-frequency content is inversely related to fish richness
+- **EVNtCount shows a strong positive effect** (2.1×) — more acoustic events = more fish species calling, which makes intuitive sense
+- **Activity fraction indices** (ACTtFraction, ACTtMean) and **region indices** (aROI, nROI) also contribute
+- **Depth/tide is important** — higher richness at high tide
 - **Time of day patterns** — diel variation in which species are calling
 
 **Why it's hard to predict:** Fish species composition changes in ways that aren't fully captured by the acoustic indices or environmental variables we measured. The indices pick up *something*, but not enough to reliably predict richness in new time periods.
@@ -266,7 +269,7 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **Response type:** Binary (binomial)
 
-**Key predictors:** 12 of 17 indices significant, plus temperature, depth, hour_of_day, day_of_year, station
+**Top indices by effect size:** LFC (+24 pp), Hf (+23 pp), AGI (+15 pp), HFC (−15 pp), nROI (−15 pp), LEQt (−14 pp), MEANf (−14 pp), SNRt (+14 pp)
 
 **CV Performance:** AUC = 0.75 (moderate — useful signal)
 
@@ -282,20 +285,22 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **Why presence is easier than counts:** Detecting *whether* biological activity is happening is fundamentally easier than measuring *how much*. Many different acoustic indices can pick up the general signature of fish sounds, even if they can't precisely quantify the amount.
 
-**What predicts fish presence:**
+**What predicts fish presence (by effect size):**
 
-- **Strong seasonal pattern** (day_of_year shows a clear spring peak — fish are more acoustically active in warmer months)
+- **LFC (low-frequency content) is the top predictor** (+24 pp) — fish produce predominantly low-frequency sounds, so this makes ecological sense
+- **Hf (spectral entropy) also has a large positive effect** (+23 pp) — more diverse frequency content when fish are present
+- **HFC, nROI, LEQt have negative effects** (−14 to −15 pp) — high-frequency content and certain event metrics decrease when fish are calling
+- **Strong seasonal pattern** (day_of_year shows a clear spring peak)
 - **Depth/tide matters** (fish presence increases at high tide)
-- **Multiple acoustic indices contribute** — this is why the model works reasonably well
 
-**Practical implication:** If you want to use acoustic indices to monitor fish, focus on presence/absence rather than trying to count activity levels.
+**Practical implication:** If you want to use acoustic indices to monitor fish, focus on presence/absence rather than trying to count activity levels. LFC is a good starting point for fish detection.
 
 
 ### dolphin_burst_pulse {#dolphin-burst-pulse}
 
 **Response type:** Count (negative binomial)
 
-**Key predictors:** ACI, BI, EPS_KURT, H_Havrda, NBPEAKS, TFSD, nROI, temperature, depth, hour_of_day
+**Top indices by effect size:** MFC (0.002×), HFC (0.07×), EPS (12.7×), EPS_SKEW (0.09×), EVNspFract (0.10×), AGI (0.13×), ACTspMean (5.2×), Ht (0.44×)
 
 **CV Performance:** RMSE = 1.54, R² = -0.13 (doesn't generalize)
 
@@ -309,9 +314,11 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **The big picture:** Burst pulses are rapid clicks dolphins produce while hunting. They're discrete events (a dolphin catches a fish, or doesn't) rather than continuous activity, which makes them inherently hard to predict.
 
-**What predicts burst pulses:**
+**What predicts burst pulses (by effect size):**
 
-- **Indices sensitive to impulsive sounds** — TFSD, NBPEAKS, and nROI pick up the sharp, transient nature of burst pulses
+- **Frequency band indices show extreme effects** — MFC (0.002×) and HFC (0.07×) have very strong inverse relationships; burst pulses occur when mid/high frequency content is low
+- **EPS (spectral entropy) has a large positive effect** (12.7×) — burst pulses associate with more complex spectral patterns
+- **ACTspMean shows a positive effect** (5.2×) — higher spectral activity intensity correlates with burst pulse occurrence
 - **Temperature matters** — more foraging activity in cooler water (possibly related to prey availability)
 - **Very low temporal persistence** (AR1 ρ = 0.06) — knowing burst pulses happened in one 2-hour window tells you almost nothing about the next window
 
@@ -322,7 +329,7 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **Response type:** Count (negative binomial)
 
-**Key predictors:** BI, ECV, EPS_KURT, NBPEAKS, ROU, TFSD, nROI, temperature, depth
+**Top indices by effect size:** ACTspCount (2378×), HFC (0.01×), EVNspFract (0.02×), ACTspFract (19×), MFC (0.16×), Ht (0.26×), ACTtMean (0.34×), EPS_SKEW (0.51×)
 
 **CV Performance:** RMSE = 11.0, R² = -455 (outlier folds dominating)
 
@@ -336,20 +343,22 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **The big picture:** Echolocation clicks are the sounds dolphins use for navigation and finding prey. They're broadband (spread across many frequencies) and occur in rapid sequences. The model finds real patterns, but fails catastrophically when tested on new data (R² = -455).
 
-**What predicts echolocation:**
+**What predicts echolocation (by effect size):**
 
-- **Indices sensitive to broadband transients** — BI (bioacoustic index), TFSD (temporal fine structure), NBPEAKS all respond to click trains
+- **ACTspCount dominates with an extreme effect** (2378× fold change) — this spectral activity count index essentially captures echolocation directly. When ACTspCount is high, echolocation counts are dramatically higher.
+- **HFC and EVNspFract show strong inverse effects** (0.01× and 0.02×) — echolocation occurs when these indices are very low
+- **ACTspFract also shows a large positive effect** (19×) — consistent with ACTspCount; spectral activity indices directly capture click activity
 - **Temperature effect** — like burst pulses, more echolocation in cooler water
 - **Depth matters** — echolocation use varies with water depth
 
-**Why the terrible R²:** The R² of -455 is shockingly bad, but it's driven by a few outlier weeks where dolphin activity spiked way beyond anything the model had seen. When you test the model on those weeks, the predictions are wildly wrong, dragging down the average. The model isn't useless — it just can't handle rare high-activity events.
+**Why the terrible R²:** The R² of -455 is shockingly bad, but it's driven by a few outlier weeks where dolphin activity spiked way beyond anything the model had seen. The extreme sensitivity to ACTspCount (2378×) means small prediction errors become catastrophic when activity is high. The model isn't useless — it just can't handle rare high-activity events.
 
 
 ### dolphin_whistle {#dolphin-whistle}
 
 **Response type:** Count (negative binomial)
 
-**Key predictors:** ECV, TFSD, ZCR, temperature, depth, hour_of_day, station
+**Top indices by effect size:** Ht (0.02×), SNRt (0.07×), MFC (0.24×), TFSD (0.24×), ZCR (3.4×), EVNspMean (3.0×), BGNf (2.7×), ECU (0.40×)
 
 **CV Performance:** RMSE = 0.78, R² = -∞ (rare events)
 
@@ -363,22 +372,24 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **The big picture:** Whistles are tonal sounds dolphins use for social communication (think: dolphin "names" and contact calls). They're rare in this dataset — most 2-hour windows have zero whistles — which makes prediction extremely difficult.
 
-**What predicts whistles:**
+**What predicts whistles (by effect size):**
 
-- **Only a few indices matter** — ECV, TFSD, and ZCR capture the tonal, frequency-modulated nature of whistles
+- **Ht (temporal entropy) shows the strongest effect** (0.02× fold change) — whistles occur when temporal entropy is very low, suggesting a distinctive temporal pattern
+- **SNRt also shows a strong inverse effect** (0.07×) — lower signal-to-noise when whistles are absent
+- **ZCR has a positive effect** (3.4×) — higher zero-crossing rates associate with whistle presence, consistent with the tonal nature of whistles
 - **Station differences** — whistle occurrence varies by location (some areas may be more social)
 - **Temperature and depth** — environmental conditions affect dolphin social behavior
 
 **Why R² = -∞:** When most observations are zeros, the model essentially learns "predict zero." Then when whistles actually occur, it's wrong. The R² formula breaks down when you're trying to predict rare events — it's not that the model is infinitely bad, it's that this metric isn't meaningful for rare-event data.
 
-**The underlying problem:** Whistles are social signals that depend on dolphin group dynamics — whether dolphins happen to be socializing in range of the hydrophone. This isn't really predictable from acoustic indices or environmental conditions.
+**The underlying problem:** Whistles are social signals that depend on dolphin group dynamics — whether dolphins happen to be socializing in range of the hydrophone. This isn't reliably predictable from acoustic indices or environmental conditions.
 
 
 ### dolphin_activity {#dolphin-activity}
 
 **Response type:** Count (negative binomial)
 
-**Key predictors:** BI, ECV, EPS_KURT, EVNtCount, H_Havrda, NBPEAKS, ROU, TFSD, nROI, temperature, depth, hour_of_day, station
+**Top indices by effect size:** ACTspCount (11650×), HFC (0.01×), EVNspCount (0.05×), ACTspFract (17×), MFC (0.10×), Ht (0.22×), EVNspFract (0.26×), EPS_SKEW (0.30×)
 
 **CV Performance:** RMSE = 7.22, R² = -48 (poor generalization)
 
@@ -390,24 +401,26 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 #### Interpretation
 
-**The big picture:** Dolphin activity combines all dolphin sound types (clicks, whistles, burst pulses) into one count. It's the "total dolphin noise" metric. Many indices show effects, but the model still doesn't generalize (R² = -48).
+**The big picture:** Dolphin activity combines all dolphin sound types (clicks, whistles, burst pulses) into one count. It's the "total dolphin noise" metric. Like echolocation, it shows extreme sensitivity to spectral activity indices.
 
-**What predicts dolphin activity:**
+**What predicts dolphin activity (by effect size):**
 
-- **Many acoustic indices contribute** — because this aggregates multiple call types, indices sensitive to different sound characteristics all matter
+- **ACTspCount has an extreme effect** (11,650× fold change) — this single index essentially captures total dolphin acoustic activity. The relationship is nearly tautological: more spectral activity events = more dolphin sounds counted.
+- **HFC and EVNspCount show strong inverse effects** (0.01× and 0.05×) — dolphin activity is highest when these indices are very low
+- **ACTspFract also shows a large positive effect** (17×) — consistent pattern across dolphin metrics
 - **Temperature is key** — dolphins are more acoustically active in cooler water (this pattern appears across all dolphin metrics)
 - **Time of day and depth** — behavioral patterns drive when and where dolphins vocalize
 
-**Why the poor generalization:** Even though the model finds many significant predictors, dolphin activity is highly variable. A pod of dolphins moving through the study area creates a spike that the model can't anticipate. The patterns learned from training data don't transfer well to new time periods.
+**Why the poor generalization:** The extreme sensitivity to ACTspCount (11,650×) means the model is essentially learning "ACTspCount predicts activity" — which doesn't help predict *future* activity levels. The patterns don't transfer to new time periods.
 
-**Comparison to presence:** Dolphin presence (AUC = 0.74) works much better than dolphin activity counts (R² = -48). If you need to monitor dolphins, detect presence rather than trying to quantify activity.
+**Comparison to presence:** Dolphin presence (AUC = 0.74) works much better than activity counts (R² = -48). If you need to monitor dolphins, detect presence rather than trying to quantify activity.
 
 
 ### dolphin_presence {#dolphin-presence}
 
 **Response type:** Binary (binomial)
 
-**Key predictors:** BI, BioEnergy, ECV, EVNtCount, EVNtMean, KURTt, NBPEAKS, TFSD, nROI, temperature, depth, station
+**Top indices by effect size:** **ACTspFract (+97 pp)**, HFC (−21 pp), EVNspCount (−19 pp), MFC (−13 pp), Ht (−10 pp), ACTtMean (−7 pp), ECU (−4 pp), BI (−3 pp)
 
 **CV Performance:** AUC = 0.74 (moderate — useful signal)
 
@@ -419,25 +432,25 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 #### Interpretation
 
-**The big picture:** Dolphin presence (are dolphins vocalizing: yes/no?) is the best-performing dolphin metric, with an AUC of 0.74. Like fish presence, detecting *whether* dolphins are around is much easier than counting *how much* they're vocalizing.
+**The big picture:** Dolphin presence (are dolphins vocalizing: yes/no?) is the best-performing dolphin metric, with an AUC of 0.74. Unlike fish presence where multiple indices contribute moderate effects, dolphin presence is **dominated by a single index**.
 
 **What predicts dolphin presence:**
 
-- **Multiple acoustic indices contribute** — the combined signature of dolphin sounds (clicks, whistles, etc.) is picked up by several indices
+- **ACTspFract is the dominant predictor** — this single index (spectral activity fraction) has a +97 percentage point effect, essentially determining presence on its own. When ACTspFract is low, dolphin detection probability is near 0%; when high, it's near 100%. This makes ecological sense: dolphins produce distinctive clicks and whistles that dramatically increase acoustic activity in specific frequency bands.
+- **Secondary indices have much smaller effects** — HFC (−21 pp), EVNspCount (−19 pp), and MFC (−13 pp) contribute, but are dwarfed by ACTspFract
 - **Temperature matters** — dolphins more likely present in cooler water
-- **Station differences** — dolphins use some areas more than others
-- **Depth effects** — presence varies with water depth (tidal state)
+- **Station and depth effects** — presence varies by location and tidal state
 
-**Why presence works better than counts:** The AUC of 0.74 isn't spectacular, but it's far better than the count models (which have negative R²). When a dolphin makes *any* sound, the acoustic environment changes detectably. But counting how many sounds they make is much noisier and more variable.
+**Why presence works better than counts:** The AUC of 0.74 reflects ACTspFract doing the heavy lifting. When dolphins vocalize, they create a distinctive acoustic signature that ACTspFract captures directly. But counting *how many* sounds they make is much noisier — hence the poor performance of count models.
 
-**Practical implication:** For dolphin monitoring using acoustic indices, frame the question as "were dolphins present?" rather than "how active were they?" The binary approach gives you usable predictions.
+**Practical implication:** For dolphin monitoring, ACTspFract alone may be sufficient as a presence indicator. The other indices add relatively little predictive value.
 
 
 ### vessel_presence {#vessel-presence}
 
 **Response type:** Binary (binomial)
 
-**Key predictors:** ACI, BI, EVNtCount, H_Havrda, KURTt, TFSD, ZCR, nROI, hour_of_day, day_of_year
+**Top indices by effect size:** HFC (+94 pp), aROI (−82 pp), nROI (+76 pp), ACTspFract (−67 pp), Hf (+60 pp), SKEWf (+53 pp), ACTtMean (+43 pp), EPS (+41 pp)
 
 **CV Performance:** AUC = 0.92 (excellent)
 
@@ -449,21 +462,23 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 #### Interpretation
 
-**The big picture:** Vessel detection is the clear success story of this analysis. With an AUC of 0.92, the model can reliably distinguish "boat present" from "boat absent" time periods. This is excellent performance.
+**The big picture:** Vessel detection is the clear success story of this analysis. With an AUC of 0.92, the model can reliably distinguish "boat present" from "boat absent" time periods. This is excellent performance driven by massive effect sizes.
 
 **Why vessels are easy to detect:**
 
 - **Boats are loud** — they dominate the soundscape when present
 - **Distinctive acoustic signature** — broadband noise with consistent temporal patterns
-- **Strong effects in the smooth plots** — look at HFC (high-frequency content) and nROI (number of regions of interest), which show steep curves rather than flat lines
+- **Huge effect sizes** — HFC alone shifts detection probability by +94 percentage points; aROI (−82 pp) and nROI (+76 pp) are similarly large. Multiple indices independently capture the vessel signature with effects exceeding ±40 pp.
 
 **What predicts vessel presence:**
 
-- **Acoustic indices dominate** — multiple indices pick up the vessel signature
+- **HFC (high-frequency content) is the top predictor** (+94 pp) — boat noise is broadband with strong high-frequency energy
+- **Activity region indices (aROI, nROI)** capture the distinctive acoustic "footprint" of vessels
+- **ACTspFract has a strong negative effect** (−67 pp) — interesting contrast with dolphins, where high ACTspFract indicates biological activity; for vessels, the noise pattern is different
 - **Time of day matters** (morning peak in boat traffic)
-- **Temperature and depth are NOT significant** — unlike biological activity, vessel presence is purely an acoustic phenomenon, not affected by environmental conditions
+- **Temperature and depth are NOT significant** — vessel presence is purely an acoustic phenomenon
 
-**Practical implication:** Acoustic indices are highly effective for automated vessel monitoring. This could be useful for tracking anthropogenic noise exposure in the estuary.
+**Practical implication:** Acoustic indices are highly effective for automated vessel monitoring. With effect sizes this large, even simple thresholding on HFC or nROI could provide useful detection.
 
 ---
 
@@ -553,13 +568,13 @@ For presence/absence models, we calculated: "If this index moves from low (10th 
 
 **What we learn:**
 
-- **Vessel presence has huge effects.** The index nROI (number of regions of interest) alone changes vessel detection probability by +45 percentage points. Multiple indices exceed the ±10 pp threshold. This explains the excellent AUC — the signal is genuinely strong.
+- **Vessel presence has huge effects.** HFC alone changes vessel detection probability by +94 percentage points, with aROI (−82 pp) and nROI (+76 pp) close behind. This explains the excellent AUC — the signal is genuinely strong.
 
-- **Fish presence has moderate effects.** BioEnergy (−36 pp), ZCR (+19 pp), and ROU (+17 pp) exceed the threshold. There's enough signal to make useful predictions.
+- **Dolphin presence is dominated by one index.** ACTspFract (activity fraction in the spectral domain) has a massive +97 percentage point effect — moving from low to high ACTspFract values takes detection probability from near 0% to near 100%. The next largest effects (HFC −21 pp, EVNspCount −19 pp) are much smaller. This single index is doing most of the predictive work.
 
-- **Dolphin presence effects are tiny.** The largest is under 7 percentage points. Even though many indices are "statistically significant," none makes a meaningful practical difference on its own. This is why the dolphin models have lower AUC — the available signal is weak.
+- **Fish presence has moderate effects.** LFC (+24 pp), Hf (+23 pp), and AGI (+15 pp) exceed the ±10 pp threshold. There's enough signal to make useful predictions, spread across multiple indices rather than dominated by one.
 
-**The insight:** Statistical significance is necessary but not sufficient. Focus on indices with large effect sizes for practical applications.
+**The insight:** Effect size reveals which indices actually matter. For dolphins, ACTspFract is the key — it directly measures acoustic activity in the frequency bands where dolphin sounds occur.
 
 ### Zero-Inflation: A Structural Problem
 
@@ -782,59 +797,76 @@ The main results show only the top 8 indices by effect size plus 4 temporal/envi
 
 :::
 
+### Effect Size Reference
+
+The smooth plots above show the *shape* of each relationship, but not the *magnitude*. For the actual effect sizes (how much each index changes the predicted outcome), download the effect sizes table:
+
+- [Effect Sizes (CSV)](tables/effect_sizes.csv) — For each index × metric combination, shows:
+  - **low_value / high_value**: 10th and 90th percentile of the index
+  - **low_pred / high_pred**: Predicted outcome at those values
+  - **effect_size**: For presence models, probability change in percentage points; for count models, fold change
+  - **effect_type**: "probability_change" or "fold_change"
+
+**Interpreting effect sizes:**
+
+- For **presence models**: Effect size is the change in detection probability (e.g., +0.25 means +25 percentage points)
+- For **count models**: Effect size is the multiplicative change (e.g., 2.0 means twice as many detections)
+
 ---
 
-## Appendix C: Per-Station Index Significance {#appendix-bystation}
+## Appendix C: Per-Station Index Effects {#appendix-bystation}
 
 The main analysis pools data across all three monitoring stations (9M, 14M, 37M). But do the same indices matter at each location, or are some effects station-specific?
 
-To answer this, we fit separate GAMM models for each station and extracted which indices were statistically significant (p < 0.05) at each location.
+To answer this, we fit separate GAMM models for each station and calculated **effect sizes** (probability change when moving from 10th to 90th percentile of each index).
 
-### Indices That Matter Everywhere
+### Top 5 Indices by Effect Size at Each Station
 
-These indices were significant at **all three stations** — suggesting robust, location-independent relationships:
+**dolphin_presence**
 
-| Metric | Indices Significant at All Stations |
-|--------|-------------------------------------|
-| **fish_presence** | EVNtMean, LFC, NDSI, VARf, aROI, rBA |
-| **vessel_presence** | LFC, MFC, aROI, nROI |
-| **dolphin_presence** | ACI, LEQt, TFSD, aROI |
+| Station | Top 5 Indices (effect in percentage points) |
+|---------|---------------------------------------------|
+| **9M** | AEI (−29), ADI (−22), aROI (−18), TFSD (−12), LEQt (+10) |
+| **14M** | **ACTspCount (+86)**, MFC (−73), EVNspCount (−53), MEANf (−18), EVNspFract (−17) |
+| **37M** | **ACTspCount (+80)**, HFC (−52), EVNspCount (−29), EVNspFract (−27), MEANf (+24) |
 
-**What these indices have in common:** Most capture broad acoustic characteristics — aROI (area of regions of interest) appears in all three, suggesting that the overall "acoustic activity" level is a universal predictor. LFC (low-frequency content) is important for both fish and vessels, which makes sense given both produce low-frequency sounds.
+**Key finding:** ACTspCount dominates at the deeper stations (14M, 37M) with massive effects (+80-86 pp), but has minimal effect at 9M. At the shallowest station, different indices matter entirely (AEI, ADI, aROI).
 
-### How Many Indices Are Significant by Station?
+**fish_presence**
 
-| Metric | 9M | 14M | 37M | Notes |
-|--------|-----|------|------|-------|
-| vessel_presence | 19 | 21 | 23 | Consistent across stations |
-| fish_presence | 19 | 20 | 21 | Consistent across stations |
-| fish_richness | 13 | 14 | 13 | Consistent across stations |
-| dolphin_presence | 14 | 21 | 14 | More indices matter at 14M |
-| dolphin_activity | 9 | 10 | 21 | **37M has 2× more** |
-| dolphin_echolocation | 10 | 14 | 18 | More indices at deeper stations |
-| dolphin_burst_pulse | 11 | 11 | 17 | More indices at 37M |
-| dolphin_whistle | 8 | **0** | 6 | Nothing significant at 14M |
-| fish_activity | N/A | 17 | 17 | 9M model failed |
+| Station | Top 5 Indices (effect in percentage points) |
+|---------|---------------------------------------------|
+| **9M** | **LFC (+64)**, LEQt (−41), EPS (−37), aROI (+22), ACTspCount (−18) |
+| **14M** | ROU (+31), nROI (−27), ACTtMean (+27), aROI (+22), MEANf (−18) |
+| **37M** | *(Model collapsed — all effects ~0 pp)* |
 
-**Patterns:**
+**Key finding:** Fish presence detection works well at 9M (LFC has a huge +64 pp effect) and moderately at 14M, but the model provides no predictive value at 37M. This may reflect differences in fish community or acoustic environment at the deepest station.
 
-- **Fish and vessel metrics** are consistent — similar numbers of significant indices at all stations
-- **Dolphin metrics vary by station** — 37M (the deepest site) tends to have more significant indices, possibly because dolphins are more acoustically active in deeper water
-- **dolphin_whistle at 14M** is an outlier — zero significant indices, compared to 6-8 at other stations. This could indicate station-specific dolphin behavior or acoustic conditions that make whistle detection harder at 14M
+**vessel_presence**
 
-### Station-Specific Effects
+| Station | Top 5 Indices (effect in percentage points) |
+|---------|---------------------------------------------|
+| **9M** | *(All effects <3 pp — vessels hard to detect acoustically)* |
+| **14M** | **MFC (−60)**, aROI (−26), HFC (+21), nROI (+16), EVNtCount (−11) |
+| **37M** | nROI (+21), aROI (−19), HFC (+16), ACTtMean (+16), SNRf (−8) |
 
-Many indices show effects at only 1-2 stations. For example:
+**Key finding:** Vessel detection via acoustic indices works well at 14M and 37M but fails at 9M (the shallowest station). This could reflect acoustic propagation differences or different vessel traffic patterns.
 
-- **BGNt** (background noise temporal) predicts dolphin_activity at 37M but not at shallower stations
-- **BioEnergy** predicts vessel_presence at 14M and 37M but not at 9M
-- **NBPEAKS** (number of spectral peaks) predicts dolphin_activity at 9M but not elsewhere
+### What This Tells Us
 
-This suggests that while some acoustic characteristics are universally informative, others depend on local acoustic conditions, depth, or species behavior at each site.
+1. **Station matters a lot.** The "best" index for detection varies dramatically by location. ACTspCount is the dominant dolphin predictor at deeper stations but irrelevant at 9M.
+
+2. **Depth may drive the differences.** The 37M station (deepest) shows different patterns than shallower stations for all three metrics. This could reflect:
+   - Different acoustic propagation characteristics
+   - Different animal behavior at depth
+   - Different background noise environments
+
+3. **No universal "best index."** An index that works well at one station may be useless at another. Any operational monitoring system should be calibrated per-location.
 
 ### Downloads
 
-- [Per-Station Index Significance (CSV)](tables/bystation_significance_summary.csv) — Wide format with EDF and p-values for each station
+- [Per-Station Effect Sizes (CSV)](tables/bystation_effect_sizes.csv) — Effect sizes for all indices at each station
+- [Per-Station Significance (CSV)](tables/bystation_significance_summary.csv) — P-values and EDFs for reference
 
 ---
 
