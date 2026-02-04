@@ -47,93 +47,124 @@ This is **v2** of the analysis, using all 60 acoustic indices with GAMM regulari
 
 ## Model Summary {#model-summary}
 
-### Convergence & Technical Soundness
+### Why GAMMs? A Quick Primer
 
-All 9 models converged successfully with 60 acoustic indices (smooth k=3).
+We used **Generalized Additive Mixed Models (GAMMs)** because the relationships between acoustic indices and biological activity aren't simple straight lines. For example, fish activity might increase with temperature up to a point, then decrease — a curved relationship that standard linear regression can't capture.
 
-| Metric | AR1 (ρ) | AIC | Dev. Expl. | Type |
-|--------|---------|-----|------------|------|
-| fish_activity | 0.169 | 33,450 | 55.3% | Count |
-| fish_richness | 0.160 | 22,334 | 51.4% | Count |
-| fish_presence | 0.124 | 9,077 | 49.4% | Binary |
-| dolphin_burst_pulse | 0.060 | 8,046 | 26.7% | Count |
-| dolphin_echolocation | 0.102 | 30,565 | 21.8% | Count |
-| dolphin_whistle | 0.114 | 3,117 | 33.8% | Count |
-| dolphin_activity | 0.102 | 32,128 | 20.8% | Count |
-| dolphin_presence | 0.093 | 10,693 | 25.0% | Binary |
-| vessel_presence | 0.064 | 6,435 | 52.4% | Binary |
+GAMMs let the data "speak for itself" about the shape of each relationship, rather than forcing us to guess. The model learns smooth curves for each predictor, and we can look at those curves to understand how each index relates to biological activity.
 
-**AR1 (ρ) interpretation:** Measures temporal "stickiness" — how much knowing the current state tells you about the next 2-hour window. Values of 0.06–0.17 indicate modest persistence, which is appropriate for these data.
+**Two types of responses:**
 
-**Dev. Expl. (Deviance Explained):** The proportion of variation explained by the model. Fish metrics and vessel presence explain ~50% of variation; dolphin metrics explain 20-34%.
+- **Count metrics** (fish_activity, fish_richness, dolphin counts): How many sounds were detected? These use negative binomial models because ecological counts are typically "overdispersed" — more variable than simple counting would predict.
+- **Binary metrics** (presence/absence): Were sounds detected at all? These use logistic regression, predicting the probability of detection.
+
+**Handling time:** Observations close together in time tend to be similar (if dolphins were here an hour ago, they're probably still nearby). We account for this with an AR1 correlation structure — the model knows that consecutive time points aren't independent.
+
+### Model Performance Overview
+
+All 9 models converged successfully. Here's a summary of how well each model fits:
+
+| Metric | Dev. Expl. | AR1 (ρ) | Type |
+|--------|------------|---------|------|
+| fish_activity | 55.3% | 0.17 | Count |
+| fish_richness | 51.4% | 0.16 | Count |
+| fish_presence | 49.4% | 0.12 | Binary |
+| dolphin_burst_pulse | 26.7% | 0.06 | Count |
+| dolphin_echolocation | 21.8% | 0.10 | Count |
+| dolphin_whistle | 33.8% | 0.11 | Count |
+| dolphin_activity | 20.8% | 0.10 | Count |
+| dolphin_presence | 25.0% | 0.09 | Binary |
+| vessel_presence | 52.4% | 0.06 | Binary |
+
+**Reading this table:**
+
+- **Deviance Explained** is like R² — the percentage of variation the model captures. Fish and vessel models explain ~50% of variation, which is quite good for ecological data. Dolphin models explain less (20-34%), meaning dolphin behavior is harder to predict.
+
+- **AR1 (ρ)** measures temporal "stickiness." A value of 0.17 (fish_activity) means knowing the current state gives you some information about the next 2-hour window, but not a lot. Values near 0 (like vessel_presence at 0.06) mean each time window is relatively independent — boats come and go without much pattern.
+
+**The key insight:** Fish and vessel activity are more predictable than dolphin activity. This makes ecological sense — dolphins are mobile and their presence is more episodic, while fish communities and boat traffic have more consistent patterns.
 
 ---
 
 ## Do Indices Add Value? {#baseline-comparison}
 
-We compared full models (with 60 acoustic indices) against baseline models (temporal/environmental predictors only) to quantify how much acoustic indices contribute.
+This is the fundamental question: **Are acoustic indices actually useful, or could we predict biological activity just as well using only time of day, season, temperature, and depth?**
 
-| Metric | Full AIC | Baseline AIC | ΔAIC | Dev. Expl. Gain |
-|--------|----------|--------------|------|-----------------|
-| **vessel_presence** | 6,435 | 8,065 | **1,630** | +12.8 pp |
-| **fish_activity** | 33,450 | 34,477 | **1,027** | +3.8 pp |
-| **fish_presence** | 9,077 | 9,985 | **908** | +5.4 pp |
-| dolphin_presence | 10,693 | 11,347 | 655 | +4.9 pp |
-| fish_richness | 22,334 | 22,839 | 505 | +4.1 pp |
-| dolphin_activity | 32,128 | 32,611 | 482 | +6.5 pp |
-| dolphin_echolocation | 30,565 | 30,998 | 434 | +6.0 pp |
-| dolphin_burst_pulse | 8,046 | 8,265 | 219 | +12.0 pp |
-| dolphin_whistle | 3,117 | 3,189 | 72 | +12.0 pp |
+To answer this, we built two versions of each model:
+
+1. **Baseline model:** Only uses temporal and environmental predictors (hour of day, day of year, temperature, depth, station)
+2. **Full model:** Adds all 60 acoustic indices on top of the baseline
+
+If the acoustic indices contain real information about biological activity, the full model should fit better. We measure this with **ΔAIC** — the improvement in model fit when adding indices. Larger ΔAIC = indices help more.
+
+### The Verdict: Indices Add Real Value
+
+| Metric | ΔAIC | What this means |
+|--------|------|-----------------|
+| **vessel_presence** | **1,630** | Massive improvement — indices are essential for vessel detection |
+| **fish_activity** | **1,027** | Strong improvement — indices capture something time/environment don't |
+| **fish_presence** | **908** | Strong improvement |
+| dolphin_presence | 655 | Substantial improvement |
+| fish_richness | 505 | Substantial improvement |
+| dolphin_activity | 482 | Moderate improvement |
+| dolphin_echolocation | 434 | Moderate improvement |
+| dolphin_burst_pulse | 219 | Modest improvement |
+| dolphin_whistle | 72 | Small but real improvement |
+
+**How to interpret ΔAIC:** In model comparison, ΔAIC > 10 is considered "strong evidence" that the better model is meaningfully better. All 9 metrics exceed this threshold — the smallest is dolphin_whistle at 72, still far above the threshold. This means acoustic indices genuinely contain information about biological activity that you can't get from just knowing the time, temperature, and location.
 
 ::: {.callout-important}
-## Key Finding
-All 9 metrics show **strong evidence** that acoustic indices add predictive value (ΔAIC > 70 for all). Vessel detection benefits most (ΔAIC = 1,630), followed by fish metrics.
+## The Bottom Line
+Acoustic indices aren't just statistical noise. They capture real information about what's happening in the soundscape. The indices are most valuable for vessel detection (ΔAIC = 1,630) and fish metrics, and least valuable (but still useful) for rare events like dolphin whistles.
 :::
 
-### Per-Station Consistency
+### Does This Hold Up Across Locations?
 
-We verified that indices add value at each individual station, not just when pooled:
+A skeptic might worry that the indices only help because they're picking up some quirk of how we combined data across stations. To check this, we ran the same comparison at each station separately:
 
-| Metric | 14M ΔAIC | 37M ΔAIC | 9M ΔAIC |
-|--------|----------|----------|---------|
+| Metric | 14M | 37M | 9M |
+|--------|-----|-----|-----|
 | fish_presence | 115 | 199 | 211 |
 | dolphin_presence | 50 | 99 | 75 |
 | vessel_presence | 385 | 551 | 257 |
 
-**Interpretation:** Strong evidence at all stations — robust findings, not artifacts of station pooling.
+Indices improve predictions at every single station. The pattern is robust — it's not an artifact of how we pooled the data.
 
 ---
 
 ## Which Indices Predict Which Responses? {#index-significance}
 
-With 60 indices and GAMM's `select=TRUE` regularization, many indices are shrunk toward zero (EDF ≈ 0). Below are the **top 3 indices by effect size** for each metric.
+Now that we know indices add value overall, a natural question is: **which specific indices matter for which biological responses?**
+
+This turns out to be tricky to answer precisely, and here's why: many acoustic indices measure similar things. An index that captures "how much high-frequency energy is present" will be correlated with other indices measuring spectral content. When multiple indices carry overlapping information, the model might use any of them — or split the signal across several.
+
+That said, we can identify which indices have the **largest effects** for each response. The table below shows the top 3 indices by effect size:
 
 ### Top Predictors by Metric
 
-| Metric | Top 3 Indices (by effect size) |
-|--------|--------------------------------|
-| **fish_activity** | SNRt (2.3× fold change), BGNt (2.1×), EVNtCount (1.7×) |
-| **fish_richness** | EVNtCount (2.1× fold change), aROI (1.5×), LFC (1.4×) |
-| **fish_presence** | LFC (+24 pp), Hf (+23 pp), AGI (+15 pp) |
-| **dolphin_burst_pulse** | EPS (12.7× fold change), ACTspMean (5.1×), H_gamma (2.1×) |
-| **dolphin_echolocation** | ACTspCount (2378×), ACTspFract (19×), EPS (1.9×) |
-| **dolphin_whistle** | ZCR (3.4× fold change), EVNspMean (3.0×), BGNf (2.7×) |
-| **dolphin_activity** | ACTspCount (11650×), ACTspFract (17×), EPS (2.2×) |
-| **dolphin_presence** | ACTspFract (+97 pp), HFC (−21 pp), EVNspCount (−19 pp) |
-| **vessel_presence** | HFC (+94 pp), aROI (−82 pp), nROI (+76 pp) |
+| Metric | Top 3 Indices | What these indices measure |
+|--------|---------------|---------------------------|
+| **fish_activity** | SNRt, BGNt, EVNtCount | Signal-to-noise, background noise levels, acoustic event counts |
+| **fish_richness** | EVNtCount, aROI, LFC | Event counts, activity regions, low-frequency content |
+| **fish_presence** | LFC, Hf, AGI | Low-frequency content, spectral entropy, acoustic gradients |
+| **dolphin_burst_pulse** | EPS, ACTspMean, H_gamma | Spectral entropy, activity intensity, information content |
+| **dolphin_echolocation** | ACTspCount, ACTspFract, EPS | Activity counts and fractions, spectral entropy |
+| **dolphin_whistle** | ZCR, EVNspMean, BGNf | Zero-crossing rate, spectral events, frequency-band noise |
+| **dolphin_activity** | ACTspCount, ACTspFract, EPS | Activity counts and fractions, spectral entropy |
+| **dolphin_presence** | ACTspFract, HFC, EVNspCount | Activity fraction, high-frequency content, spectral events |
+| **vessel_presence** | HFC, aROI, nROI | High-frequency content, activity regions |
 
-*pp = percentage point change in probability; fold change = multiplicative effect on count*
+### What Patterns Emerge?
 
-### Key Patterns
+**For dolphins:** The "ACT" family of indices (ACTspCount, ACTspFract, ACTtCount) consistently appears. These measure how much acoustic "activity" is happening — transient sounds, busy soundscapes. This makes sense: dolphins produce distinctive clicks and whistles that register as acoustic events.
 
-- **Temporal activity indices** (ACTspCount, ACTspFract, ACTtCount) are top predictors for dolphins
-- **Spectral complexity** (EPS, HFC, LFC) matters for most responses
-- **Event counts** (EVNtCount, EVNspCount, nROI) are broadly predictive
-- **Vessel detection** relies heavily on high-frequency content (HFC) and region-of-interest indices
+**For fish:** Event counts (EVNtCount, nROI) and frequency-band indices (LFC, HFC) matter most. Fish sounds tend to be lower frequency than dolphin sounds, so the low-frequency content (LFC) index is particularly relevant.
 
-::: {.callout-note}
-## High Concurvity Warning
-Most index terms have concurvity > 0.8, meaning they're partially redundant. Effects can't be cleanly attributed to individual indices. See [Diagnostics](#diagnostic-checks) for details.
+**For vessels:** High-frequency content (HFC) dominates. Boats produce broadband noise with lots of high-frequency energy, making this index almost diagnostic for vessel presence.
+
+::: {.callout-warning}
+## A Caveat About Individual Indices
+Because many indices are correlated with each other, we can't say "this specific index is THE predictor." If you removed HFC from the vessel model, another correlated index would likely take its place. Think of the indices as a family of related measurements, not as independent predictors with distinct meanings.
 :::
 
 ---
@@ -438,116 +469,209 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 ## Validation Results {#validation}
 
+Building a model that fits your data is one thing. Building a model that works on *new* data is harder — and ultimately what matters. This section asks: **How well do our models generalize?**
+
+We use two complementary validation approaches:
+
+1. **AR1 check:** Did our temporal correlation correction actually work?
+2. **Cross-validation:** If we train on some weeks and predict others, how accurate are we?
+
 ### AR1 Autocorrelation Check
 
-We checked if the AR1 correction removed temporal autocorrelation from residuals.
+**The problem we're solving:** Time series data has "memory." If dolphins were clicking at 2pm, they're probably still clicking at 4pm. Standard statistical models assume observations are independent, which would make us overconfident in patterns that are really just temporal persistence.
+
+**Our solution:** We added an AR1 (first-order autoregressive) structure to account for this. The model learns a correlation parameter (ρ) that represents how much each observation is influenced by the previous one.
+
+**Did it work?** Partially.
 
 ![](figures/acf_residuals.png){width=100%}
 
-**Finding:** Residual ACF(1) ≈ estimated ρ, meaning the AR1 correction is not fully absorbing autocorrelation. This is a known limitation of the `bam()` approach. The autocorrelation levels are modest (0.06–0.20), so results are still interpretable but p-values should be treated conservatively.
+The plot shows "residual autocorrelation" — how much temporal pattern remains *after* our correction. If the AR1 perfectly removed all autocorrelation, these values would be zero.
 
-### Cross-Validation Performance
+**What we see:** The residual correlation roughly equals our estimated ρ values. This means the AR1 correction captured *some* of the temporal structure but not all of it. The remaining autocorrelation is modest (0.06–0.20), so our results are still interpretable.
+
+**Practical implication:** Treat p-values conservatively. When the model says something is significant at p = 0.04, it might actually be p = 0.06 if we perfectly accounted for temporal structure. Highly significant results (p < 0.001) are still trustworthy; borderline cases deserve skepticism.
+
+### Cross-Validation: Can We Predict the Future?
+
+The real test of a model isn't how well it explains data it was trained on — it's how well it predicts data it hasn't seen. We used "leave-one-week-out" cross-validation: train on all weeks except one, predict that held-out week, repeat for all weeks, then average the errors.
+
+This simulates a realistic use case: "We've learned patterns from the past year. How well can we predict next week?"
 
 ![](figures/cv_performance_by_metric.png){width=100%}
 
-#### Binary Metrics (AUC)
+#### Binary Models (Presence/Absence): Good News
 
-| Metric | Mean AUC | SD | Interpretation |
+For presence/absence detection, we use **AUC** (Area Under the ROC Curve). AUC = 0.5 means random guessing, AUC = 1.0 means perfect prediction.
+
+| Metric | Mean AUC | SD | What this means |
 |--------|----------|-----|----------------|
-| vessel_presence | **0.93** | 0.03 | Excellent |
-| fish_presence | 0.77 | 0.11 | Moderate |
-| dolphin_presence | 0.77 | 0.12 | Moderate |
+| vessel_presence | **0.93** | 0.03 | Excellent — can reliably detect boats |
+| fish_presence | 0.77 | 0.11 | Good — better than chance, useful for screening |
+| dolphin_presence | 0.77 | 0.12 | Good — same as fish |
 
-#### Count Metrics (RMSE / R²)
+These are genuinely useful for detection. An AUC of 0.77 means if you pick one "dolphin present" and one "dolphin absent" time window, the model will correctly rank them 77% of the time.
 
-| Metric | Mean RMSE | Mean R² | Interpretation |
+#### Count Models (Activity Levels): Bad News
+
+For activity counts, we use **R²** — the proportion of variance explained. R² = 1.0 is perfect prediction; R² = 0 means you're no better than just predicting the average; R² < 0 means you're *worse* than predicting the average.
+
+| Metric | Mean RMSE | Mean R² | What this means |
 |--------|-----------|---------|----------------|
-| fish_richness | 0.55 | 0.05 | Low error, poor R² |
+| fish_richness | 0.55 | 0.05 | Essentially no predictive power |
 | fish_activity | 1.11 | 0.04 | Same |
-| dolphin_whistle | 1.22 | -∞ | Rare events |
-| dolphin_burst_pulse | 46.7 | -44,154 | Outlier folds (one extreme week) |
-| dolphin_echolocation | 4.06 | -1.6 | Poor |
-| dolphin_activity | 5.78 | -1.8 | Poor |
+| dolphin_whistle | 1.22 | −∞ | Model can't handle this |
+| dolphin_burst_pulse | 46.7 | −44,154 | One extreme week broke everything |
+| dolphin_echolocation | 4.06 | −1.6 | Worse than guessing the mean |
+| dolphin_activity | 5.78 | −1.8 | Worse than guessing the mean |
+
+**Why are count models so bad at prediction?** The patterns learned from one week don't transfer well to other weeks. A week with unusual dolphin activity throws off predictions entirely. The model captures real relationships (as shown by deviance explained in the fitting phase), but those relationships vary enough across weeks that they don't help predict new weeks.
 
 ::: {.callout-warning}
-## Count Models Don't Generalize
+## Count Models: Good for Description, Bad for Prediction
 
-The negative R² values for count models mean predictions are worse than simply predicting the mean. This is common in time series CV — weekly patterns don't transfer. The fitted relationships are real but shouldn't be used for prediction without caution.
+The negative R² values aren't a bug — they're telling us something important. These models are useful for understanding *what* relates to dolphin activity (exploratory analysis), but they shouldn't be used to predict *how much* activity will occur next week (forecasting). If you need predictions, use the presence/absence models instead.
 :::
 
 ---
 
 ## Diagnostic Checks {#diagnostic-checks}
 
-These checks provide context for interpreting the main results — which effects are practically meaningful, why count models struggle, and how to read the significance table.
+Statistics can be misleading. A "significant" result might be trivially small. A model might fit well on average but fail completely on certain data types. This section digs into three diagnostic questions that help us interpret the main results honestly.
 
-### Effect Sizes: What Actually Matters?
+### Effect Sizes: Significant vs. Actually Meaningful
 
-Statistical significance (p < 0.05) tells us an effect isn't zero. Effect size tells us whether it's large enough to matter. With 13,102 observations, even trivial effects can be "significant."
+Here's a dirty secret of large-sample statistics: with 13,102 observations, almost everything is "statistically significant." The p-value just tells you the effect isn't exactly zero — it doesn't tell you whether the effect is large enough to matter.
 
-The plot below shows the change in detection probability when each index moves from its 10th to 90th percentile (holding other predictors at median values). Dotted lines mark ±0.10 as a rough threshold for "meaningful" effects.
+**Effect size** answers the more important question: *How much does this actually change things?*
+
+For presence/absence models, we calculated: "If this index moves from low (10th percentile) to high (90th percentile), how much does the probability of detection change?" We hold all other predictors at their median values to isolate each index's contribution.
 
 ![](figures/effect_sizes_presence.png){width=100%}
 
-**Key findings:**
+**Reading this plot:** Each bar shows the change in detection probability (in percentage points) associated with moving from low to high values of that index. The dotted lines at ±10 percentage points mark a rough threshold for "practically meaningful."
 
-- **Vessel presence** has the largest practical effects — nROI alone shifts detection probability by +45 percentage points
-- **Fish presence** has moderate effects from BioEnergy (−36 pp), ZCR (+19 pp), and ROU (+17 pp)
-- **Dolphin presence** effects are all small (< 7 pp) despite statistical significance
+**What we learn:**
 
-This explains why vessel detection works so well (AUC = 0.92) — the index associations are genuinely strong. For dolphins, the indices provide weak signal even when "significant."
+- **Vessel presence has huge effects.** The index nROI (number of regions of interest) alone changes vessel detection probability by +45 percentage points. Multiple indices exceed the ±10 pp threshold. This explains the excellent AUC — the signal is genuinely strong.
 
-### Zero-Inflation: Why Count Models Struggle
+- **Fish presence has moderate effects.** BioEnergy (−36 pp), ZCR (+19 pp), and ROU (+17 pp) exceed the threshold. There's enough signal to make useful predictions.
 
-Count models assume a negative binomial distribution, but the data has far more zeros than this distribution expects. The models think activity should occur more often than it actually does.
+- **Dolphin presence effects are tiny.** The largest is under 7 percentage points. Even though many indices are "statistically significant," none makes a meaningful practical difference on its own. This is why the dolphin models have lower AUC — the available signal is weak.
+
+**The insight:** Statistical significance is necessary but not sufficient. Focus on indices with large effect sizes for practical applications.
+
+### Zero-Inflation: A Structural Problem
+
+Why do count models fail so badly at prediction while presence models succeed? A big part of the answer is **zero-inflation**.
+
+Our count models use a negative binomial distribution, which is the standard choice for ecological count data. But this distribution has expectations about how often zeros should occur — and our data has *far more zeros* than expected.
 
 ![](figures/zero_inflation_gap.png){width=100%}
 
-**Interpretation:** Dolphins are rare and bursty — most 2-hour windows have zero detections. The Dolphin Activity model expects only 17% zeros but observes 77% (a 59 percentage point gap). This mismatch explains the poor cross-validation performance (negative R²). The model structure doesn't fit the data-generating process.
+**Reading this plot:** Each bar shows the "gap" — the difference between observed zeros (what we actually see) and predicted zeros (what the model expects). Larger gaps indicate worse model fit.
 
-For applications requiring activity counts, a zero-inflated model or hurdle model might be more appropriate. For presence/absence detection, the current binary models avoid this issue entirely.
+**What's happening:**
 
-### Concurvity: Interpreting the Significance Table
+- **Dolphin Activity:** The model expects about 17% of time windows to have zero detections. In reality, 77% have zero. That's a 59 percentage point gap. The model thinks dolphins should be active most of the time, when actually they're absent most of the time.
 
-Concurvity is the GAM equivalent of multicollinearity. High concurvity (> 0.8) means smooth terms explain similar variance — they're partially redundant.
+- **Dolphin Echolocation:** Similar story — 77% observed zeros vs. 33% expected.
 
-Most index terms in these models have concurvity > 0.8. This means:
+- **Fish Activity:** More modest gap (14 pp) but still flagged.
 
-- The many "significant" indices in the results table aren't independent signals
-- If ZCR predicts fish, correlated indices (ACI, EVNtCount) will also appear significant
-- Effects can't be cleanly attributed to specific indices
+**Why this matters:** When a model systematically misunderstands the basic structure of your data (how often zeros occur), its predictions will be unreliable. It's like trying to predict rare events with a model designed for common ones.
 
-**Practical implication:** Think of the indices as capturing "acoustic characteristics" broadly, not as 17 independent predictors. The indices that matter most are those with large effect sizes, not just statistical significance.
+**What to do about it:** For applications requiring activity counts, a **zero-inflated model** (which explicitly models the zero-generating process separately) or a **hurdle model** (which treats "any vs. none" and "how much" as separate questions) might be more appropriate. Our presence/absence models sidestep this issue entirely by treating the question as binary.
+
+### Concurvity: Why So Many Indices Seem Important
+
+If you look at the significance tables for each metric, you'll notice something that might seem suspicious: *lots* of indices are significant. Are they really all contributing independent information?
+
+Probably not. The culprit is **concurvity** — the GAM equivalent of multicollinearity.
+
+**What is concurvity?** It measures how much each smooth term can be predicted by the other smooth terms. High concurvity (> 0.8) means the terms are capturing overlapping information.
+
+**What we found:** Most index terms in these models have concurvity > 0.8. The acoustic indices are measuring similar underlying acoustic characteristics from different angles.
+
+**What this means for interpretation:**
+
+1. **The 60 indices aren't 60 independent predictors.** They're more like 60 different views of maybe 5-10 underlying acoustic "dimensions."
+
+2. **Significance spreads across correlated indices.** If ZCR genuinely predicts fish presence, then all indices correlated with ZCR will *also* appear to predict fish presence. The signal gets split and replicated.
+
+3. **Don't over-interpret individual index effects.** Saying "ZCR is the key predictor" overstates our ability to pinpoint specific indices. It's more accurate to say "the acoustic characteristics captured by ZCR and related indices predict fish presence."
+
+**Practical advice:** When thinking about which indices matter, focus on effect sizes rather than counting significant p-values. And think of the indices as capturing "acoustic regimes" broadly, not as mechanistic individual predictors.
 
 ::: {.callout-note}
 ## Diagnostic Summary
 
-- **Effect sizes** show vessel and fish presence have practically meaningful index associations; dolphin effects are small even when statistically significant
-- **Zero-inflation** explains why count models don't generalize — too many zeros for the assumed distribution
-- **Concurvity** means significant indices are correlated, not independent predictors
+Three key insights from diagnostics:
+
+1. **Effect sizes separate the meaningful from the trivial.** Vessel indices have big effects; dolphin indices have tiny ones even when "significant."
+
+2. **Zero-inflation explains count model failures.** The models expect more activity than actually occurs.
+
+3. **Concurvity means indices overlap.** Many significant indices ≠ many independent predictors.
 :::
 
 ---
 
 ## Conclusions {#conclusions}
 
-### What Works
+### What We Learned
 
-1. **Vessel detection** (AUC = 0.92) — Acoustic indices reliably distinguish vessel presence. Useful for anthropogenic noise monitoring.
+This analysis asked a simple question: **Can automated acoustic measurements tell us about biological activity in an estuary?** The answer is nuanced, and understanding the nuance is useful for planning future acoustic monitoring work.
 
-2. **Biological presence** (AUC ~0.75) — Fish and dolphin presence models show moderate predictive power. Indices contain real signal about whether activity is occurring.
+#### The Clear Win: Vessel Detection
 
-3. **Index-response associations** — Multiple indices significantly predict biological metrics, with ecologically interpretable patterns (e.g., ZCR for fish, ECV for dolphins).
+Acoustic indices excel at detecting vessel presence (AUC = 0.93). This makes intuitive sense — boats are loud, their acoustic signature is distinctive, and the soundscape changes dramatically when a vessel passes. Multiple indices pick up the same signal, and the effect sizes are large (the nROI index alone shifts detection probability by 45 percentage points).
 
-### What Doesn't Work
+**Practical application:** Automated vessel monitoring using acoustic indices is highly feasible. This could support studies of anthropogenic noise exposure, vessel traffic patterns, or marine protected area compliance.
 
-1. **Activity/count prediction** — Models don't generalize to held-out weeks. Good for describing patterns, not for forecasting.
+#### The Partial Win: Biological Presence
 
-2. **Full AR1 correction** — Residual autocorrelation remains; interpret significance conservatively.
+For fish and dolphin presence detection, the models work moderately well (AUC ~0.77). This is genuinely useful — substantially better than random guessing — but not reliable enough for automated monitoring without human verification.
 
-### The Bottom Line
+**What's happening ecologically:** The soundscape does change when fish or dolphins are present. Fish choruses add tonal structure; dolphin clicks and whistles shift the spectral profile. Acoustic indices capture these changes, but the signal is weaker and more variable than for vessels.
 
-Acoustic indices are useful for **screening** ("is there activity?") but not for **quantification** ("how much activity?"). For presence/absence monitoring, they provide real value. For activity levels, they describe patterns but don't predict reliably.
+**Practical application:** These models are useful for *screening* — flagging time periods that are worth human review, prioritizing recordings for manual annotation, or identifying hotspots in large datasets. They're not reliable enough to replace human validation entirely.
+
+#### The Honest Failure: Activity Quantification
+
+For predicting *how much* activity occurs (counts of fish sounds, dolphin clicks, etc.), the models fail to generalize. They fit the training data reasonably well, but predictions on held-out weeks are worse than simply guessing the mean.
+
+**Why this happens:**
+
+1. **Zero-inflation:** Most time windows have zero activity. The models expect more activity than actually occurs.
+2. **Week-to-week variability:** Patterns learned from one week don't transfer well to other weeks. Dolphins are episodic; what predicts their activity this Tuesday doesn't predict next Tuesday.
+3. **Count noise:** Counting individual sounds is inherently noisier than detecting presence/absence.
+
+**Practical implication:** Use binary (presence/absence) models rather than count models when prediction is the goal. If you need activity levels, acoustic indices can help describe patterns after the fact (exploratory analysis), but don't rely on them for forecasting.
+
+### Methodological Lessons
+
+**60 indices beat 17:** Post-hoc validation showed that including all 60 acoustic indices (with GAMM regularization) outperformed the VIF-filtered 17-index approach. Letting the model decide which indices matter worked better than pre-filtering based on statistical rules.
+
+**Presence beats counts:** Binary models are more robust than count models for prediction. When designing an acoustic monitoring system, frame questions as "Is there activity?" rather than "How much activity?"
+
+**Effect sizes matter more than p-values:** With large samples, everything is significant. Focus on indices with large practical effects rather than counting significant predictors.
+
+### For Future Work
+
+If replicating this approach in other systems, consider:
+
+- **Use presence/absence models** for detection applications
+- **Include all candidate indices** and let regularization handle selection
+- **Evaluate with cross-validation**, not just model fit statistics
+- **Check zero-inflation** before building count models — if most observations are zeros, consider hurdle models
+- **Think of indices as overlapping descriptors**, not independent predictors
+
+::: {.callout-tip}
+## The One-Sentence Summary
+
+Acoustic indices can tell you *whether* biological activity is happening, but not *how much* — and vessel detection works much better than biological detection.
+:::
 
 ---
 
@@ -624,7 +748,7 @@ For exploratory analysis with modern regularized methods (GAMMs, LASSO, random f
 
 ## Appendix B: Full Smooth Plots (All 60 Indices) {#appendix-full-smooths}
 
-The main results show only the top 10 indices by effect size for readability. Below are the complete smooth plots showing all 60 acoustic indices plus temporal and environmental predictors.
+The main results show only the top 8 indices by effect size plus 4 temporal/environmental predictors (12 total) for readability. Below are the complete smooth plots showing all 60 acoustic indices plus temporal and environmental predictors.
 
 ::: {.panel-tabset}
 
