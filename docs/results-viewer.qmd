@@ -140,6 +140,43 @@ Most index terms have concurvity > 0.8, meaning they're partially redundant. Eff
 
 ## Results by Metric {.tabset}
 
+### How to Read These Results
+
+Each metric below shows **smooth plots** and **diagnostics**. Here's how to interpret them:
+
+#### Understanding the Smooth Plots
+
+Each panel shows how one predictor (acoustic index or environmental variable) relates to the response. The plots show the **top 8 acoustic indices by effect size** plus 4 temporal/environmental variables (temperature, depth, hour of day, day of year).
+
+**Reading a single panel:**
+
+- **The curve** shows the estimated effect of that predictor on the response (holding other predictors constant)
+- **The gray band** is the 95% confidence interval — wider bands mean more uncertainty
+- **A flat line at zero** means that predictor has no effect
+- **A curved line** means the relationship is non-linear (e.g., effect increases up to a point, then levels off)
+- **EDF (Effective Degrees of Freedom)** tells you how "wiggly" the relationship is:
+  - EDF ≈ 0: Predictor has been shrunk to zero (no effect)
+  - EDF ≈ 1: Linear relationship (straight line)
+  - EDF > 1: Non-linear relationship (the higher, the more complex the curve)
+
+**What "effect size" means here:**
+
+- For **presence/absence** metrics: How much does detection probability change when the index goes from low (10th percentile) to high (90th percentile)?
+- For **count** metrics: How many times more/fewer detections when the index goes from low to high?
+
+We show only the top 8 indices because with 60 indices, most have tiny or zero effects. The ones shown here are the indices that actually matter for each metric.
+
+#### Understanding the Diagnostics
+
+The 4-panel diagnostic plot checks whether the model is behaving reasonably:
+
+- **Top-left (Residuals vs linear predictor):** Points should scatter randomly around zero. A pattern suggests the model is missing something. *Note: For binary models (presence/absence), a curved pattern with two bands is normal and expected.*
+- **Top-right (Histogram):** Should look roughly bell-shaped (normal distribution).
+- **Bottom-left (Q-Q plot):** Points should follow the diagonal line. Deviations at the ends are common and usually okay.
+- **Bottom-right (Response vs fitted):** Shows predicted vs actual values.
+
+---
+
 ### fish_activity {#fish-activity}
 
 **Response type:** Count (negative binomial)
@@ -156,7 +193,15 @@ Most index terms have concurvity > 0.8, meaning they're partially redundant. Eff
 
 #### Interpretation
 
-Fish activity shows strong diel patterns (hour_of_day EDF = 6.81) but weak index associations. Only ZCR is significant among the acoustic indices. The model fits the training data but doesn't generalize well to held-out weeks.
+**The big picture:** Fish activity (total number of fish sounds detected) is hard to predict from acoustic indices. Most indices have little effect — you can see this from the many flat or nearly-flat lines in the smooth plots.
+
+**What does predict fish activity:**
+
+- **Time of day matters a lot** (look at hour_of_day — the wiggly curve with EDF=6.5 shows a complex daily pattern)
+- **Season matters** (day_of_year shows activity peaking in spring/summer)
+- **ZCR (zero-crossing rate)** is the only acoustic index with a meaningful effect
+
+**Why the poor CV performance:** The R² of 0.01 means the model explains almost none of the variation when tested on new data. Fish activity is highly variable and unpredictable — knowing the acoustic environment doesn't tell you much about how many fish sounds you'll hear.
 
 
 ### fish_richness {#fish-richness}
@@ -194,7 +239,17 @@ Fish richness has more significant index predictors than fish activity. Indices 
 
 #### Interpretation
 
-Fish presence is the most predictable fish metric. Many indices pick it up — detecting "something is there" is easier than quantifying how much. Strong seasonal pattern (day_of_year EDF = 9.36) with spring peak. The model generalizes moderately well (AUC = 0.75).
+**The big picture:** Fish presence (are fish sounds happening: yes/no?) is much easier to predict than fish activity counts. The AUC of 0.75 means the model does a decent job distinguishing "fish present" from "fish absent" time periods.
+
+**Why presence is easier than counts:** Detecting *whether* biological activity is happening is fundamentally easier than measuring *how much*. Many different acoustic indices can pick up the general signature of fish sounds, even if they can't precisely quantify the amount.
+
+**What predicts fish presence:**
+
+- **Strong seasonal pattern** (day_of_year shows a clear spring peak — fish are more acoustically active in warmer months)
+- **Depth/tide matters** (fish presence increases at high tide)
+- **Multiple acoustic indices contribute** — this is why the model works reasonably well
+
+**Practical implication:** If you want to use acoustic indices to monitor fish, focus on presence/absence rather than trying to count activity levels.
 
 
 ### dolphin_burst_pulse {#dolphin-burst-pulse}
@@ -308,7 +363,21 @@ Dolphin presence is moderately predictable (AUC = 0.74), similar to fish presenc
 
 #### Interpretation
 
-Vessel presence is the best-predicted metric. Boats are loud, broadband, and create distinctive temporal patterns — 8 indices are significant. Strong diel pattern (morning peak). Notably, temperature and depth are NOT significant — vessel detection is purely acoustic, not environmentally mediated.
+**The big picture:** Vessel detection is the clear success story of this analysis. With an AUC of 0.92, the model can reliably distinguish "boat present" from "boat absent" time periods. This is excellent performance.
+
+**Why vessels are easy to detect:**
+
+- **Boats are loud** — they dominate the soundscape when present
+- **Distinctive acoustic signature** — broadband noise with consistent temporal patterns
+- **Strong effects in the smooth plots** — look at HFC (high-frequency content) and nROI (number of regions of interest), which show steep curves rather than flat lines
+
+**What predicts vessel presence:**
+
+- **Acoustic indices dominate** — multiple indices pick up the vessel signature
+- **Time of day matters** (morning peak in boat traffic)
+- **Temperature and depth are NOT significant** — unlike biological activity, vessel presence is purely an acoustic phenomenon, not affected by environmental conditions
+
+**Practical implication:** Acoustic indices are highly effective for automated vessel monitoring. This could be useful for tracking anthropogenic noise exposure in the estuary.
 
 ---
 
