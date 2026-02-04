@@ -446,4 +446,56 @@ Acoustic indices are useful for **screening** ("is there activity?") but not for
 
 ---
 
+## Appendix A: Methodological Evolution {#appendix-vif}
+
+### Why We Moved from 17 to 60 Indices
+
+**Original Approach (v1):** We pre-filtered indices using Variance Inflation Factor (VIF) analysis, reducing 62 indices to 17 before modeling. The rationale was standard practice: remove collinear predictors to improve coefficient interpretability and model stability.
+
+**The Problem:** Post-hoc validation revealed that 60-index models consistently outperformed 17-index models across all metrics:
+
+| Metric | 17-Index AIC | 60-Index AIC | ΔAIC | Winner |
+|--------|--------------|--------------|------|--------|
+| fish_activity | 33,450 | 33,404 | −46 | 60-index |
+| fish_richness | 22,334 | 22,303 | −31 | 60-index |
+| fish_presence | 9,077 | 9,057 | −20 | 60-index |
+| dolphin_burst_pulse | 8,046 | 8,022 | −24 | 60-index |
+| dolphin_echolocation | 30,565 | 30,564 | −1 | ~tie |
+| dolphin_whistle | 3,117 | 3,119 | +1 | ~tie |
+| dolphin_activity | 32,128 | 32,129 | +0 | ~tie |
+| dolphin_presence | 10,693 | 10,687 | −6 | 60-index |
+| vessel_presence | 6,435 | 6,445 | +10 | 17-index |
+
+**Average improvement:** ΔAIC = −13 (favoring 60-index models)
+
+### What Changed
+
+Instead of VIF pre-filtering, we rely on GAMM's built-in regularization (`select=TRUE`), which:
+
+- Adds a penalty to each smooth term
+- Shrinks uninformative smooths toward zero (EDF → 0)
+- Retains predictors with genuine signal
+- Allows the data to determine which indices matter
+
+We also reduced the smooth basis dimension (`k=5` → `k=3`) to help 60-index models converge.
+
+### Implications
+
+1. **More indices can participate:** Some indices removed by VIF turn out to contribute unique information that other indices don't capture.
+
+2. **Regularization handles collinearity:** The GAMM shrinkage effectively manages the collinearity that VIF was meant to address.
+
+3. **Slight tradeoff for vessels:** Vessel presence slightly prefers the 17-index model (ΔAIC = +10), possibly because low-frequency content (removed indices) doesn't help with broadband vessel detection.
+
+### When VIF Pre-Filtering Still Makes Sense
+
+VIF remains useful when:
+- Interpreting individual coefficient estimates is critical
+- Using models without built-in regularization (e.g., standard GLMs)
+- Computational constraints require fewer predictors
+
+For exploratory analysis with modern regularized methods (GAMMs, LASSO, random forests), letting the algorithm select features is often preferable to manual pre-filtering.
+
+---
+
 *Generated: `r Sys.Date()`*
