@@ -220,7 +220,15 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 #### Interpretation
 
-Fish richness has more significant index predictors than fish activity. Indices related to acoustic complexity (ACI, EVNtCount, nROI) are significant — consistent with the idea that more fish species create a more diverse soundscape. Depth (tidal proxy) is strongly significant: higher richness at high tide.
+**The big picture:** Fish richness (number of different fish sound types) is slightly more predictable than raw activity counts, but still doesn't generalize well (R² = 0.02). The low RMSE (0.56) just means typical richness values are small, not that predictions are accurate.
+
+**What predicts fish richness:**
+
+- **Acoustic complexity indices matter** — ACI, EVNtCount, and nROI all show effects. This makes intuitive sense: more fish species calling = more complex soundscape
+- **Depth/tide is important** — higher richness at high tide, likely because more fish move into shallow areas
+- **Time of day patterns** — diel variation in which species are calling
+
+**Why it's hard to predict:** Fish species composition changes in ways that aren't fully captured by the acoustic indices or environmental variables we measured. The indices pick up *something*, but not enough to reliably predict richness in new time periods.
 
 
 ### fish_presence {#fish-presence}
@@ -268,7 +276,15 @@ Fish richness has more significant index predictors than fish activity. Indices 
 
 #### Interpretation
 
-Burst pulses are foraging-related — discrete hunting events. Indices sensitive to impulsive sounds (TFSD, NBPEAKS, nROI) are predictive. Temperature is significant (more activity in cooler water). The model has the lowest AR1 (ρ = 0.06) — these are event-like, not persistent.
+**The big picture:** Burst pulses are rapid clicks dolphins produce while hunting. They're discrete events (a dolphin catches a fish, or doesn't) rather than continuous activity, which makes them inherently hard to predict.
+
+**What predicts burst pulses:**
+
+- **Indices sensitive to impulsive sounds** — TFSD, NBPEAKS, and nROI pick up the sharp, transient nature of burst pulses
+- **Temperature matters** — more foraging activity in cooler water (possibly related to prey availability)
+- **Very low temporal persistence** (AR1 ρ = 0.06) — knowing burst pulses happened in one 2-hour window tells you almost nothing about the next window
+
+**Why the negative R²:** A negative R² means the model's predictions are worse than just guessing the average. Burst pulse events are too sporadic and unpredictable — the model captures some patterns in the training data but they don't transfer to new time periods.
 
 
 ### dolphin_echolocation {#dolphin-echolocation}
@@ -287,7 +303,15 @@ Burst pulses are foraging-related — discrete hunting events. Indices sensitive
 
 #### Interpretation
 
-Echolocation clicks are broadband with distinctive temporal structure — reflected in significant BI, TFSD, NBPEAKS. The extremely negative R² in CV is due to a few outlier weeks with high activity; the model can't predict these spikes.
+**The big picture:** Echolocation clicks are the sounds dolphins use for navigation and finding prey. They're broadband (spread across many frequencies) and occur in rapid sequences. The model finds real patterns, but fails catastrophically when tested on new data (R² = -455).
+
+**What predicts echolocation:**
+
+- **Indices sensitive to broadband transients** — BI (bioacoustic index), TFSD (temporal fine structure), NBPEAKS all respond to click trains
+- **Temperature effect** — like burst pulses, more echolocation in cooler water
+- **Depth matters** — echolocation use varies with water depth
+
+**Why the terrible R²:** The R² of -455 is shockingly bad, but it's driven by a few outlier weeks where dolphin activity spiked way beyond anything the model had seen. When you test the model on those weeks, the predictions are wildly wrong, dragging down the average. The model isn't useless — it just can't handle rare high-activity events.
 
 
 ### dolphin_whistle {#dolphin-whistle}
@@ -306,7 +330,17 @@ Echolocation clicks are broadband with distinctive temporal structure — reflec
 
 #### Interpretation
 
-Whistles are tonal social signals — only 3 indices (ECV, TFSD, ZCR) are significant. These capture spectral and temporal characteristics of whistles. The R² = -∞ reflects that most observations are zeros (rare events); predicting *when* whistles occur is very hard.
+**The big picture:** Whistles are tonal sounds dolphins use for social communication (think: dolphin "names" and contact calls). They're rare in this dataset — most 2-hour windows have zero whistles — which makes prediction extremely difficult.
+
+**What predicts whistles:**
+
+- **Only a few indices matter** — ECV, TFSD, and ZCR capture the tonal, frequency-modulated nature of whistles
+- **Station differences** — whistle occurrence varies by location (some areas may be more social)
+- **Temperature and depth** — environmental conditions affect dolphin social behavior
+
+**Why R² = -∞:** When most observations are zeros, the model essentially learns "predict zero." Then when whistles actually occur, it's wrong. The R² formula breaks down when you're trying to predict rare events — it's not that the model is infinitely bad, it's that this metric isn't meaningful for rare-event data.
+
+**The underlying problem:** Whistles are social signals that depend on dolphin group dynamics — whether dolphins happen to be socializing in range of the hydrophone. This isn't really predictable from acoustic indices or environmental conditions.
 
 
 ### dolphin_activity {#dolphin-activity}
@@ -325,7 +359,17 @@ Whistles are tonal social signals — only 3 indices (ECV, TFSD, ZCR) are signif
 
 #### Interpretation
 
-Dolphin activity (total vocalizations) has many significant predictors — it aggregates across call types. Temperature is the dominant environmental driver (more activity in cooler water). Like other count models, it doesn't generalize well to held-out weeks.
+**The big picture:** Dolphin activity combines all dolphin sound types (clicks, whistles, burst pulses) into one count. It's the "total dolphin noise" metric. Many indices show effects, but the model still doesn't generalize (R² = -48).
+
+**What predicts dolphin activity:**
+
+- **Many acoustic indices contribute** — because this aggregates multiple call types, indices sensitive to different sound characteristics all matter
+- **Temperature is key** — dolphins are more acoustically active in cooler water (this pattern appears across all dolphin metrics)
+- **Time of day and depth** — behavioral patterns drive when and where dolphins vocalize
+
+**Why the poor generalization:** Even though the model finds many significant predictors, dolphin activity is highly variable. A pod of dolphins moving through the study area creates a spike that the model can't anticipate. The patterns learned from training data don't transfer well to new time periods.
+
+**Comparison to presence:** Dolphin presence (AUC = 0.74) works much better than dolphin activity counts (R² = -48). If you need to monitor dolphins, detect presence rather than trying to quantify activity.
 
 
 ### dolphin_presence {#dolphin-presence}
@@ -344,7 +388,18 @@ Dolphin activity (total vocalizations) has many significant predictors — it ag
 
 #### Interpretation
 
-Dolphin presence is moderately predictable (AUC = 0.74), similar to fish presence. Many indices contribute. Temperature is significant — dolphins more likely present in cooler water. The binary framing (present/absent) is more predictable than count models.
+**The big picture:** Dolphin presence (are dolphins vocalizing: yes/no?) is the best-performing dolphin metric, with an AUC of 0.74. Like fish presence, detecting *whether* dolphins are around is much easier than counting *how much* they're vocalizing.
+
+**What predicts dolphin presence:**
+
+- **Multiple acoustic indices contribute** — the combined signature of dolphin sounds (clicks, whistles, etc.) is picked up by several indices
+- **Temperature matters** — dolphins more likely present in cooler water
+- **Station differences** — dolphins use some areas more than others
+- **Depth effects** — presence varies with water depth (tidal state)
+
+**Why presence works better than counts:** The AUC of 0.74 isn't spectacular, but it's far better than the count models (which have negative R²). When a dolphin makes *any* sound, the acoustic environment changes detectably. But counting how many sounds they make is much noisier and more variable.
+
+**Practical implication:** For dolphin monitoring using acoustic indices, frame the question as "were dolphins present?" rather than "how active were they?" The binary approach gives you usable predictions.
 
 
 ### vessel_presence {#vessel-presence}
