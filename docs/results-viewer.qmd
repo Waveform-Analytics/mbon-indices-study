@@ -214,7 +214,7 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **Top indices by effect size:** HFC (0.36×), ACTtFraction (0.42×), SNRt (2.3×), BGNt (2.1×), LEQt (0.56×), MEANf (0.57×), EVNtCount (1.7×), EVNtFraction (1.6×)
 
-**CV Performance:** RMSE = 1.14, R² = 0.01 (poor generalization)
+**CV Performance:** RMSE = 1.11, R² = 0.04 (poor generalization)
 
 #### Smooth Terms Overview
 ![](figures/fish_activity/gamm_smooths_top12.png){width=100%}
@@ -242,7 +242,7 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **Top indices by effect size:** HFC (0.36×), EVNtCount (2.1×), ACTtFraction (0.55×), aROI (1.5×), LEQt (0.70×), LFC (1.4×), nROI (0.74×), ACTtMean (1.3×)
 
-**CV Performance:** RMSE = 0.56, R² = 0.02 (low error, poor R²)
+**CV Performance:** RMSE = 0.55, R² = 0.05 (low error, poor R²)
 
 #### Smooth Terms Overview
 ![](figures/fish_richness/gamm_smooths_top12.png){width=100%}
@@ -302,7 +302,7 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **Top indices by effect size:** MFC (0.002×), HFC (0.07×), EPS (12.7×), EPS_SKEW (0.09×), EVNspFract (0.10×), AGI (0.13×), ACTspMean (5.2×), Ht (0.44×)
 
-**CV Performance:** RMSE = 1.54, R² = -0.13 (doesn't generalize)
+**CV Performance:** RMSE = 46.7, R² = -44,154 (doesn't generalize)
 
 #### Smooth Terms Overview
 ![](figures/dolphin_burst_pulse/gamm_smooths_top12.png){width=100%}
@@ -331,7 +331,7 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **Top indices by effect size:** ACTspCount (2378×), HFC (0.01×), EVNspFract (0.02×), ACTspFract (19×), MFC (0.16×), Ht (0.26×), ACTtMean (0.34×), EPS_SKEW (0.51×)
 
-**CV Performance:** RMSE = 11.0, R² = -455 (outlier folds dominating)
+**CV Performance:** RMSE = 4.06, R² = -1.6 (poor generalization)
 
 #### Smooth Terms Overview
 ![](figures/dolphin_echolocation/gamm_smooths_top12.png){width=100%}
@@ -341,7 +341,7 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 #### Interpretation
 
-**The big picture:** Echolocation clicks are the sounds dolphins use for navigation and finding prey. They're broadband (spread across many frequencies) and occur in rapid sequences. The model finds real patterns, but fails catastrophically when tested on new data (R² = -455).
+**The big picture:** Echolocation clicks are the sounds dolphins use for navigation and finding prey. They're broadband (spread across many frequencies) and occur in rapid sequences. The model finds real patterns, but fails to generalize when tested on new data (R² = -1.6).
 
 **What predicts echolocation (by effect size):**
 
@@ -351,7 +351,7 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 - **Temperature effect** — like burst pulses, more echolocation in cooler water
 - **Depth matters** — echolocation use varies with water depth
 
-**Why the terrible R²:** The R² of -455 is shockingly bad, but it's driven by a few outlier weeks where dolphin activity spiked way beyond anything the model had seen. The extreme sensitivity to ACTspCount (2378×) means small prediction errors become catastrophic when activity is high. The model isn't useless — it just can't handle rare high-activity events.
+**Why the negative R²:** A negative R² means the model's predictions are worse than just guessing the average. The extreme sensitivity to ACTspCount (2378×) means small prediction errors get amplified when activity is high. The model captures real patterns in the training data, but those patterns don't transfer reliably to new weeks.
 
 
 ### dolphin_whistle {#dolphin-whistle}
@@ -360,7 +360,7 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **Top indices by effect size:** Ht (0.02×), SNRt (0.07×), MFC (0.24×), TFSD (0.24×), ZCR (3.4×), EVNspMean (3.0×), BGNf (2.7×), ECU (0.40×)
 
-**CV Performance:** RMSE = 0.78, R² = -∞ (rare events)
+**CV Performance:** RMSE = 1.22, R² = -∞ (rare events)
 
 #### Smooth Terms Overview
 ![](figures/dolphin_whistle/gamm_smooths_top12.png){width=100%}
@@ -391,7 +391,7 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **Top indices by effect size:** ACTspCount (11650×), HFC (0.01×), EVNspCount (0.05×), ACTspFract (17×), MFC (0.10×), Ht (0.22×), EVNspFract (0.26×), EPS_SKEW (0.30×)
 
-**CV Performance:** RMSE = 7.22, R² = -48 (poor generalization)
+**CV Performance:** RMSE = 5.78, R² = -1.8 (poor generalization)
 
 #### Smooth Terms Overview
 ![](figures/dolphin_activity/gamm_smooths_top12.png){width=100%}
@@ -413,7 +413,7 @@ The 4-panel diagnostic plot checks whether the model is behaving reasonably:
 
 **Why the poor generalization:** The extreme sensitivity to ACTspCount (11,650×) means the model is essentially learning "ACTspCount predicts activity" — which doesn't help predict *future* activity levels. The patterns don't transfer to new time periods.
 
-**Comparison to presence:** Dolphin presence (AUC = 0.74) works much better than activity counts (R² = -48). If you need to monitor dolphins, detect presence rather than trying to quantify activity.
+**Comparison to presence:** Dolphin presence (AUC = 0.74) works much better than activity counts (R² = -1.8). If you need to monitor dolphins, detect presence rather than trying to quantify activity.
 
 
 ### dolphin_presence {#dolphin-presence}
@@ -588,7 +588,7 @@ Our count models use a negative binomial distribution, which is the standard cho
 
 **What's happening:**
 
-- **Dolphin Activity:** The model expects about 17% of time windows to have zero detections. In reality, 77% have zero. That's a 59 percentage point gap. The model thinks dolphins should be active most of the time, when actually they're absent most of the time.
+- **Dolphin Activity:** The model expects about 24% of time windows to have zero detections. In reality, 77% have zero. That's a 52 percentage point gap. The model thinks dolphins should be active most of the time, when actually they're absent most of the time.
 
 - **Dolphin Echolocation:** Similar story — 77% observed zeros vs. 33% expected.
 
@@ -640,7 +640,7 @@ This analysis asked a simple question: **Can automated acoustic measurements tel
 
 #### The Clear Win: Vessel Detection
 
-Acoustic indices excel at detecting vessel presence (AUC = 0.93). This makes intuitive sense — boats are loud, their acoustic signature is distinctive, and the soundscape changes dramatically when a vessel passes. Multiple indices pick up the same signal, and the effect sizes are large (the nROI index alone shifts detection probability by 45 percentage points).
+Acoustic indices excel at detecting vessel presence (AUC = 0.93). This makes intuitive sense — boats are loud, their acoustic signature is distinctive, and the soundscape changes dramatically when a vessel passes. Multiple indices pick up the same signal, and the effect sizes are large (the nROI index alone shifts detection probability by 76 percentage points).
 
 **Practical application:** Automated vessel monitoring using acoustic indices is highly feasible. This could support studies of anthropogenic noise exposure, vessel traffic patterns, or marine protected area compliance.
 
@@ -720,17 +720,17 @@ Acoustic indices can tell you *whether* biological activity is happening, but no
 
 | Metric | 17-Index AIC | 60-Index AIC | ΔAIC | Winner |
 |--------|--------------|--------------|------|--------|
-| fish_activity | 33,450 | 33,404 | −46 | 60-index |
-| fish_richness | 22,334 | 22,303 | −31 | 60-index |
-| fish_presence | 9,077 | 9,057 | −20 | 60-index |
-| dolphin_burst_pulse | 8,046 | 8,022 | −24 | 60-index |
-| dolphin_echolocation | 30,565 | 30,564 | −1 | ~tie |
-| dolphin_whistle | 3,117 | 3,119 | +1 | ~tie |
-| dolphin_activity | 32,128 | 32,129 | +0 | ~tie |
-| dolphin_presence | 10,693 | 10,687 | −6 | 60-index |
-| vessel_presence | 6,435 | 6,445 | +10 | 17-index |
+| fish_activity | 33,897 | 33,450 | −447 | 60-index |
+| fish_richness | 22,472 | 22,334 | −138 | 60-index |
+| fish_presence | 9,413 | 9,077 | −336 | 60-index |
+| dolphin_burst_pulse | 8,187 | 8,046 | −141 | 60-index |
+| dolphin_echolocation | 30,765 | 30,565 | −200 | 60-index |
+| dolphin_whistle | 3,189 | 3,117 | −72 | 60-index |
+| dolphin_activity | 32,367 | 32,128 | −239 | 60-index |
+| dolphin_presence | 10,949 | 10,693 | −256 | 60-index |
+| vessel_presence | 6,961 | 6,435 | −526 | 60-index |
 
-**Average improvement:** ΔAIC = −13 (favoring 60-index models)
+**Average improvement:** ΔAIC = −262 (favoring 60-index models)
 
 ### What Changed
 
@@ -749,7 +749,7 @@ We also reduced the smooth basis dimension (`k=5` → `k=3`) to help 60-index mo
 
 2. **Regularization handles collinearity:** The GAMM shrinkage effectively manages the collinearity that VIF was meant to address.
 
-3. **Slight tradeoff for vessels:** Vessel presence slightly prefers the 17-index model (ΔAIC = +10), possibly because low-frequency content (removed indices) doesn't help with broadband vessel detection.
+3. **Largest gains for vessels and fish:** Vessel presence showed the largest improvement (ΔAIC = −526), followed by fish_activity (−447) and fish_presence (−336). The additional indices capture acoustic signatures that VIF filtering had removed.
 
 ### When VIF Pre-Filtering Still Makes Sense
 

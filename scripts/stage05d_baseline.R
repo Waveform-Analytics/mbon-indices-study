@@ -504,9 +504,34 @@ cat("\n=== Baseline Comparison Complete ===\n")
 # ==============================================================================
 # VIF VALIDATION (User Story 4: T021-T030 - only if not --baseline-only)
 # ==============================================================================
+#
+# IMPORTANT NOTE (2026-02-04):
+# This section was originally designed to compare 17-index (VIF-filtered) models
+# against 60-index models. However, the comparison logic assumes that the current
+# gamm.rds files contain 17-index models.
+#
+# Since we switched to 60-index models as the standard (Feb 2026), running this
+# section would compare 60-index vs 60-index, producing misleading results.
+#
+# The historical 17 vs 60 comparison has been captured in:
+#   results/tables/vif_validation.csv (using AICs from RUN_HISTORY.md)
+#
+# To regenerate a true comparison, you would need to:
+#   1. Archive the current 60-index gamm.rds files
+#   2. Re-run stage05_modeling.R with 17 indices (set vif_enabled: true in config)
+#   3. Run this script
+#   4. Restore the 60-index models
+#
+# For now, this section is SKIPPED by default. Use --force-vif-validation to run.
+# ==============================================================================
 
-if (!baseline_only) {
+# Check for --force-vif-validation flag
+force_vif <- "--force-vif-validation" %in% args
+
+if (!baseline_only && force_vif) {
   cat("\n=== VIF Validation: 17-index vs 60-index comparison ===\n")
+  cat("WARNING: This assumes gamm.rds contains 17-index models!\n")
+  cat("If models are already 60-index, results will be misleading.\n")
   cat("Comparing models with 17 VIF-filtered indices vs all ~60 indices\n\n")
 
   # T021: Load 60 indices from aligned_indices.parquet
@@ -696,6 +721,12 @@ if (!baseline_only) {
   }
 
   cat("\n=== VIF Validation Complete ===\n")
+} else if (!baseline_only && !force_vif) {
+  cat("\n=== VIF Validation SKIPPED ===\n")
+  cat("VIF validation is skipped by default because the current models use 60 indices.\n")
+  cat("The historical 17 vs 60 comparison is stored in: results/tables/vif_validation.csv\n")
+  cat("To re-run VIF validation, use: Rscript scripts/stage05d_baseline.R --force-vif-validation\n")
+  cat("(But only do this if gamm.rds files contain 17-index models!)\n")
 }
 
 cat("\nScript complete.\n")
