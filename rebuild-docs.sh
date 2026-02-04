@@ -30,7 +30,7 @@ for metric in fish_activity fish_richness fish_presence \
               dolphin_burst_pulse dolphin_echolocation dolphin_whistle \
               dolphin_activity dolphin_presence vessel_presence; do
   mkdir -p "docs/figures/$metric"
-  cp "results/figures/$metric/gamm_smooths_top10.png" "docs/figures/$metric/" 2>/dev/null || true
+  cp "results/figures/$metric/gamm_smooths_top12.png" "docs/figures/$metric/" 2>/dev/null || true
   cp "results/figures/$metric/gamm_smooths.png" "docs/figures/$metric/" 2>/dev/null || true
   cp "results/figures/$metric/gamm_diagnostics.png" "docs/figures/$metric/" 2>/dev/null || true
   cp "results/figures/$metric/random_effects_qq.png" "docs/figures/$metric/" 2>/dev/null || true

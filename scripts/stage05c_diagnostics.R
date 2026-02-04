@@ -448,14 +448,15 @@ plot_random_effects_qq <- function(model, metric) {
 #' Generate smooth plots filtered to top N indices by effect size
 #'
 #' Creates a readable overview of smooth terms by showing only the most
-#' impactful indices rather than all 60.
+#' impactful indices rather than all 60. Uses 8 indices + 4 temporal/env = 12
+#' panels in a clean 3x4 grid.
 #'
 #' @param model A fitted GAMM object
 #' @param effect_sizes data.frame with effect sizes for this metric
 #' @param metric Name of the metric
-#' @param top_n Number of top indices to show (default 10)
+#' @param top_n Number of top indices to show (default 8, for 12 total with temporal)
 #' @return Path to saved plot, or NULL if failed
-plot_top_smooths <- function(model, effect_sizes, metric, top_n = 10) {
+plot_top_smooths <- function(model, effect_sizes, metric, top_n = 8) {
   if (nrow(effect_sizes) == 0) {
     warning("No effect sizes available for filtering")
     return(NULL)
@@ -479,18 +480,19 @@ plot_top_smooths <- function(model, effect_sizes, metric, top_n = 10) {
 
   cat(sprintf("    Top %d indices: %s\n", length(top_indices), paste(top_indices, collapse = ", ")))
 
-  # Get smooth term indices in the model
+  # Get smooth term info from the model
   smooth_terms <- sapply(model$smooth, function(s) s$label)
-
-  # Find which smooth indices correspond to our top indices
-  # Smooth labels look like "s(ACI)" so extract the variable name
   smooth_vars <- gsub("s\\(([^,)]+).*", "\\1", smooth_terms)
 
-  # Get indices of smooths to plot (top indices + always include temporal/environmental)
+  # Get EDF values from model summary
+  model_summary <- summary(model)$s.table
+  edf_values <- model_summary[, "edf"]
+
+  # Always include temporal/environmental terms
   always_include <- c("temperature", "depth", "hour_of_day", "day_of_year")
   vars_to_plot <- union(top_indices, always_include)
 
-  # Find which smooth term indices to include
+  # Find which smooth term indices to include, preserving order
   select_indices <- which(smooth_vars %in% vars_to_plot)
 
   if (length(select_indices) == 0) {
@@ -498,20 +500,40 @@ plot_top_smooths <- function(model, effect_sizes, metric, top_n = 10) {
     return(NULL)
   }
 
-  # Calculate grid layout
-  n_plots <- length(select_indices)
-  n_cols <- min(4, ceiling(sqrt(n_plots)))
-  n_rows <- ceiling(n_plots / n_cols)
+  # Fixed 3x4 grid for 12 panels
+  n_cols <- 4
+  n_rows <- 3
 
-  # Create the plot
-  out_path <- file.path("results", "figures", metric, "gamm_smooths_top10.png")
+  # Create the plot with nice formatting like v1
+  out_path <- file.path("results", "figures", metric, "gamm_smooths_top12.png")
 
-  png(out_path, width = 400 * n_cols, height = 350 * n_rows, res = 120)
-  par(mfrow = c(n_rows, n_cols), mar = c(4, 4, 2, 1))
+  png(out_path, width = 1600, height = 1200, res = 120)
 
+  # Set up layout with title space
+  par(mfrow = c(n_rows, n_cols),
+      mar = c(4, 4, 3, 1),   # margins: bottom, left, top, right
+      oma = c(0, 0, 2, 0))   # outer margins for main title
+
+  # Plot each selected smooth
   for (i in select_indices) {
-    plot(model, select = i, shade = TRUE, main = smooth_terms[i])
+    var_name <- smooth_vars[i]
+    edf <- round(edf_values[i], 2)
+
+    # Create title with variable name and EDF
+    title_text <- var_name
+    subtitle_text <- sprintf("EDF=%.2g", edf)
+
+    plot(model, select = i, shade = TRUE,
+         main = title_text, cex.main = 1.1,
+         xlab = var_name, ylab = "Effect")
+
+    # Add EDF as subtitle
+    mtext(subtitle_text, side = 3, line = 0.2, cex = 0.8, col = "gray40")
   }
+
+  # Add main title
+  mtext(paste0(metric, " — Smooth Terms (Top 8 + Temporal)"),
+        outer = TRUE, cex = 1.2, font = 2)
 
   dev.off()
 
@@ -671,9 +693,9 @@ for (metric in names(responses)) {
                   i, top_effects$index[i], top_effects$effect_size[i], top_effects$effect_type[i]))
     }
 
-    # Generate filtered smooth plot (top 10 indices)
-    cat("  Generating top-10 smooth plot...\n")
-    top_smooth_path <- plot_top_smooths(model, effect_sizes, metric, top_n = 10)
+    # Generate filtered smooth plot (top 8 indices + 4 temporal = 12 panels, 3x4 grid)
+    cat("  Generating top-12 smooth plot...\n")
+    top_smooth_path <- plot_top_smooths(model, effect_sizes, metric, top_n = 8)
     if (!is.null(top_smooth_path)) {
       files_created <- files_created + 1
       cat(sprintf("    Saved: %s\n", top_smooth_path))
