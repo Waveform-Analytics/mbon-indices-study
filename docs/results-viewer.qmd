@@ -47,7 +47,7 @@ This is **v2** of the analysis, using all 60 acoustic indices with GAMM regulari
 
 ## Model Summary {#model-summary}
 
-### Why GAMMs? A Quick Primer
+### Why GAMMs?
 
 We used **Generalized Additive Mixed Models (GAMMs)** because the relationships between acoustic indices and biological activity aren't simple straight lines. For example, fish activity might increase with temperature up to a point, then decrease — a curved relationship that standard linear regression can't capture.
 
