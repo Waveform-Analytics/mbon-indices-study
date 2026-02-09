@@ -135,36 +135,52 @@ Indices improve predictions at every single station. The pattern is robust — i
 
 The baseline comparison asked: "Do indices add value beyond environmental/temporal variables?" But we can also flip this question: **How well do acoustic indices predict biological activity *without* environmental or temporal information?**
 
-This "acoustic-only" analysis fits models using only the 60 acoustic indices (plus station and month random effects), excluding temperature, depth, hour of day, and day of year. It reveals how much of the signal comes from the indices themselves.
+This "acoustic-only" analysis fits models using only the 60 acoustic indices (plus station and month random effects), excluding temperature, depth, hour of day, and day of year.
 
-| Metric | Full Model Dev% | Acoustic-Only Dev% | Baseline Dev% | Primary Driver |
-|--------|-----------------|-------------------|---------------|----------------|
-| fish_activity | 55.3% | 52.0% | 51.5% | Acoustic indices |
-| fish_richness | 51.4% | 48.2% | 47.3% | Acoustic indices |
-| fish_presence | 49.4% | 46.0% | 44.0% | Acoustic indices |
-| dolphin_burst_pulse | 26.7% | 23.6% | 14.7% | Acoustic indices |
-| dolphin_echolocation | 21.8% | 21.4% | 15.8% | Acoustic indices |
-| dolphin_whistle | 33.8% | 32.2% | 21.8% | Acoustic indices |
-| dolphin_activity | 20.8% | 20.3% | 14.2% | Acoustic indices |
-| dolphin_presence | 25.0% | 24.7% | 20.1% | Acoustic indices |
-| vessel_presence | 52.4% | 44.9% | 39.6% | Acoustic indices |
+#### Understanding Unique Contributions
+
+Think of it like a Venn diagram. The full model explains some total amount of variance (the whole circle). But how much of that comes from indices vs. environmental/temporal variables?
+
+- **What indices uniquely add** = Full model − Baseline model (i.e., how much better do we get by adding indices to env/temporal?)
+- **What env/temporal uniquely adds** = Full model − Acoustic-only model (i.e., how much better do we get by adding env/temporal to indices?)
+
+The bigger number "wins" — that's the component doing more of the predictive work.
+
+| Metric | Full | Indices add | Env/temporal adds | Which contributes more? |
+|--------|------|-------------|-------------------|------------------------|
+| **Fish metrics** | | | | |
+| fish_activity | 55.3% | +3.8 pp | +3.3 pp | ~Equal |
+| fish_richness | 51.4% | +4.1 pp | +3.2 pp | ~Equal |
+| fish_presence | 49.4% | +5.4 pp | +3.4 pp | ~Equal |
+| **Dolphin metrics** | | | | |
+| dolphin_burst_pulse | 26.7% | +12.0 pp | +3.1 pp | **Indices dominate** |
+| dolphin_echolocation | 21.8% | +6.0 pp | +0.4 pp | **Indices dominate** |
+| dolphin_whistle | 33.8% | +12.0 pp | +1.6 pp | **Indices dominate** |
+| dolphin_activity | 20.8% | +6.6 pp | +0.5 pp | **Indices dominate** |
+| dolphin_presence | 25.0% | +4.9 pp | +0.3 pp | **Indices dominate** |
+| **Vessel metrics** | | | | |
+| vessel_presence | 52.4% | +12.8 pp | +7.5 pp | Indices lead |
 
 **Reading this table:**
 
-- **Full Model Dev%**: Deviance explained by the complete model (indices + env/temporal)
-- **Acoustic-Only Dev%**: Deviance explained using only acoustic indices
-- **Baseline Dev%**: Deviance explained using only environmental/temporal variables (no indices)
-- **Primary Driver**: Whichever explains more variance — indices or env/temporal
+- **Full**: Total variance explained by the complete model
+- **Indices add**: How many percentage points indices contribute *on top of* environmental/temporal variables
+- **Env/temporal adds**: How many percentage points environmental/temporal variables contribute *on top of* indices
+- **Which contributes more?**: Compares the two "add" columns
 
-::: {.callout-important}
+::: {.callout-note}
 ## The Key Finding
 
-**Acoustic indices are the primary driver for all 9 metrics.** In every case, acoustic-only models explain more variance than baseline (env/temporal-only) models. The indices aren't just adding a little extra signal on top of environmental patterns — they're capturing the core predictive information.
+**The story differs by species group:**
 
-This is especially striking for dolphin metrics: the acoustic-only model explains 21.4% of echolocation variance, while the baseline explains only 15.8%. The indices are doing most of the work.
+- **Dolphins**: Acoustic indices clearly dominate. They add 5–12 pp of unique predictive power, while environmental/temporal variables add only 0.3–3 pp. The soundscape characteristics captured by indices are far more informative than knowing the time, temperature, or depth.
+
+- **Fish**: Indices and environmental/temporal variables contribute roughly equally (both add 3–5 pp). Knowing the season, time of day, and water conditions matters just as much as the acoustic indices for predicting fish activity.
+
+- **Vessels**: Indices contribute more (+12.8 pp) than environmental/temporal (+7.5 pp), but both matter. Boats are detectable acoustically, but traffic patterns also follow predictable temporal rhythms.
 :::
 
-**But indices alone aren't enough:** The full models still outperform acoustic-only models (ΔAIC ranges from +6 to +993, all favoring the full model). Environmental and temporal variables add real value — just less than the indices themselves.
+**Bottom line:** You need both components for best predictions, but acoustic indices carry more of the signal for dolphins, while fish predictions rely equally on environmental context.
 
 ---
 
