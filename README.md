@@ -1,137 +1,115 @@
 # MBON Acoustic Indices Study
 
-## Overview
+Can acoustic indices — automated summaries of underwater soundscape characteristics — predict biological activity in an estuary?
 
-This project investigates whether **acoustic indices** — summary statistics computed from underwater sound recordings — can predict **biological community metrics** in estuarine environments. We analyze passive acoustic monitoring data from three sites along the May River, South Carolina to understand relationships between soundscape characteristics and the presence/activity of fish, dolphins, and vessels.
+**Study site:** Three passive acoustic monitoring stations along the May River estuary, SC (9M, 14M, 37M), 2021 data at 2-hour resolution. 13,102 observations, 60 acoustic indices, 9 biological response variables (fish, dolphins, vessels).
 
-For a more complete documentation of the analysis and data pipeline, please see specs/stages/*. 
+## Key Findings
 
-## Study Sites
+**Presence detection works.** Vessel presence: AUC 0.93 (excellent). Fish and dolphin presence: AUC ~0.77 (moderate, useful for screening).
 
-Data were collected at three stations along the May River estuary:
+**Activity counts don't generalize.** Count models (fish activity, dolphin clicks, etc.) fit training data but fail on held-out weeks (negative R²). The data is too zero-inflated and variable for week-to-week prediction.
 
-| Station | Location | Description |
-|---------|----------|-------------|
-| **37M** | River mouth | Closest to open water |
-| **14M** | Mid-river | Intermediate position |
-| **9M** | Up-river | Furthest inland |
+**60 indices > 17 VIF-filtered indices.** Letting GAMM regularization (`select=TRUE`) handle feature selection outperformed manual VIF pre-filtering (avg ΔAIC = -262).
 
-## Data Sources
+**Acoustic indices add real value beyond environment/time.** All 9 metrics show ΔAIC > 70 when adding indices to a baseline model with only temperature, depth, and time variables. For dolphins, indices dominate; for fish, indices and environment contribute roughly equally.
 
-- **Acoustic indices**: ~60 metrics computed from sound recordings (e.g., acoustic complexity, entropy, bioacoustic index), currently available for 2021
-- **Manual detections**: Expert annotations of fish calls, dolphin vocalizations, and vessel noise for 2018 and 2021
-- **Environmental data**: Water temperature and depth at each station
+**No universal "best index."** Top predictors vary by metric and station. HFC dominates vessel detection; ACTspFract dominates dolphin presence; LFC matters most for fish presence. Station-level models show different indices matter at different locations.
 
-## Species and Metrics
-
-### Fish (8 species of interest)
-- Silver perch
-- Oyster toadfish (boat whistle and grunt calls)
-- Black drum
-- Spotted seatrout
-- Red drum
-- Atlantic croaker
-- Weakfish
-
-**Derived metrics**: activity (total call intensity), richness (species count per time bin), presence (binary)
-
-### Bottlenose Dolphins
-- Echolocation clicks
-- Burst pulses
-- Whistles
-
-**Derived metrics**: counts by call type, total activity, presence (binary)
-
-### Vessels
-**Derived metrics**: presence (binary)
-
-## Research Questions
-
-1. Which acoustic indices best capture variation in biological activity?
-2. Can we predict fish and dolphin presence/activity from soundscape metrics?
-3. How do these relationships vary across stations and time of day?
-
-## Analysis Approach
-
-The analysis proceeds through a series of stages:
-
-### Stage 0: Data Preparation
-Align all data sources to a common 2-hour temporal resolution and standardize formats across stations and years.
-
-### Stage 1: Index Reduction
-Reduce ~60 acoustic indices to a smaller, non-redundant set using variance inflation factor (VIF) screening. VIF captures multicollinearity holistically and the approach is fully deterministic.
-
-**Current result**: ~17 final indices representing spectral, temporal, and complexity dimensions of the soundscape.
-
-### Stage 2: Community Metrics
-Derive biological response variables from manual detections:
-- **Fish**: activity, richness, presence
-- **Dolphins**: counts by call type, total activity, presence
-- **Vessels**: presence
-
-### Stage 3: Feature Engineering
-Create temporal features (time of day, day of year) and grouping variables needed for mixed-effects modeling.
-
-### Stages 4–5: Statistical Modeling
-Fit Generalized Additive Mixed Models (GAMMs) to assess which indices predict each community metric, accounting for:
-- Station-level variation (random effects)
-- Temporal autocorrelation (AR1 with data-driven rho estimation)
-- Non-linear relationships (smooth terms)
-
-GAMMs were chosen over GLMMs because initial analysis revealed non-linear relationships between acoustic indices and community metrics.
-
-### Stages 6–10: Validation & Reporting
-Validate models via cross-validation and generate visualizations and reports.
-
-## Current Progress
-
-| Stage | Description | Status |
-|-------|-------------|--------|
-| 00 | Data Prep & Alignment | Complete |
-| 01 | Index Reduction | Complete (~17 indices via VIF-only) |
-| 02 | Community Metrics | Complete (9 response variables) |
-| 03 | Feature Engineering | Complete |
-| 04 | Exploratory Visualization | Complete |
-| 05a | GAMM Modeling | Complete |
-| 05b | Validation | Complete |
-| 06–10 | Reporting | Planned |
+Full results: [`docs/results-viewer.html`](docs/results-viewer.html) (run `./rebuild-docs.sh` to generate, or open the pre-built HTML).
 
 ## Project Organization
 
 ```
-mbon-indices-study/
+├── config/
+│   └── analysis.yml              # All analysis parameters (responses, thresholds, GAMM settings)
 ├── data/
-│   ├── raw/                 # Original data files
-│   ├── interim/             # Cleaned, aligned data
-│   └── processed/           # Analysis-ready datasets
+│   ├── raw/                      # Original data (detections, environment, indices by year/station)
+│   ├── interim/                  # Aligned parquet files (stage 00 output)
+│   └── processed/                # Analysis-ready dataset, community metrics, final index list
+├── scripts/
+│   ├── stage00-*.py              # Data loading, alignment, QA
+│   ├── stage01_index_reduction.py
+│   ├── stage02_community_metrics.py
+│   ├── stage03_feature_engineering.py
+│   ├── stage04_exploratory_viz.py
+│   ├── stage05_modeling.R        # Main GAMM fitting (9 response variables)
+│   ├── stage05b_validation.R     # Leave-one-week-out cross-validation
+│   ├── stage05c_diagnostics.R    # Effect sizes, zero-inflation, concurvity
+│   ├── stage05d_baseline.R       # Baseline comparison (indices vs no-indices)
+│   ├── stage05e_*.R              # Acoustic-only models, per-station effects
+│   └── stage05f_*.R              # Per-station effect sizes
 ├── results/
-│   ├── figures/             # Plots and visualizations
-│   ├── tables/              # Summary tables
-│   └── logs/                # Processing logs
-├── specs/                   # Detailed documentation for each stage
-│   └── stages/              # Stage-by-stage specifications
-├── scripts/                 # Executable analysis scripts
-├── src/python/              # Python code for data processing
-├── src/r/                   # R code for statistical modeling
-└── config/                  # Analysis parameters
+│   ├── figures/                  # All plots (per-metric subdirs + summary figures)
+│   ├── tables/                   # CSV summaries (model fits, effect sizes, validation)
+│   ├── models/                   # Saved GAMM .rds files
+│   └── logs/                     # Processing logs with timestamps
+├── specs/stages/                 # Detailed specs for each analysis stage
+├── docs/
+│   ├── results-viewer.qmd        # Quarto results document (source)
+│   ├── results-viewer.html       # Rendered results (rebuild with ./rebuild-docs.sh)
+│   └── presentations/            # Slide decks
+├── src/python/mbon_indices/      # Python package (data loading/processing utilities)
+└── rebuild-docs.sh               # Copies figures/tables to docs/ and renders Quarto
 ```
 
-### Where to Find More Information
+## Quickstart
 
-- **Stage specifications** (`specs/stages/`): Detailed documentation of inputs, outputs, methods, and decisions for each analysis stage
-- **Configuration** (`config/analysis.yml`): Parameter values and thresholds used in the analysis
-- **Processing logs** (`results/logs/`): Timestamped records of each analysis run
+### Prerequisites
 
-## Key Outputs
+- Python 3.10+ with [uv](https://docs.astral.sh/uv/)
+- R with `mgcv`, `jsonlite`, `dplyr`, `ggplot2`, `pROC`
+- [Quarto](https://quarto.org/) (for rendering docs)
 
-- `data/processed/indices_final.csv` — Final set of acoustic indices for modeling
-- `data/processed/community_metrics.parquet` — Biological response variables
-- `data/processed/analysis_ready.parquet` — Combined dataset for modeling (after Stage 03)
-- `results/figures/` — Correlation heatmaps, diagnostic plots, model visualizations
+### Setup
 
-## Contributing
+```bash
+uv sync
+```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, coding conventions, and workflow details.
+### Run the pipeline
+
+Stages 00–04 are Python, stages 05+ are R:
+
+```bash
+# Data prep (Python)
+uv run scripts/stage00-a_verify_loaders.py
+uv run scripts/stage00-b_align.py
+uv run scripts/stage01_index_reduction.py
+uv run scripts/stage02_community_metrics.py
+uv run scripts/stage03_feature_engineering.py
+uv run scripts/stage04_exploratory_viz.py
+
+# Modeling (R) — these take a while
+Rscript scripts/stage05_modeling.R
+Rscript scripts/stage05b_validation.R
+Rscript scripts/stage05c_diagnostics.R
+Rscript scripts/stage05d_baseline.R
+Rscript scripts/stage05e_acoustic_only.R
+Rscript scripts/stage05e_bystation_effects.R
+Rscript scripts/stage05f_bystation_effect_sizes.R
+
+# Build results site
+./rebuild-docs.sh
+open docs/results-viewer.html
+```
+
+### Configuration
+
+All analysis parameters live in [`config/analysis.yml`](config/analysis.yml) — response variable families, GAMM settings (`smooth_k`, `select`), scaling options, station list, etc.
+
+## Models
+
+**Generalized Additive Mixed Models (GAMMs)** via `mgcv::bam()` with:
+
+- 60 acoustic indices as smooth predictors (`k=3`)
+- Temperature and depth as smooth covariates
+- Cyclic smooths for hour-of-day and day-of-year
+- Station, month, and day as random effects
+- AR1 autocorrelation (data-driven ρ)
+- Shrinkage selection (`select=TRUE`) — penalizes unnecessary complexity, no manual pre-filtering needed
+
+Binary responses (presence) use binomial family; count responses use negative binomial.
 
 ## License
 
