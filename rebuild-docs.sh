@@ -61,6 +61,7 @@ cp results/tables/baseline_comparison_bystation.csv docs/tables/ 2>/dev/null || 
 cp results/tables/bystation_significance_summary.csv docs/tables/ 2>/dev/null || true
 cp results/tables/bystation_effect_sizes.csv docs/tables/ 2>/dev/null || true
 cp results/tables/vif_validation.csv docs/tables/ 2>/dev/null || true
+cp results/tables/acoustic_only_comparison.csv docs/tables/ 2>/dev/null || true
 echo "  Copied summary tables"
 
 # Step 3: Render Quarto

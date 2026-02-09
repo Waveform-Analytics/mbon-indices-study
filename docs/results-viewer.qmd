@@ -131,6 +131,41 @@ A skeptic might worry that the indices only help because they're picking up some
 
 Indices improve predictions at every single station. The pattern is robust — it's not an artifact of how we pooled the data.
 
+### The Inverse Question: What Do Indices Capture Alone?
+
+The baseline comparison asked: "Do indices add value beyond environmental/temporal variables?" But we can also flip this question: **How well do acoustic indices predict biological activity *without* environmental or temporal information?**
+
+This "acoustic-only" analysis fits models using only the 60 acoustic indices (plus station and month random effects), excluding temperature, depth, hour of day, and day of year. It reveals how much of the signal comes from the indices themselves.
+
+| Metric | Full Model Dev% | Acoustic-Only Dev% | Baseline Dev% | Primary Driver |
+|--------|-----------------|-------------------|---------------|----------------|
+| fish_activity | 55.3% | 52.0% | 51.5% | Acoustic indices |
+| fish_richness | 51.4% | 48.2% | 47.3% | Acoustic indices |
+| fish_presence | 49.4% | 46.0% | 44.0% | Acoustic indices |
+| dolphin_burst_pulse | 26.7% | 23.6% | 14.7% | Acoustic indices |
+| dolphin_echolocation | 21.8% | 21.4% | 15.8% | Acoustic indices |
+| dolphin_whistle | 33.8% | 32.2% | 21.8% | Acoustic indices |
+| dolphin_activity | 20.8% | 20.3% | 14.2% | Acoustic indices |
+| dolphin_presence | 25.0% | 24.7% | 20.1% | Acoustic indices |
+| vessel_presence | 52.4% | 44.9% | 39.6% | Acoustic indices |
+
+**Reading this table:**
+
+- **Full Model Dev%**: Deviance explained by the complete model (indices + env/temporal)
+- **Acoustic-Only Dev%**: Deviance explained using only acoustic indices
+- **Baseline Dev%**: Deviance explained using only environmental/temporal variables (no indices)
+- **Primary Driver**: Whichever explains more variance — indices or env/temporal
+
+::: {.callout-important}
+## The Key Finding
+
+**Acoustic indices are the primary driver for all 9 metrics.** In every case, acoustic-only models explain more variance than baseline (env/temporal-only) models. The indices aren't just adding a little extra signal on top of environmental patterns — they're capturing the core predictive information.
+
+This is especially striking for dolphin metrics: the acoustic-only model explains 21.4% of echolocation variance, while the baseline explains only 15.8%. The indices are doing most of the work.
+:::
+
+**But indices alone aren't enough:** The full models still outperform acoustic-only models (ΔAIC ranges from +6 to +993, all favoring the full model). Environmental and temporal variables add real value — just less than the indices themselves.
+
 ---
 
 ## Which Indices Predict Which Responses? {#index-significance}
@@ -712,6 +747,7 @@ Acoustic indices can tell you *whether* biological activity is happening, but no
 - [CV Performance Summary (CSV)](tables/cv_performance_summary.csv)
 - [AR1 Validation (CSV)](tables/ar1_validation.csv)
 - [Baseline Comparison (CSV)](tables/baseline_comparison.csv) — indices vs no-indices
+- [Acoustic-Only Comparison (CSV)](tables/acoustic_only_comparison.csv) — indices alone vs full model
 - [Per-Station Baseline (CSV)](tables/baseline_comparison_bystation.csv)
 - [Per-Station Index Significance (CSV)](tables/bystation_significance_summary.csv) — which indices matter at each station
 - [VIF Validation (CSV)](tables/vif_validation.csv) — 17 vs 60 indices
