@@ -190,21 +190,31 @@ Now that we know indices add value overall, a natural question is: **which speci
 
 This turns out to be tricky to answer precisely, and here's why: many acoustic indices measure similar things. An index that captures "how much high-frequency energy is present" will be correlated with other indices measuring spectral content. When multiple indices carry overlapping information, the model might use any of them — or split the signal across several.
 
-That said, we can identify which indices have the **largest effects** for each response. The table below shows the top 3 indices by effect size:
+That said, we can identify which indices have the **largest effects** for each response. The table below shows the top 3 indices by effect size.
+
+::: {.callout-tip}
+## Reading Effect Sizes
+
+Effect sizes show how much the predicted outcome changes when an index moves from low (10th percentile) to high (90th percentile).
+
+- **Positive values (+)** = higher index values → higher response (e.g., +24 pp means detection probability increases by 24 percentage points)
+- **Negative values (−)** = higher index values → lower response (e.g., −15 pp means detection probability decreases by 15 percentage points)
+- **For count models**: Values are shown as fold changes (×). Values >1× indicate a positive relationship; values <1× indicate an inverse relationship (e.g., 0.36× means counts drop to about 1/3)
+:::
 
 ### Top Predictors by Metric (by Effect Size)
 
-| Metric | Top 3 Indices | Effect Magnitude | What these indices measure |
-|--------|---------------|------------------|---------------------------|
-| **fish_activity** | HFC, ACTtFraction, SNRt | 0.4–2.3× fold change | High-frequency content, temporal activity fraction, signal-to-noise |
-| **fish_richness** | HFC, EVNtCount, ACTtFraction | 0.4–2.1× fold change | High-frequency content, event counts, temporal activity |
-| **fish_presence** | LFC, Hf, AGI | 15–24 pp change | Low-frequency content, spectral entropy, acoustic gradients |
-| **dolphin_burst_pulse** | MFC, HFC, EPS | 0.01–13× fold change | Mid/high frequency content, spectral entropy |
-| **dolphin_echolocation** | ACTspCount, HFC, ACTspFract | 0.01–2400× fold change | Spectral activity counts/fraction, high-frequency content |
-| **dolphin_whistle** | Ht, SNRt, MFC | 0.02–3.4× fold change | Temporal entropy, signal-to-noise, mid-frequency content |
-| **dolphin_activity** | ACTspCount, HFC, ACTspFract | 0.01–11650× fold change | Spectral activity counts/fraction, high-frequency content |
-| **dolphin_presence** | **ACTspFract**, HFC, EVNspCount | **+97 pp**, −21 pp, −19 pp | Activity fraction dominates; high-freq and event counts secondary |
-| **vessel_presence** | HFC, aROI, nROI | +94 pp, −82 pp, +76 pp | High-frequency content, activity regions — all massive effects |
+| Metric | Top 3 Indices (effect size) | What these indices measure |
+|--------|----------------------------|---------------------------|
+| **fish_activity** | HFC (0.36×), ACTtFraction (0.42×), SNRt (2.3×) | High-frequency content, temporal activity fraction, signal-to-noise |
+| **fish_richness** | HFC (0.36×), EVNtCount (2.1×), ACTtFraction (0.55×) | High-frequency content, event counts, temporal activity |
+| **fish_presence** | LFC (+24 pp), Hf (+23 pp), AGI (+15 pp) | Low-frequency content, spectral entropy, acoustic gradients |
+| **dolphin_burst_pulse** | MFC (0.002×), HFC (0.07×), EPS (12.7×) | Mid/high frequency content, spectral entropy |
+| **dolphin_echolocation** | ACTspCount (2378×), HFC (0.01×), ACTspFract (19×) | Spectral activity counts/fraction, high-frequency content |
+| **dolphin_whistle** | Ht (0.02×), SNRt (0.07×), ZCR (3.4×) | Temporal entropy, signal-to-noise, zero-crossing rate |
+| **dolphin_activity** | ACTspCount (11650×), HFC (0.01×), ACTspFract (17×) | Spectral activity counts/fraction, high-frequency content |
+| **dolphin_presence** | ACTspFract (+97 pp), HFC (−21 pp), EVNspCount (−19 pp) | Activity fraction dominates; high-freq and event counts secondary |
+| **vessel_presence** | HFC (+94 pp), aROI (−82 pp), nROI (+76 pp) | High-frequency content, activity regions — all massive effects |
 
 ### What Patterns Emerge?
 
@@ -882,6 +892,15 @@ The smooth plots above show the *shape* of each relationship, but not the *magni
 The main analysis pools data across all three monitoring stations (9M, 14M, 37M). But do the same indices matter at each location, or are some effects station-specific?
 
 To answer this, we fit separate GAMM models for each station and calculated **effect sizes** (probability change when moving from 10th to 90th percentile of each index). Note: Sample sizes are roughly equal across all three stations, so differences in effects reflect genuine station-level variation rather than sampling imbalance.
+
+::: {.callout-tip}
+## Reading Effect Sizes
+
+- **Positive values (+)** = higher index values → higher detection probability
+- **Negative values (−)** = higher index values → lower detection probability
+
+For example, ACTspCount (+86) means that when ACTspCount goes from low to high, dolphin detection probability increases by 86 percentage points.
+:::
 
 ### Top 5 Indices by Effect Size at Each Station
 
