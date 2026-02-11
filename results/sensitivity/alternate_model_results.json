@@ -1,0 +1,482 @@
+{
+  "fish_activity": {
+    "converged": true,
+    "AIC": "NA",
+    "n_obs": 13102,
+    "coefficients": [
+      {
+        "Estimate": -0.0329,
+        "Std. Error": 0.2948,
+        "z value": -0.1116,
+        "Pr(>|z|)": 0.9112,
+        "predictor": "(Intercept)",
+        "_row": "(Intercept)"
+      },
+      {
+        "Estimate": 0.0674,
+        "Std. Error": 0.0158,
+        "z value": 4.2585,
+        "Pr(>|z|)": 0,
+        "predictor": "AGI",
+        "_row": "AGI"
+      },
+      {
+        "Estimate": -0.0074,
+        "Std. Error": 0.0085,
+        "z value": -0.8778,
+        "Pr(>|z|)": 0.38,
+        "predictor": "ECV",
+        "_row": "ECV"
+      },
+      {
+        "Estimate": -0.0315,
+        "Std. Error": 0.0117,
+        "z value": -2.69,
+        "Pr(>|z|)": 0.0071,
+        "predictor": "EPS_SKEW",
+        "_row": "EPS_SKEW"
+      },
+      {
+        "Estimate": 0.029,
+        "Std. Error": 0.0135,
+        "z value": 2.1499,
+        "Pr(>|z|)": 0.0316,
+        "predictor": "EVNtCount",
+        "_row": "EVNtCount"
+      },
+      {
+        "Estimate": -0.0846,
+        "Std. Error": 0.0122,
+        "z value": -6.9176,
+        "Pr(>|z|)": 4.5922e-12,
+        "predictor": "EVNtMean",
+        "_row": "EVNtMean"
+      },
+      {
+        "Estimate": -0.0316,
+        "Std. Error": 0.017,
+        "z value": -1.8567,
+        "Pr(>|z|)": 0.0634,
+        "predictor": "KURTt",
+        "_row": "KURTt"
+      },
+      {
+        "Estimate": 0.0012,
+        "Std. Error": 0.0101,
+        "z value": 0.1165,
+        "Pr(>|z|)": 0.9073,
+        "predictor": "MEANt",
+        "_row": "MEANt"
+      },
+      {
+        "Estimate": 0.0161,
+        "Std. Error": 0.0115,
+        "z value": 1.4095,
+        "Pr(>|z|)": 0.1587,
+        "predictor": "NBPEAKS",
+        "_row": "NBPEAKS"
+      },
+      {
+        "Estimate": 0.0342,
+        "Std. Error": 0.0146,
+        "z value": 2.3499,
+        "Pr(>|z|)": 0.0188,
+        "predictor": "SKEWt",
+        "_row": "SKEWt"
+      },
+      {
+        "Estimate": -0.0211,
+        "Std. Error": 0.0083,
+        "z value": -2.5357,
+        "Pr(>|z|)": 0.0112,
+        "predictor": "TFSD",
+        "_row": "TFSD"
+      },
+      {
+        "Estimate": -0.0683,
+        "Std. Error": 0.0147,
+        "z value": -4.6382,
+        "Pr(>|z|)": 3.5148e-06,
+        "predictor": "VARt",
+        "_row": "VARt"
+      },
+      {
+        "Estimate": 0.0285,
+        "Std. Error": 0.0114,
+        "z value": 2.5089,
+        "Pr(>|z|)": 0.0121,
+        "predictor": "ZCR",
+        "_row": "ZCR"
+      },
+      {
+        "Estimate": -0.0874,
+        "Std. Error": 0.0111,
+        "z value": -7.9077,
+        "Pr(>|z|)": 2.6213e-15,
+        "predictor": "nROI",
+        "_row": "nROI"
+      },
+      {
+        "Estimate": -0.0376,
+        "Std. Error": 0.0104,
+        "z value": -3.6098,
+        "Pr(>|z|)": 0.0003,
+        "predictor": "rBA",
+        "_row": "rBA"
+      },
+      {
+        "Estimate": 0.4811,
+        "Std. Error": 0.0327,
+        "z value": 14.7072,
+        "Pr(>|z|)": 5.7927e-49,
+        "predictor": "temperature",
+        "_row": "temperature"
+      },
+      {
+        "Estimate": 0.1989,
+        "Std. Error": 0.0137,
+        "z value": 14.4888,
+        "Pr(>|z|)": 1.4263e-47,
+        "predictor": "depth",
+        "_row": "depth"
+      },
+      {
+        "Estimate": -0.177,
+        "Std. Error": 0.011,
+        "z value": -16.1174,
+        "Pr(>|z|)": 1.9254e-58,
+        "predictor": "sin_hour",
+        "_row": "sin_hour"
+      },
+      {
+        "Estimate": -0.0975,
+        "Std. Error": 0.0115,
+        "z value": -8.4905,
+        "Pr(>|z|)": 2.0569e-17,
+        "predictor": "cos_hour",
+        "_row": "cos_hour"
+      }
+    ],
+    "significant_predictors": ["AGI", "EPS_SKEW", "EVNtCount", "EVNtMean", "SKEWt", "TFSD", "VARt", "ZCR", "nROI", "rBA", "temperature", "depth", "sin_hour", "cos_hour"]
+  },
+  "dolphin_activity": {
+    "converged": true,
+    "AIC": 32724.7855,
+    "n_obs": 13102,
+    "coefficients": [
+      {
+        "Estimate": 0.1788,
+        "Std. Error": 0.2531,
+        "z value": 0.7062,
+        "Pr(>|z|)": 0.48,
+        "predictor": "(Intercept)",
+        "_row": "(Intercept)"
+      },
+      {
+        "Estimate": -0.0427,
+        "Std. Error": 0.0562,
+        "z value": -0.7583,
+        "Pr(>|z|)": 0.4483,
+        "predictor": "AGI",
+        "_row": "AGI"
+      },
+      {
+        "Estimate": -0.0104,
+        "Std. Error": 0.0356,
+        "z value": -0.2916,
+        "Pr(>|z|)": 0.7706,
+        "predictor": "ECV",
+        "_row": "ECV"
+      },
+      {
+        "Estimate": -0.035,
+        "Std. Error": 0.044,
+        "z value": -0.7948,
+        "Pr(>|z|)": 0.4267,
+        "predictor": "EPS_SKEW",
+        "_row": "EPS_SKEW"
+      },
+      {
+        "Estimate": -0.1173,
+        "Std. Error": 0.05,
+        "z value": -2.3454,
+        "Pr(>|z|)": 0.019,
+        "predictor": "EVNtCount",
+        "_row": "EVNtCount"
+      },
+      {
+        "Estimate": -0.0511,
+        "Std. Error": 0.0348,
+        "z value": -1.4689,
+        "Pr(>|z|)": 0.1419,
+        "predictor": "EVNtMean",
+        "_row": "EVNtMean"
+      },
+      {
+        "Estimate": 0.0579,
+        "Std. Error": 0.0365,
+        "z value": 1.5847,
+        "Pr(>|z|)": 0.113,
+        "predictor": "KURTt",
+        "_row": "KURTt"
+      },
+      {
+        "Estimate": 0.0174,
+        "Std. Error": 0.0307,
+        "z value": 0.5673,
+        "Pr(>|z|)": 0.5705,
+        "predictor": "MEANt",
+        "_row": "MEANt"
+      },
+      {
+        "Estimate": -0.1327,
+        "Std. Error": 0.04,
+        "z value": -3.3139,
+        "Pr(>|z|)": 0.0009,
+        "predictor": "NBPEAKS",
+        "_row": "NBPEAKS"
+      },
+      {
+        "Estimate": -0.0232,
+        "Std. Error": 0.0389,
+        "z value": -0.597,
+        "Pr(>|z|)": 0.5505,
+        "predictor": "SKEWt",
+        "_row": "SKEWt"
+      },
+      {
+        "Estimate": -0.4949,
+        "Std. Error": 0.0556,
+        "z value": -8.8966,
+        "Pr(>|z|)": 5.7562e-19,
+        "predictor": "TFSD",
+        "_row": "TFSD"
+      },
+      {
+        "Estimate": -0.0141,
+        "Std. Error": 0.0353,
+        "z value": -0.4011,
+        "Pr(>|z|)": 0.6884,
+        "predictor": "VARt",
+        "_row": "VARt"
+      },
+      {
+        "Estimate": -0.0517,
+        "Std. Error": 0.0377,
+        "z value": -1.3699,
+        "Pr(>|z|)": 0.1707,
+        "predictor": "ZCR",
+        "_row": "ZCR"
+      },
+      {
+        "Estimate": 0.0734,
+        "Std. Error": 0.0387,
+        "z value": 1.8986,
+        "Pr(>|z|)": 0.0576,
+        "predictor": "nROI",
+        "_row": "nROI"
+      },
+      {
+        "Estimate": -0.0317,
+        "Std. Error": 0.0435,
+        "z value": -0.7287,
+        "Pr(>|z|)": 0.4662,
+        "predictor": "rBA",
+        "_row": "rBA"
+      },
+      {
+        "Estimate": -0.3575,
+        "Std. Error": 0.0672,
+        "z value": -5.3211,
+        "Pr(>|z|)": 1.0313e-07,
+        "predictor": "temperature",
+        "_row": "temperature"
+      },
+      {
+        "Estimate": -0.3078,
+        "Std. Error": 0.0517,
+        "z value": -5.9539,
+        "Pr(>|z|)": 2.6175e-09,
+        "predictor": "depth",
+        "_row": "depth"
+      },
+      {
+        "Estimate": -0.1107,
+        "Std. Error": 0.0426,
+        "z value": -2.5974,
+        "Pr(>|z|)": 0.0094,
+        "predictor": "sin_hour",
+        "_row": "sin_hour"
+      },
+      {
+        "Estimate": 0.123,
+        "Std. Error": 0.042,
+        "z value": 2.9294,
+        "Pr(>|z|)": 0.0034,
+        "predictor": "cos_hour",
+        "_row": "cos_hour"
+      }
+    ],
+    "significant_predictors": ["EVNtCount", "NBPEAKS", "TFSD", "temperature", "depth", "sin_hour", "cos_hour"]
+  },
+  "vessel_presence": {
+    "converged": true,
+    "AIC": 7159.5914,
+    "n_obs": 13102,
+    "coefficients": [
+      {
+        "Estimate": -2.455,
+        "Std. Error": 0.6325,
+        "z value": -3.8816,
+        "Pr(>|z|)": 0.0001,
+        "predictor": "(Intercept)",
+        "_row": "(Intercept)"
+      },
+      {
+        "Estimate": -0.3784,
+        "Std. Error": 0.0609,
+        "z value": -6.2096,
+        "Pr(>|z|)": 5.3125e-10,
+        "predictor": "AGI",
+        "_row": "AGI"
+      },
+      {
+        "Estimate": 0.0021,
+        "Std. Error": 0.0421,
+        "z value": 0.049,
+        "Pr(>|z|)": 0.9609,
+        "predictor": "ECV",
+        "_row": "ECV"
+      },
+      {
+        "Estimate": 0.3751,
+        "Std. Error": 0.0463,
+        "z value": 8.0926,
+        "Pr(>|z|)": 5.839e-16,
+        "predictor": "EPS_SKEW",
+        "_row": "EPS_SKEW"
+      },
+      {
+        "Estimate": -0.4939,
+        "Std. Error": 0.0613,
+        "z value": -8.0532,
+        "Pr(>|z|)": 8.0685e-16,
+        "predictor": "EVNtCount",
+        "_row": "EVNtCount"
+      },
+      {
+        "Estimate": 0.1648,
+        "Std. Error": 0.0408,
+        "z value": 4.0417,
+        "Pr(>|z|)": 0.0001,
+        "predictor": "EVNtMean",
+        "_row": "EVNtMean"
+      },
+      {
+        "Estimate": 0.0491,
+        "Std. Error": 0.0532,
+        "z value": 0.9233,
+        "Pr(>|z|)": 0.3559,
+        "predictor": "KURTt",
+        "_row": "KURTt"
+      },
+      {
+        "Estimate": -0.0236,
+        "Std. Error": 0.0416,
+        "z value": -0.5669,
+        "Pr(>|z|)": 0.5708,
+        "predictor": "MEANt",
+        "_row": "MEANt"
+      },
+      {
+        "Estimate": 0.0365,
+        "Std. Error": 0.0533,
+        "z value": 0.6839,
+        "Pr(>|z|)": 0.494,
+        "predictor": "NBPEAKS",
+        "_row": "NBPEAKS"
+      },
+      {
+        "Estimate": 0.0653,
+        "Std. Error": 0.0511,
+        "z value": 1.2797,
+        "Pr(>|z|)": 0.2007,
+        "predictor": "SKEWt",
+        "_row": "SKEWt"
+      },
+      {
+        "Estimate": 0.0164,
+        "Std. Error": 0.0419,
+        "z value": 0.3911,
+        "Pr(>|z|)": 0.6957,
+        "predictor": "TFSD",
+        "_row": "TFSD"
+      },
+      {
+        "Estimate": 0.0208,
+        "Std. Error": 0.024,
+        "z value": 0.8639,
+        "Pr(>|z|)": 0.3877,
+        "predictor": "VARt",
+        "_row": "VARt"
+      },
+      {
+        "Estimate": 0.044,
+        "Std. Error": 0.0481,
+        "z value": 0.9151,
+        "Pr(>|z|)": 0.3602,
+        "predictor": "ZCR",
+        "_row": "ZCR"
+      },
+      {
+        "Estimate": 0.7983,
+        "Std. Error": 0.044,
+        "z value": 18.1569,
+        "Pr(>|z|)": 1.1331e-73,
+        "predictor": "nROI",
+        "_row": "nROI"
+      },
+      {
+        "Estimate": -0.162,
+        "Std. Error": 0.0467,
+        "z value": -3.4722,
+        "Pr(>|z|)": 0.0005,
+        "predictor": "rBA",
+        "_row": "rBA"
+      },
+      {
+        "Estimate": 0.3404,
+        "Std. Error": 0.0719,
+        "z value": 4.7327,
+        "Pr(>|z|)": 2.215e-06,
+        "predictor": "temperature",
+        "_row": "temperature"
+      },
+      {
+        "Estimate": 0.0122,
+        "Std. Error": 0.0581,
+        "z value": 0.2099,
+        "Pr(>|z|)": 0.8337,
+        "predictor": "depth",
+        "_row": "depth"
+      },
+      {
+        "Estimate": 1.9544,
+        "Std. Error": 0.0629,
+        "z value": 31.0578,
+        "Pr(>|z|)": 8.9652e-212,
+        "predictor": "sin_hour",
+        "_row": "sin_hour"
+      },
+      {
+        "Estimate": -1.0277,
+        "Std. Error": 0.0508,
+        "z value": -20.2298,
+        "Pr(>|z|)": 5.3545e-91,
+        "predictor": "cos_hour",
+        "_row": "cos_hour"
+      }
+    ],
+    "significant_predictors": ["(Intercept)", "AGI", "EPS_SKEW", "EVNtCount", "EVNtMean", "nROI", "rBA", "temperature", "sin_hour", "cos_hour"]
+  }
+}

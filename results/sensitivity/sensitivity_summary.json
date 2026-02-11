@@ -1,0 +1,250 @@
+{
+  "timestamp": "2025-12-16T12:52:17.905900",
+  "config": {
+    "correlation_threshold": 0.6,
+    "vif_threshold": 2,
+    "vif_fallback": 5
+  },
+  "index_comparison": {
+    "primary_count": 14,
+    "alternate_count": 14,
+    "common_count": 6,
+    "common_indices": [
+      "KURTt",
+      "MEANt",
+      "NBPEAKS",
+      "SKEWt",
+      "TFSD",
+      "VARt"
+    ],
+    "only_primary": [
+      "ACI",
+      "ACTtCount",
+      "ADI",
+      "BI",
+      "BioEnergy",
+      "EAS",
+      "EPS_KURT",
+      "EVNspMean"
+    ],
+    "only_alternate": [
+      "AGI",
+      "ECV",
+      "EPS_SKEW",
+      "EVNtCount",
+      "EVNtMean",
+      "ZCR",
+      "nROI",
+      "rBA"
+    ],
+    "swap_details": [
+      {
+        "index": "BI",
+        "in_primary": true,
+        "dropped_in_alternate_for": "rBA",
+        "correlation": 0.6433782013025737
+      },
+      {
+        "index": "ACI",
+        "in_primary": true,
+        "dropped_in_alternate_for": "ACTspMean",
+        "correlation": 0.6774250321782819
+      },
+      {
+        "index": "ACTtCount",
+        "in_primary": true,
+        "dropped_in_alternate_for": "ACTtFraction",
+        "correlation": 0.999881448627472
+      },
+      {
+        "index": "EVNspMean",
+        "in_primary": true,
+        "dropped_in_alternate_for": "EVNtMean",
+        "correlation": 0.6520042467346314
+      },
+      {
+        "index": "EAS",
+        "in_primary": true,
+        "dropped_in_alternate_for": "ECV",
+        "correlation": 0.7118227327368993
+      },
+      {
+        "index": "BioEnergy",
+        "in_primary": true,
+        "dropped_in_alternate_for": "MEANf",
+        "correlation": 0.6936383192593232
+      },
+      {
+        "index": "ADI",
+        "in_primary": true,
+        "dropped_in_alternate_for": "AEI",
+        "correlation": -0.9444610872762792
+      },
+      {
+        "index": "EPS_KURT",
+        "in_primary": true,
+        "dropped_in_alternate_for": "EPS_SKEW",
+        "correlation": 0.8654072255809648
+      },
+      {
+        "index": "nROI",
+        "in_primary": false,
+        "dropped_in_primary_for": "aROI",
+        "correlation": 0.7708187309064333
+      },
+      {
+        "index": "ZCR",
+        "in_primary": false,
+        "dropped_in_primary_for": "ACTtMean",
+        "correlation": 0.7289685619276475
+      },
+      {
+        "index": "EPS_SKEW",
+        "in_primary": false,
+        "dropped_in_primary_for": "EPS_KURT",
+        "correlation": 0.8654072255809648
+      },
+      {
+        "index": "EVNtCount",
+        "in_primary": false,
+        "dropped_in_primary_for": "ACTtCount",
+        "correlation": 0.7090412956028369
+      },
+      {
+        "index": "EVNtMean",
+        "in_primary": false,
+        "dropped_in_primary_for": "EVNspMean",
+        "correlation": 0.6520042467346314
+      },
+      {
+        "index": "ECV",
+        "in_primary": false,
+        "dropped_in_primary_for": "ECU",
+        "correlation": 0.9169090124017599
+      },
+      {
+        "index": "rBA",
+        "in_primary": false,
+        "dropped_in_primary_for": "NDSI",
+        "correlation": 0.9999999999999996
+      }
+    ]
+  },
+  "model_comparison": {
+    "fish_activity": {
+      "primary_AIC": "NA",
+      "alternate_AIC": "NA",
+      "error": "Could not compare AIC (NA or invalid value)"
+    },
+    "dolphin_activity": {
+      "primary_AIC": 32705.7457,
+      "alternate_AIC": 32724.7855,
+      "AIC_difference": 19.039800000002288,
+      "AIC_interpretation": "strong difference (|diff| >= 10)",
+      "primary_significant": [
+        "ACI",
+        "ACTtCount",
+        "ADI",
+        "BI",
+        "EPS_KURT",
+        "NBPEAKS",
+        "TFSD",
+        "cos_hour",
+        "depth",
+        "sin_hour",
+        "temperature"
+      ],
+      "alternate_significant": [
+        "EVNtCount",
+        "NBPEAKS",
+        "TFSD",
+        "cos_hour",
+        "depth",
+        "sin_hour",
+        "temperature"
+      ],
+      "sig_in_both": [
+        "NBPEAKS",
+        "TFSD",
+        "cos_hour",
+        "depth",
+        "sin_hour",
+        "temperature"
+      ],
+      "sig_only_primary": [
+        "ACI",
+        "ACTtCount",
+        "ADI",
+        "BI",
+        "EPS_KURT"
+      ],
+      "sig_only_alternate": [
+        "EVNtCount"
+      ]
+    },
+    "vessel_presence": {
+      "primary_AIC": 7390.7611,
+      "alternate_AIC": 7159.5914,
+      "AIC_difference": -231.16969999999947,
+      "AIC_interpretation": "strong difference (|diff| >= 10)",
+      "primary_significant": [
+        "(Intercept)",
+        "ACI",
+        "ACTtCount",
+        "ADI",
+        "BI",
+        "BioEnergy",
+        "EAS",
+        "EPS_KURT",
+        "EVNspMean",
+        "KURTt",
+        "TFSD",
+        "cos_hour",
+        "depth",
+        "sin_hour",
+        "temperature"
+      ],
+      "alternate_significant": [
+        "(Intercept)",
+        "AGI",
+        "EPS_SKEW",
+        "EVNtCount",
+        "EVNtMean",
+        "cos_hour",
+        "nROI",
+        "rBA",
+        "sin_hour",
+        "temperature"
+      ],
+      "sig_in_both": [
+        "(Intercept)",
+        "cos_hour",
+        "sin_hour",
+        "temperature"
+      ],
+      "sig_only_primary": [
+        "ACI",
+        "ACTtCount",
+        "ADI",
+        "BI",
+        "BioEnergy",
+        "EAS",
+        "EPS_KURT",
+        "EVNspMean",
+        "KURTt",
+        "TFSD",
+        "depth"
+      ],
+      "sig_only_alternate": [
+        "AGI",
+        "EPS_SKEW",
+        "EVNtCount",
+        "EVNtMean",
+        "nROI",
+        "rBA"
+      ]
+    }
+  },
+  "robustness": "sensitive",
+  "interpretation": "Models show meaningful differences - investigate further"
+}

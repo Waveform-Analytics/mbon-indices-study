@@ -1,0 +1,320 @@
+{
+  "final_indices": [
+    {
+      "index": "ACI",
+      "category": "Complexity Indices",
+      "description": "Quantifies the complexity of sound by evaluating the variation in amplitude among frequency bands, providing insights into the richness and diversity of the acoustic environment. Based on user defined threshold (Full bandwidth used for these calculations)"
+    },
+    {
+      "index": "ACTspCount",
+      "category": "Complexity Indices",
+      "description": "Measures the count of spatial areas showing significant sound activity, reflecting spatial patterns of sound distribution and activity. Quantifies how many distinct spatial regions have notable sound events."
+    },
+    {
+      "index": "ACTspFract",
+      "category": "Complexity Indices",
+      "description": "Measures fraction of spatial areas showing significant sound activity, reflecting spatial patterns of sound distribution and activity. Represents proportion of the area that is active, providing insight into concentration of sound activity across space"
+    },
+    {
+      "index": "ACTspMean",
+      "category": "Complexity Indices",
+      "description": "Measures the mean spatial areas showing significant sound activity, reflecting spatial patterns of sound distribution and activity. Provides average intensity of sound activity in the area, or overall sound energy distribution."
+    },
+    {
+      "index": "ACTtCount",
+      "category": "Temporal Indices",
+      "description": "Evaluates count of temporal sound activity, providing insights into the frequency, duration, and intensity of acoustic events over time. Quantifies how many distinct time intervals have notable sound events"
+    },
+    {
+      "index": "ACTtFraction",
+      "category": "Temporal Indices",
+      "description": "Evaluates fraction of total time of temporal sound activity, providing insights into the frequency, duration, and intensity of acoustic events over time. Represents proportion of time that is active, relating to the concentration of sound activity over time."
+    },
+    {
+      "index": "ACTtMean",
+      "category": "Temporal Indices",
+      "description": "Evaluates mean temporal sound activity, providing insights into the frequency, duration, and intensity of acoustic events over time. Provides average intensity of sound activity in active time segments."
+    },
+    {
+      "index": "ADI",
+      "category": "Diversity Indices",
+      "description": "Measures the variety of sound frequencies present, indicative of biodiversity, and provides valuable information about the ecological integrity and health of the acoustic environment. Based on user defined threshold for andthrophony (0-1,000 Hz for 16 kHz SR; 0-1,500 Hz for Full Bandwidth) and biophony (1,000 Hz - 8,000 Hz for 16 kHz SR; 1,500 Hz and up for Full Bandwidth runs)."
+    },
+    {
+      "index": "AEI",
+      "category": "Diversity Indices",
+      "description": "Evaluates the evenness of the distribution of sound energy across frequencies, reflecting the balance and uniformity of acoustic energy within the environment. Based on user defined threshold for andthrophony (0-1,000 Hz for 16 kHz SR; 0-1,500 Hz for Full Bandwidth) and biophony (1,000 Hz - 8,000 Hz for 16 kHz SR; 1,500 Hz and up for Full Bandwidth runs)."
+    },
+    {
+      "index": "AGI",
+      "category": "Complexity Indices",
+      "description": "Measures the gaps or silent intervals within the acoustic signal, indicative of disturbance or interruptions in natural soundscapes, indicating areas or periods of significnt acoustic change."
+    },
+    {
+      "index": "AnthroEnergy",
+      "category": "Spectral Indices",
+      "description": "Measure of energy associated with human-made sounds, providing information about anthropogenic influences on the acoustic environment. Based on user defined threshold (1,000 Hz for 16 kHz SR; 1,500 Hz for Full bandwidth)"
+    },
+    {
+      "index": "BGNf",
+      "category": "Amplitude Indices",
+      "description": "Level of background noise in the frequency domain, indicating the level of ambient noise pollution in the environment. "
+    },
+    {
+      "index": "BGNt",
+      "category": "Temporal Indices",
+      "description": "Level of background noise in the time domain, indicating the level of ambient noise pollution over time."
+    },
+    {
+      "index": "BI",
+      "category": "Diversity Indices",
+      "description": "Index evaluating the presence of biological sounds. Based on user defined threshold (1,000 Hz - 8,000 Hz for 16 kHz SR; 1,500 Hz and up for Full Bandwidth runs)"
+    },
+    {
+      "index": "BioEnergy",
+      "category": "Diversity Indices",
+      "description": "Measure of energy associated with natural sounds, reflecting the presence and intensity of biological activities within the environment. Based on user defined threshold (1,000 Hz - 8,000 Hz for 16 kHz SR; 1,500 Hz and up for Full Bandwidth runs)"
+    },
+    {
+      "index": "EAS",
+      "category": "Complexity Indices",
+      "description": "Total acoustic energy measured across the spectrum, providing an overview of the overall energy distribution and composition of the acoustic environment."
+    },
+    {
+      "index": "ECU",
+      "category": "Complexity Indices",
+      "description": "Evenness with which different frequency channels are utilized, reflecting the efficient utilization of frequency resources within the acoustic spectrum."
+    },
+    {
+      "index": "ECV",
+      "category": "Complexity Indices",
+      "description": "Coefficient of variation of the energy across different frequency bands, providing insights into the variability and distribution of acoustic energy within the environment."
+    },
+    {
+      "index": "ENRf",
+      "category": "Complexity Indices",
+      "description": "Ratio of energy within certain frequency bands compared to the total energy, offering information about the distribution and allocation of energy across the frequency spectrum."
+    },
+    {
+      "index": "EPS",
+      "category": "Spectral Indices",
+      "description": "Measure of the peak energy in the spectrum, indicating the presence and intensity of dominant acoustic events or phenomena."
+    },
+    {
+      "index": "EPS_KURT",
+      "category": "Spectral Indices",
+      "description": "Kurtosis of the energy peak spectrum, indicating the shape of the peak distribution and providing insights into the distributional characteristics of dominant energy sources."
+    },
+    {
+      "index": "EPS_SKEW",
+      "category": "Spectral Indices",
+      "description": "Skewness of the energy peak spectrum, indicating the asymmetry of the peak distribution and providing information about the uniformity of energy distribution within the spectrum."
+    },
+    {
+      "index": "EVNspCount",
+      "category": "Complexity Indices",
+      "description": "Count of sound events in spatial areas, offering insights into spatial patterns of sound activity and distribution."
+    },
+    {
+      "index": "EVNspFract",
+      "category": "Complexity Indices",
+      "description": "Fraction of the spatial domain where sound events occur, providing insights into spatial patterns of sound activity and distribution."
+    },
+    {
+      "index": "EVNspMean",
+      "category": "Complexity Indices",
+      "description": "Average level of sound events across spatial areas, providing insights into spatial patterns of sound activity and distribution."
+    },
+    {
+      "index": "EVNtCount",
+      "category": "Temporal Indices",
+      "description": "Number of distinct sound events detected, providing insights into the frequency and occurrence of sound events over time."
+    },
+    {
+      "index": "EVNtFraction",
+      "category": "Temporal Indices",
+      "description": "Fraction of time that 'events' (heightened sound activity) occur, providing insights into the frequency and occurrence of sound events over time."
+    },
+    {
+      "index": "EVNtMean",
+      "category": "Temporal Indices",
+      "description": "Average sound level during event times, providing insights into the intensity and characteristics of sound events over time."
+    },
+    {
+      "index": "HFC",
+      "category": "Spectral Indices",
+      "description": "Reiterates the presence and extent of high frequencies in the soundscape."
+    },
+    {
+      "index": "H_GiniSimpson",
+      "category": "Diversity Indices",
+      "description": "Entropy based on the Gini-Simpson index, reflecting diversity and probability."
+    },
+    {
+      "index": "H_Havrda",
+      "category": "Diversity Indices",
+      "description": "Entropy measure based on Havrda-Charvat entropy, reflecting diversity."
+    },
+    {
+      "index": "H_Renyi",
+      "category": "Diversity Indices",
+      "description": "Generalized entropy measure capturing diversity and richness of the soundscape."
+    },
+    {
+      "index": "H_gamma",
+      "category": "Diversity Indices",
+      "description": "Entropy measure based on the gamma distribution, used for sound diversity."
+    },
+    {
+      "index": "H_pairedShannon",
+      "category": "Diversity Indices",
+      "description": "Shannon entropy calculated from paired data sets for comparing diversity."
+    },
+    {
+      "index": "Hf",
+      "category": "Spectral Indices",
+      "description": "Extent to which high frequencies are present in the soundscape."
+    },
+    {
+      "index": "Ht",
+      "category": "Temporal Indices",
+      "description": "Median frequency of the acoustic signal, providing insights into the central tendency of frequency distribution within the environment."
+    },
+    {
+      "index": "KURTf",
+      "category": "Spectral Indices",
+      "description": "'Tailedness' of the frequency distribution, indicating infrequent extreme frequency deviations."
+    },
+    {
+      "index": "KURTt",
+      "category": "Amplitude Indices",
+      "description": "'Tailedness' of the amplitude distribution in the time domain, indicating infrequent extreme deviations."
+    },
+    {
+      "index": "LEQf",
+      "category": "Amplitude Indices",
+      "description": "Equivalent constant sound level in the frequency domain that conveys the same sound energy."
+    },
+    {
+      "index": "LEQt",
+      "category": "Temporal Indices",
+      "description": "Constant sound level that delivers the same sound energy as the varying sound level over a specified period."
+    },
+    {
+      "index": "LFC",
+      "category": "Spectral Indices",
+      "description": "Extent to which low frequencies are present in the soundscape."
+    },
+    {
+      "index": "MEANf",
+      "category": "Amplitude Indices",
+      "description": "Average frequency of sounds, weighted by their amplitude."
+    },
+    {
+      "index": "MEANt",
+      "category": "Temporal Indices",
+      "description": "The average amplitude of the audio signal over time, reflecting the overall loudness."
+    },
+    {
+      "index": "MED",
+      "category": "Spectral Indices",
+      "description": "Median frequency of the acoustic signal, providing insights into the central tendency of frequency distribution within the environment."
+    },
+    {
+      "index": "MFC",
+      "category": "Spectral Indices",
+      "description": "Extent to which mid-range frequencies are present in the soundscape."
+    },
+    {
+      "index": "NBPEAKS",
+      "category": "Spectral Indices",
+      "description": "Total number of prominent peaks in the frequency spectrum."
+    },
+    {
+      "index": "NDSI",
+      "category": "Spectral Indices",
+      "description": "Index of the balance between biological sounds and anthropogenic noise."
+    },
+    {
+      "index": "RAOQ",
+      "category": "Complexity Indices",
+      "description": "Entropy measure that considers both abundance and dissimilarity among categories."
+    },
+    {
+      "index": "ROU",
+      "category": "Complexity Indices",
+      "description": "Measure of the texture or roughness of the sound profile."
+    },
+    {
+      "index": "SKEWf",
+      "category": "Spectral Indices",
+      "description": "Asymmetry of the frequency distribution of the sound."
+    },
+    {
+      "index": "SKEWt",
+      "category": "Temporal Indices",
+      "description": "Asymmetry of the amplitude distribution of the audio signal in the time domain."
+    },
+    {
+      "index": "SNRf",
+      "category": "Amplitude Indices",
+      "description": "Ratio of signal level to noise level in the frequency domain."
+    },
+    {
+      "index": "SNRt",
+      "category": "Amplitude Indices",
+      "description": "Ratio of the audio signal level to the level of background noise."
+    },
+    {
+      "index": "TFSD",
+      "category": "Temporal Indices",
+      "description": "Diversity of frequencies over time, reflecting temporal variation."
+    },
+    {
+      "index": "VARf",
+      "category": "Spectral Indices",
+      "description": "Variance in the frequency of sounds, indicating dispersion around the mean frequency."
+    },
+    {
+      "index": "VARt",
+      "category": "Temporal Indices",
+      "description": "Variance of the time-domain audio signal amplitude, indicating amplitude fluctuations over time."
+    },
+    {
+      "index": "ZCR",
+      "category": "Complexity Indices",
+      "description": "Measures the rate at which the signal changes from positive to negative or back, indicating the frequency content of the sound."
+    },
+    {
+      "index": "aROI",
+      "category": "Unknown",
+      "description": ""
+    },
+    {
+      "index": "nROI",
+      "category": "Unknown",
+      "description": ""
+    },
+    {
+      "index": "rBA",
+      "category": "Spectral Indices",
+      "description": "Relative levels of biophony (natural sounds) and anthrophony (human-made sounds). Based on user defined threshold for andthrophony (0-1,000 Hz for 16 kHz SR; 0-1,500 Hz for Full Bandwidth) and biophony (1,000 Hz - 8,000 Hz for 16 kHz SR; 1,500 Hz and up for Full Bandwidth runs)."
+    }
+  ],
+  "count": 60,
+  "coverage": {
+    "total_indices": 60,
+    "categories_covered": 5,
+    "categories": [
+      "Spectral Indices",
+      "Complexity Indices",
+      "Diversity Indices",
+      "Amplitude Indices",
+      "Temporal Indices"
+    ],
+    "missing": []
+  },
+  "vif_threshold": null,
+  "vif_enabled": false,
+  "method": "All indices (VIF disabled)"
+}

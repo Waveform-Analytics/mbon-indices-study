@@ -1,7 +1,3 @@
-Please refer to rules in .trae/rules
-
-Please be aware of the .trae/documents folder, Especially .trae/documents/MBON Acoustic Indices Analysis — Implementation Plan.md
-
 ## Workflow Preferences
 
 **Collaborative Learning Approach:**

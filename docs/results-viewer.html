@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="MBON-USC Team">
+<meta name="dcterms.date" content="2026-02-09">
+
+<title>MBON Acoustic Indices Study: Results Viewer</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="results-viewer_files/libs/clipboard/clipboard.min.js"></script>
+<script src="results-viewer_files/libs/quarto-html/quarto.js"></script>
+<script src="results-viewer_files/libs/quarto-html/popper.min.js"></script>
+<script src="results-viewer_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="results-viewer_files/libs/quarto-html/anchor.min.js"></script>
+<link href="results-viewer_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="results-viewer_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="results-viewer_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="results-viewer_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="results-viewer_files/libs/bootstrap/bootstrap-10daa034703793678e481cc8cee6d76f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a>
+  <ul class="collapse">
+  <li><a href="#study-design" id="toc-study-design" class="nav-link" data-scroll-target="#study-design">Study Design</a></li>
+  </ul></li>
+  <li><a href="#model-summary" id="toc-model-summary" class="nav-link" data-scroll-target="#model-summary">Model Summary</a>
+  <ul class="collapse">
+  <li><a href="#why-gamms" id="toc-why-gamms" class="nav-link" data-scroll-target="#why-gamms">Why GAMMs?</a></li>
+  <li><a href="#model-performance-overview" id="toc-model-performance-overview" class="nav-link" data-scroll-target="#model-performance-overview">Model Performance Overview</a></li>
+  </ul></li>
+  <li><a href="#baseline-comparison" id="toc-baseline-comparison" class="nav-link" data-scroll-target="#baseline-comparison">Do Indices Add Value?</a>
+  <ul class="collapse">
+  <li><a href="#the-verdict-indices-add-real-value" id="toc-the-verdict-indices-add-real-value" class="nav-link" data-scroll-target="#the-verdict-indices-add-real-value">The Verdict: Indices Add Real Value</a></li>
+  <li><a href="#does-this-hold-up-across-locations" id="toc-does-this-hold-up-across-locations" class="nav-link" data-scroll-target="#does-this-hold-up-across-locations">Does This Hold Up Across Locations?</a></li>
+  <li><a href="#the-inverse-question-what-do-indices-capture-alone" id="toc-the-inverse-question-what-do-indices-capture-alone" class="nav-link" data-scroll-target="#the-inverse-question-what-do-indices-capture-alone">The Inverse Question: What Do Indices Capture Alone?</a></li>
+  </ul></li>
+  <li><a href="#index-significance" id="toc-index-significance" class="nav-link" data-scroll-target="#index-significance">Which Indices Predict Which Responses?</a>
+  <ul class="collapse">
+  <li><a href="#top-predictors-by-metric-by-effect-size" id="toc-top-predictors-by-metric-by-effect-size" class="nav-link" data-scroll-target="#top-predictors-by-metric-by-effect-size">Top Predictors by Metric (by Effect Size)</a></li>
+  <li><a href="#what-patterns-emerge" id="toc-what-patterns-emerge" class="nav-link" data-scroll-target="#what-patterns-emerge">What Patterns Emerge?</a></li>
+  </ul></li>
+  <li><a href="#results-by-metric" id="toc-results-by-metric" class="nav-link" data-scroll-target="#results-by-metric">Results by Metric</a>
+  <ul class="collapse">
+  <li><a href="#how-to-read-these-results" id="toc-how-to-read-these-results" class="nav-link" data-scroll-target="#how-to-read-these-results">How to Read These Results</a></li>
+  <li><a href="#fish-activity" id="toc-fish-activity" class="nav-link" data-scroll-target="#fish-activity">fish_activity</a></li>
+  <li><a href="#fish-richness" id="toc-fish-richness" class="nav-link" data-scroll-target="#fish-richness">fish_richness</a></li>
+  <li><a href="#fish-presence" id="toc-fish-presence" class="nav-link" data-scroll-target="#fish-presence">fish_presence</a></li>
+  <li><a href="#dolphin-burst-pulse" id="toc-dolphin-burst-pulse" class="nav-link" data-scroll-target="#dolphin-burst-pulse">dolphin_burst_pulse</a></li>
+  <li><a href="#dolphin-echolocation" id="toc-dolphin-echolocation" class="nav-link" data-scroll-target="#dolphin-echolocation">dolphin_echolocation</a></li>
+  <li><a href="#dolphin-whistle" id="toc-dolphin-whistle" class="nav-link" data-scroll-target="#dolphin-whistle">dolphin_whistle</a></li>
+  <li><a href="#dolphin-activity" id="toc-dolphin-activity" class="nav-link" data-scroll-target="#dolphin-activity">dolphin_activity</a></li>
+  <li><a href="#dolphin-presence" id="toc-dolphin-presence" class="nav-link" data-scroll-target="#dolphin-presence">dolphin_presence</a></li>
+  <li><a href="#vessel-presence" id="toc-vessel-presence" class="nav-link" data-scroll-target="#vessel-presence">vessel_presence</a></li>
+  </ul></li>
+  <li><a href="#validation" id="toc-validation" class="nav-link" data-scroll-target="#validation">Validation Results</a>
+  <ul class="collapse">
+  <li><a href="#ar1-autocorrelation-check" id="toc-ar1-autocorrelation-check" class="nav-link" data-scroll-target="#ar1-autocorrelation-check">AR1 Autocorrelation Check</a></li>
+  <li><a href="#cross-validation-can-we-predict-the-future" id="toc-cross-validation-can-we-predict-the-future" class="nav-link" data-scroll-target="#cross-validation-can-we-predict-the-future">Cross-Validation: Can We Predict the Future?</a></li>
+  </ul></li>
+  <li><a href="#diagnostic-checks" id="toc-diagnostic-checks" class="nav-link" data-scroll-target="#diagnostic-checks">Diagnostic Checks</a>
+  <ul class="collapse">
+  <li><a href="#effect-sizes-significant-vs.-actually-meaningful" id="toc-effect-sizes-significant-vs.-actually-meaningful" class="nav-link" data-scroll-target="#effect-sizes-significant-vs.-actually-meaningful">Effect Sizes: Significant vs.&nbsp;Actually Meaningful</a></li>
+  <li><a href="#zero-inflation-a-structural-problem" id="toc-zero-inflation-a-structural-problem" class="nav-link" data-scroll-target="#zero-inflation-a-structural-problem">Zero-Inflation: A Structural Problem</a></li>
+  <li><a href="#concurvity-why-so-many-indices-seem-important" id="toc-concurvity-why-so-many-indices-seem-important" class="nav-link" data-scroll-target="#concurvity-why-so-many-indices-seem-important">Concurvity: Why So Many Indices Seem Important</a></li>
+  </ul></li>
+  <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions">Conclusions</a>
+  <ul class="collapse">
+  <li><a href="#what-we-learned" id="toc-what-we-learned" class="nav-link" data-scroll-target="#what-we-learned">What We Learned</a></li>
+  <li><a href="#methodological-lessons" id="toc-methodological-lessons" class="nav-link" data-scroll-target="#methodological-lessons">Methodological Lessons</a></li>
+  <li><a href="#for-future-work" id="toc-for-future-work" class="nav-link" data-scroll-target="#for-future-work">For Future Work</a></li>
+  </ul></li>
+  <li><a href="#downloads" id="toc-downloads" class="nav-link" data-scroll-target="#downloads">Downloads</a>
+  <ul class="collapse">
+  <li><a href="#model-results" id="toc-model-results" class="nav-link" data-scroll-target="#model-results">Model Results</a></li>
+  <li><a href="#validation-1" id="toc-validation-1" class="nav-link" data-scroll-target="#validation-1">Validation</a></li>
+  <li><a href="#archive" id="toc-archive" class="nav-link" data-scroll-target="#archive">Archive</a></li>
+  </ul></li>
+  <li><a href="#appendix-vif" id="toc-appendix-vif" class="nav-link" data-scroll-target="#appendix-vif">Appendix A: Methodological Evolution</a>
+  <ul class="collapse">
+  <li><a href="#why-we-moved-from-17-to-60-indices" id="toc-why-we-moved-from-17-to-60-indices" class="nav-link" data-scroll-target="#why-we-moved-from-17-to-60-indices">Why We Moved from 17 to 60 Indices</a></li>
+  <li><a href="#what-changed" id="toc-what-changed" class="nav-link" data-scroll-target="#what-changed">What Changed</a></li>
+  <li><a href="#implications" id="toc-implications" class="nav-link" data-scroll-target="#implications">Implications</a></li>
+  <li><a href="#when-vif-pre-filtering-still-makes-sense" id="toc-when-vif-pre-filtering-still-makes-sense" class="nav-link" data-scroll-target="#when-vif-pre-filtering-still-makes-sense">When VIF Pre-Filtering Still Makes Sense</a></li>
+  </ul></li>
+  <li><a href="#appendix-full-smooths" id="toc-appendix-full-smooths" class="nav-link" data-scroll-target="#appendix-full-smooths">Appendix B: Full Smooth Plots (All 60 Indices)</a>
+  <ul class="collapse">
+  <li><a href="#effect-size-reference" id="toc-effect-size-reference" class="nav-link" data-scroll-target="#effect-size-reference">Effect Size Reference</a></li>
+  </ul></li>
+  <li><a href="#appendix-bystation" id="toc-appendix-bystation" class="nav-link" data-scroll-target="#appendix-bystation">Appendix C: Per-Station Index Effects</a>
+  <ul class="collapse">
+  <li><a href="#top-5-indices-by-effect-size-at-each-station" id="toc-top-5-indices-by-effect-size-at-each-station" class="nav-link" data-scroll-target="#top-5-indices-by-effect-size-at-each-station">Top 5 Indices by Effect Size at Each Station</a></li>
+  <li><a href="#what-this-tells-us" id="toc-what-this-tells-us" class="nav-link" data-scroll-target="#what-this-tells-us">What This Tells Us</a></li>
+  <li><a href="#downloads-1" id="toc-downloads-1" class="nav-link" data-scroll-target="#downloads-1">Downloads</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">MBON Acoustic Indices Study: Results Viewer</h1>
+<p class="subtitle lead">May River Estuary — Modeling Results &amp; Validation (v2: 60-Index Analysis)</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>MBON-USC Team </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 9, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p><strong>The question:</strong> Can acoustic indices — automated summaries of soundscape characteristics — predict biological activity in an estuary?</p>
+<p><strong>The short answer:</strong> Yes, for presence/absence. Less reliably for activity levels.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Elevator Pitch
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Acoustic indices can tell you <em>whether</em> biological activity is happening (presence), but they can’t reliably tell you <em>how much</em> (activity levels). Vessel detection is excellent (AUC = 0.93), biological presence detection is moderate (AUC ~0.77), and activity/count prediction doesn’t generalize well across time periods.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Version Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This is <strong>v2</strong> of the analysis, using all 60 acoustic indices with GAMM regularization (<code>select=TRUE</code>). The previous v1 analysis used 17 VIF-filtered indices. <a href="results-viewer-v1.pdf">View the v1 PDF archive</a> for comparison. Post-hoc validation showed 60-index models consistently outperform 17-index models.</p>
+</div>
+</div>
+<section id="study-design" class="level3">
+<h3 class="anchored" data-anchor-id="study-design">Study Design</h3>
+<ul>
+<li><strong>Data:</strong> 13,102 observations across 3 monitoring stations (9M, 14M, 37M), 2021, at 2-hour resolution</li>
+<li><strong>Predictors:</strong> 60 acoustic indices + temperature (9.7–33.0°C), depth (3.4–11.0 m), time of day, day of year, station</li>
+<li><strong>Responses:</strong> 9 metrics — fish (activity, richness, presence), dolphins (burst pulse, echolocation, whistle, activity, presence), vessels (presence)</li>
+<li><strong>Presence definition:</strong> For fish and dolphins, presence = 1 if at least one sound was detected in the 2-hour window. For vessels, presence was annotated as binary (0/1) in the original data.</li>
+<li><strong>Models:</strong> Generalized Additive Mixed Models (GAMMs) with AR1 autocorrelation structure and automatic smoothness selection (<code>select=TRUE</code>)</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="model-summary" class="level2">
+<h2 class="anchored" data-anchor-id="model-summary">Model Summary</h2>
+<section id="why-gamms" class="level3">
+<h3 class="anchored" data-anchor-id="why-gamms">Why GAMMs?</h3>
+<p>We used <strong>Generalized Additive Mixed Models (GAMMs)</strong> because the relationships between acoustic indices and biological activity aren’t simple straight lines. For example, fish activity might increase with temperature up to a point, then decrease — a curved relationship that standard linear regression can’t capture.</p>
+<p>GAMMs let the data “speak for itself” about the shape of each relationship, rather than forcing us to guess. The model learns smooth curves for each predictor, and we can look at those curves to understand how each index relates to biological activity.</p>
+<p><strong>Two types of responses:</strong></p>
+<ul>
+<li><strong>Count metrics</strong> (fish_activity, fish_richness, dolphin counts): How many sounds were detected? These use negative binomial models because ecological counts are typically “overdispersed” — more variable than simple counting would predict.</li>
+<li><strong>Binary metrics</strong> (presence/absence): Were sounds detected at all? These use logistic regression, predicting the probability of detection.</li>
+</ul>
+<p><strong>Handling time:</strong> Observations close together in time tend to be similar (if dolphins were here an hour ago, they’re probably still nearby). We account for this with an AR1 correlation structure — the model knows that consecutive time points aren’t independent.</p>
+</section>
+<section id="model-performance-overview" class="level3">
+<h3 class="anchored" data-anchor-id="model-performance-overview">Model Performance Overview</h3>
+<p>All 9 models converged successfully. Here’s a summary of how well each model fits:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Dev. Expl.</th>
+<th>AR1 (ρ)</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>fish_activity</td>
+<td>55.3%</td>
+<td>0.17</td>
+<td>Count</td>
+</tr>
+<tr class="even">
+<td>fish_richness</td>
+<td>51.4%</td>
+<td>0.16</td>
+<td>Count</td>
+</tr>
+<tr class="odd">
+<td>fish_presence</td>
+<td>49.4%</td>
+<td>0.12</td>
+<td>Binary</td>
+</tr>
+<tr class="even">
+<td>dolphin_burst_pulse</td>
+<td>26.7%</td>
+<td>0.06</td>
+<td>Count</td>
+</tr>
+<tr class="odd">
+<td>dolphin_echolocation</td>
+<td>21.8%</td>
+<td>0.10</td>
+<td>Count</td>
+</tr>
+<tr class="even">
+<td>dolphin_whistle</td>
+<td>33.8%</td>
+<td>0.11</td>
+<td>Count</td>
+</tr>
+<tr class="odd">
+<td>dolphin_activity</td>
+<td>20.8%</td>
+<td>0.10</td>
+<td>Count</td>
+</tr>
+<tr class="even">
+<td>dolphin_presence</td>
+<td>25.0%</td>
+<td>0.09</td>
+<td>Binary</td>
+</tr>
+<tr class="odd">
+<td>vessel_presence</td>
+<td>52.4%</td>
+<td>0.06</td>
+<td>Binary</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reading this table:</strong></p>
+<ul>
+<li><p><strong>Deviance Explained</strong> is like R² — the percentage of variation the model captures. Fish and vessel models explain ~50% of variation, which is quite good for ecological data. Dolphin models explain less (20-34%), meaning dolphin behavior is harder to predict.</p></li>
+<li><p><strong>AR1 (ρ)</strong> measures temporal “stickiness.” A value of 0.17 (fish_activity) means knowing the current state gives you some information about the next 2-hour window, but not a lot. Values near 0 (like vessel_presence at 0.06) mean each time window is relatively independent — boats come and go without much pattern.</p></li>
+</ul>
+<p><strong>The key insight:</strong> Fish and vessel activity are more predictable than dolphin activity. This makes ecological sense — dolphins are mobile and their presence is more episodic, while fish communities and boat traffic have more consistent patterns.</p>
+<hr>
+</section>
+</section>
+<section id="baseline-comparison" class="level2">
+<h2 class="anchored" data-anchor-id="baseline-comparison">Do Indices Add Value?</h2>
+<p>This is the fundamental question: <strong>Are acoustic indices actually useful, or could we predict biological activity just as well using only time of day, season, temperature, and depth?</strong></p>
+<p>To answer this, we built two versions of each model:</p>
+<ol type="1">
+<li><strong>Baseline model:</strong> Only uses temporal and environmental predictors (hour of day, day of year, temperature, depth, station)</li>
+<li><strong>Full model:</strong> Adds all 60 acoustic indices on top of the baseline</li>
+</ol>
+<p>If the acoustic indices contain real information about biological activity, the full model should fit better. We measure this with <strong>ΔAIC</strong> — the improvement in model fit when adding indices. Larger ΔAIC = indices help more.</p>
+<section id="the-verdict-indices-add-real-value" class="level3">
+<h3 class="anchored" data-anchor-id="the-verdict-indices-add-real-value">The Verdict: Indices Add Real Value</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 19%">
+<col style="width: 54%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>ΔAIC</th>
+<th>What this means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>vessel_presence</strong></td>
+<td><strong>1,630</strong></td>
+<td>Massive improvement — indices are essential for vessel detection</td>
+</tr>
+<tr class="even">
+<td><strong>fish_activity</strong></td>
+<td><strong>1,027</strong></td>
+<td>Strong improvement — indices capture something time/environment don’t</td>
+</tr>
+<tr class="odd">
+<td><strong>fish_presence</strong></td>
+<td><strong>908</strong></td>
+<td>Strong improvement</td>
+</tr>
+<tr class="even">
+<td>dolphin_presence</td>
+<td>655</td>
+<td>Substantial improvement</td>
+</tr>
+<tr class="odd">
+<td>fish_richness</td>
+<td>505</td>
+<td>Substantial improvement</td>
+</tr>
+<tr class="even">
+<td>dolphin_activity</td>
+<td>482</td>
+<td>Moderate improvement</td>
+</tr>
+<tr class="odd">
+<td>dolphin_echolocation</td>
+<td>434</td>
+<td>Moderate improvement</td>
+</tr>
+<tr class="even">
+<td>dolphin_burst_pulse</td>
+<td>219</td>
+<td>Modest improvement</td>
+</tr>
+<tr class="odd">
+<td>dolphin_whistle</td>
+<td>72</td>
+<td>Small but real improvement</td>
+</tr>
+</tbody>
+</table>
+<p><strong>How to interpret ΔAIC:</strong> In model comparison, ΔAIC &gt; 10 is considered “strong evidence” that the better model is meaningfully better. All 9 metrics exceed this threshold — the smallest is dolphin_whistle at 72, still far above the threshold. This means acoustic indices genuinely contain information about biological activity that you can’t get from just knowing the time, temperature, and location.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+The Bottom Line
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Acoustic indices aren’t just statistical noise. They capture real information about what’s happening in the soundscape. The indices are most valuable for vessel detection (ΔAIC = 1,630) and fish metrics, and least valuable (but still useful) for rare events like dolphin whistles.</p>
+</div>
+</div>
+</section>
+<section id="does-this-hold-up-across-locations" class="level3">
+<h3 class="anchored" data-anchor-id="does-this-hold-up-across-locations">Does This Hold Up Across Locations?</h3>
+<p>A skeptic might worry that the indices only help because they’re picking up some quirk of how we combined data across stations. To check this, we ran the same comparison at each station separately:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>14M</th>
+<th>37M</th>
+<th>9M</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>fish_presence</td>
+<td>115</td>
+<td>199</td>
+<td>211</td>
+</tr>
+<tr class="even">
+<td>dolphin_presence</td>
+<td>50</td>
+<td>99</td>
+<td>75</td>
+</tr>
+<tr class="odd">
+<td>vessel_presence</td>
+<td>385</td>
+<td>551</td>
+<td>257</td>
+</tr>
+</tbody>
+</table>
+<p>Indices improve predictions at every single station. The pattern is robust — it’s not an artifact of how we pooled the data.</p>
+</section>
+<section id="the-inverse-question-what-do-indices-capture-alone" class="level3">
+<h3 class="anchored" data-anchor-id="the-inverse-question-what-do-indices-capture-alone">The Inverse Question: What Do Indices Capture Alone?</h3>
+<p>The baseline comparison asked: “Do indices add value beyond environmental/temporal variables?” But we can also flip this question: <strong>How well do acoustic indices predict biological activity <em>without</em> environmental or temporal information?</strong></p>
+<p>This “acoustic-only” analysis fits models using only the 60 acoustic indices (plus station and month random effects), excluding temperature, depth, hour of day, and day of year.</p>
+<section id="understanding-unique-contributions" class="level4">
+<h4 class="anchored" data-anchor-id="understanding-unique-contributions">Understanding Unique Contributions</h4>
+<p>Think of it like a Venn diagram. The full model explains some total amount of variance (the whole circle). But how much of that comes from indices vs.&nbsp;environmental/temporal variables?</p>
+<ul>
+<li><strong>What indices uniquely add</strong> = Full model − Baseline model (i.e., how much better do we get by adding indices to env/temporal?)</li>
+<li><strong>What env/temporal uniquely adds</strong> = Full model − Acoustic-only model (i.e., how much better do we get by adding env/temporal to indices?)</li>
+</ul>
+<p>The bigger number “wins” — that’s the component doing more of the predictive work.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 8%">
+<col style="width: 18%">
+<col style="width: 27%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Full</th>
+<th>Indices add</th>
+<th>Env/temporal adds</th>
+<th>Which contributes more?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Fish metrics</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>fish_activity</td>
+<td>55.3%</td>
+<td>+3.8 pp</td>
+<td>+3.3 pp</td>
+<td>~Equal</td>
+</tr>
+<tr class="odd">
+<td>fish_richness</td>
+<td>51.4%</td>
+<td>+4.1 pp</td>
+<td>+3.2 pp</td>
+<td>~Equal</td>
+</tr>
+<tr class="even">
+<td>fish_presence</td>
+<td>49.4%</td>
+<td>+5.4 pp</td>
+<td>+3.4 pp</td>
+<td>~Equal</td>
+</tr>
+<tr class="odd">
+<td><strong>Dolphin metrics</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>dolphin_burst_pulse</td>
+<td>26.7%</td>
+<td>+12.0 pp</td>
+<td>+3.1 pp</td>
+<td><strong>Indices dominate</strong></td>
+</tr>
+<tr class="odd">
+<td>dolphin_echolocation</td>
+<td>21.8%</td>
+<td>+6.0 pp</td>
+<td>+0.4 pp</td>
+<td><strong>Indices dominate</strong></td>
+</tr>
+<tr class="even">
+<td>dolphin_whistle</td>
+<td>33.8%</td>
+<td>+12.0 pp</td>
+<td>+1.6 pp</td>
+<td><strong>Indices dominate</strong></td>
+</tr>
+<tr class="odd">
+<td>dolphin_activity</td>
+<td>20.8%</td>
+<td>+6.6 pp</td>
+<td>+0.5 pp</td>
+<td><strong>Indices dominate</strong></td>
+</tr>
+<tr class="even">
+<td>dolphin_presence</td>
+<td>25.0%</td>
+<td>+4.9 pp</td>
+<td>+0.3 pp</td>
+<td><strong>Indices dominate</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Vessel metrics</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>vessel_presence</td>
+<td>52.4%</td>
+<td>+12.8 pp</td>
+<td>+7.5 pp</td>
+<td>Indices lead</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reading this table:</strong></p>
+<ul>
+<li><strong>Full</strong>: Total variance explained by the complete model</li>
+<li><strong>Indices add</strong>: How many percentage points indices contribute <em>on top of</em> environmental/temporal variables</li>
+<li><strong>Env/temporal adds</strong>: How many percentage points environmental/temporal variables contribute <em>on top of</em> indices</li>
+<li><strong>Which contributes more?</strong>: Compares the two “add” columns</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+The Key Finding
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>The story differs by species group:</strong></p>
+<ul>
+<li><p><strong>Dolphins</strong>: Acoustic indices clearly dominate. They add 5–12 pp of unique predictive power, while environmental/temporal variables add only 0.3–3 pp.&nbsp;The soundscape characteristics captured by indices are far more informative than knowing the time, temperature, or depth.</p></li>
+<li><p><strong>Fish</strong>: Indices and environmental/temporal variables contribute roughly equally (both add 3–5 pp). Knowing the season, time of day, and water conditions matters just as much as the acoustic indices for predicting fish activity.</p></li>
+<li><p><strong>Vessels</strong>: Indices contribute more (+12.8 pp) than environmental/temporal (+7.5 pp), but both matter. Boats are detectable acoustically, but traffic patterns also follow predictable temporal rhythms.</p></li>
+</ul>
+</div>
+</div>
+<p><strong>Bottom line:</strong> You need both components for best predictions, but acoustic indices carry more of the signal for dolphins, while fish predictions rely equally on environmental context.</p>
+<hr>
+</section>
+</section>
+</section>
+<section id="index-significance" class="level2">
+<h2 class="anchored" data-anchor-id="index-significance">Which Indices Predict Which Responses?</h2>
+<p>Now that we know indices add value overall, a natural question is: <strong>which specific indices matter for which biological responses?</strong></p>
+<p>This turns out to be tricky to answer precisely, and here’s why: many acoustic indices measure similar things. An index that captures “how much high-frequency energy is present” will be correlated with other indices measuring spectral content. When multiple indices carry overlapping information, the model might use any of them — or split the signal across several.</p>
+<p>That said, we can identify which indices have the <strong>largest effects</strong> for each response. The table below shows the top 3 indices by effect size.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Reading Effect Sizes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Effect sizes show how much the predicted outcome changes when an index moves from low (10th percentile) to high (90th percentile).</p>
+<ul>
+<li><strong>Positive values (+)</strong> = higher index values → higher response (e.g., +24 pp means detection probability increases by 24 percentage points)</li>
+<li><strong>Negative values (−)</strong> = higher index values → lower response (e.g., −15 pp means detection probability decreases by 15 percentage points)</li>
+<li><strong>For count models</strong>: Values are shown as fold changes (×). Values &gt;1× indicate a positive relationship; values &lt;1× indicate an inverse relationship (e.g., 0.36× means counts drop to about 1/3)</li>
+</ul>
+</div>
+</div>
+<section id="top-predictors-by-metric-by-effect-size" class="level3">
+<h3 class="anchored" data-anchor-id="top-predictors-by-metric-by-effect-size">Top Predictors by Metric (by Effect Size)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 44%">
+<col style="width: 42%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Top 3 Indices (effect size)</th>
+<th>What these indices measure</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>fish_activity</strong></td>
+<td>HFC (0.36×), ACTtFraction (0.42×), SNRt (2.3×)</td>
+<td>High-frequency content, temporal activity fraction, signal-to-noise</td>
+</tr>
+<tr class="even">
+<td><strong>fish_richness</strong></td>
+<td>HFC (0.36×), EVNtCount (2.1×), ACTtFraction (0.55×)</td>
+<td>High-frequency content, event counts, temporal activity</td>
+</tr>
+<tr class="odd">
+<td><strong>fish_presence</strong></td>
+<td>LFC (+24 pp), Hf (+23 pp), AGI (+15 pp)</td>
+<td>Low-frequency content, spectral entropy, acoustic gradients</td>
+</tr>
+<tr class="even">
+<td><strong>dolphin_burst_pulse</strong></td>
+<td>MFC (0.002×), HFC (0.07×), EPS (12.7×)</td>
+<td>Mid/high frequency content, spectral entropy</td>
+</tr>
+<tr class="odd">
+<td><strong>dolphin_echolocation</strong></td>
+<td>ACTspCount (2378×), HFC (0.01×), ACTspFract (19×)</td>
+<td>Spectral activity counts/fraction, high-frequency content</td>
+</tr>
+<tr class="even">
+<td><strong>dolphin_whistle</strong></td>
+<td>Ht (0.02×), SNRt (0.07×), ZCR (3.4×)</td>
+<td>Temporal entropy, signal-to-noise, zero-crossing rate</td>
+</tr>
+<tr class="odd">
+<td><strong>dolphin_activity</strong></td>
+<td>ACTspCount (11650×), HFC (0.01×), ACTspFract (17×)</td>
+<td>Spectral activity counts/fraction, high-frequency content</td>
+</tr>
+<tr class="even">
+<td><strong>dolphin_presence</strong></td>
+<td>ACTspFract (+97 pp), HFC (−21 pp), EVNspCount (−19 pp)</td>
+<td>Activity fraction dominates; high-freq and event counts secondary</td>
+</tr>
+<tr class="odd">
+<td><strong>vessel_presence</strong></td>
+<td>HFC (+94 pp), aROI (−82 pp), nROI (+76 pp)</td>
+<td>High-frequency content, activity regions — all massive effects</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="what-patterns-emerge" class="level3">
+<h3 class="anchored" data-anchor-id="what-patterns-emerge">What Patterns Emerge?</h3>
+<p><strong>For dolphins:</strong> The “ACT” family of indices (ACTspCount, ACTspFract, ACTtCount) consistently appears. These measure how much acoustic “activity” is happening — transient sounds, busy soundscapes. This makes sense: dolphins produce distinctive clicks and whistles that register as acoustic events.</p>
+<p><strong>For fish:</strong> Event counts (EVNtCount, nROI) and frequency-band indices (LFC, HFC) matter most. Fish sounds tend to be lower frequency than dolphin sounds, so the low-frequency content (LFC) index is particularly relevant.</p>
+<p><strong>For vessels:</strong> High-frequency content (HFC) dominates. Boats produce broadband noise with lots of high-frequency energy, making this index almost diagnostic for vessel presence.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+A Caveat About Individual Indices
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Because many indices are correlated with each other, we can’t say “this specific index is THE predictor.” If you removed HFC from the vessel model, another correlated index would likely take its place. Think of the indices as a family of related measurements, not as independent predictors with distinct meanings.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="results-by-metric" class="level2 tabset">
+<h2 class="tabset anchored" data-anchor-id="results-by-metric">Results by Metric</h2>
+<section id="how-to-read-these-results" class="level3">
+<h3 class="anchored" data-anchor-id="how-to-read-these-results">How to Read These Results</h3>
+<p>Each metric below shows <strong>smooth plots</strong> and <strong>diagnostics</strong>. Here’s how to interpret them:</p>
+<section id="understanding-the-smooth-plots" class="level4">
+<h4 class="anchored" data-anchor-id="understanding-the-smooth-plots">Understanding the Smooth Plots</h4>
+<p>Each panel shows how one predictor (acoustic index or environmental variable) relates to the response. The plots show the <strong>top 8 acoustic indices by effect size</strong> plus 4 temporal/environmental variables (temperature, depth, hour of day, day of year).</p>
+<p><strong>Reading a single panel:</strong></p>
+<ul>
+<li><strong>The curve</strong> shows the estimated effect of that predictor on the response (holding other predictors constant)</li>
+<li><strong>The gray band</strong> is the 95% confidence interval — wider bands mean more uncertainty</li>
+<li><strong>A flat line at zero</strong> means that predictor has no effect</li>
+<li><strong>A curved line</strong> means the relationship is non-linear (e.g., effect increases up to a point, then levels off)</li>
+<li><strong>EDF (Effective Degrees of Freedom)</strong> tells you how “wiggly” the relationship is:
+<ul>
+<li>EDF ≈ 0: Predictor has been shrunk to zero (no effect)</li>
+<li>EDF ≈ 1: Linear relationship (straight line)</li>
+<li>EDF &gt; 1: Non-linear relationship (the higher, the more complex the curve)</li>
+</ul></li>
+</ul>
+<p><strong>What “effect size” means here:</strong></p>
+<ul>
+<li>For <strong>presence/absence</strong> metrics: Effect sizes are in <strong>percentage points (pp)</strong> — how much detection probability changes when the index goes from low (10th percentile) to high (90th percentile). For example, “+24 pp” means detection probability increases by 24 percentage points (e.g., from 50% to 74%).</li>
+<li>For <strong>count</strong> metrics: Effect sizes are <strong>fold changes (×)</strong> — how many times more/fewer detections when the index goes from low to high. For example, “2.3×” means 2.3 times as many detections; “0.36×” means about one-third as many (a 64% reduction).</li>
+</ul>
+<p>We show only the top 8 indices because with 60 indices, most have tiny or zero effects. The ones shown here are the indices that actually matter for each metric.</p>
+</section>
+<section id="understanding-the-diagnostics" class="level4">
+<h4 class="anchored" data-anchor-id="understanding-the-diagnostics">Understanding the Diagnostics</h4>
+<p>The 4-panel diagnostic plot checks whether the model is behaving reasonably:</p>
+<ul>
+<li><strong>Top-left (Residuals vs linear predictor):</strong> Points should scatter randomly around zero. A pattern suggests the model is missing something. <em>Note: For binary models (presence/absence), a curved pattern with two bands is normal and expected.</em></li>
+<li><strong>Top-right (Histogram):</strong> Should look roughly bell-shaped (normal distribution).</li>
+<li><strong>Bottom-left (Q-Q plot):</strong> Points should follow the diagonal line. Deviations at the ends are common and usually okay.</li>
+<li><strong>Bottom-right (Response vs fitted):</strong> Shows predicted vs actual values.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="fish-activity" class="level3">
+<h3 class="anchored" data-anchor-id="fish-activity">fish_activity</h3>
+<p><strong>Response type:</strong> Count (negative binomial)</p>
+<p><strong>Top indices by effect size:</strong> HFC (0.36×), ACTtFraction (0.42×), SNRt (2.3×), BGNt (2.1×), LEQt (0.56×), MEANf (0.57×), EVNtCount (1.7×), EVNtFraction (1.6×)</p>
+<p><strong>CV Performance:</strong> RMSE = 1.11, R² = 0.04 (poor generalization)</p>
+<section id="smooth-terms-overview" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview">Smooth Terms Overview</h4>
+<p><img src="figures/fish_activity/gamm_smooths_top12.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics">Diagnostics</h4>
+<p><img src="figures/fish_activity/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation">Interpretation</h4>
+<p><strong>The big picture:</strong> Fish activity (total number of fish sounds detected) shows moderate relationships with several acoustic indices, though the model doesn’t generalize well to new data.</p>
+<p><strong>What predicts fish activity (by effect size):</strong></p>
+<ul>
+<li><strong>HFC and ACTtFraction show inverse relationships</strong> (0.36× and 0.42× fold change) — when these indices are high, fish activity tends to be lower</li>
+<li><strong>SNRt and BGNt show positive relationships</strong> (2.3× and 2.1× fold change) — higher signal-to-noise and background noise levels associate with more fish activity</li>
+<li><strong>Time of day matters a lot</strong> (look at hour_of_day — the wiggly curve shows a complex daily pattern)</li>
+<li><strong>Season matters</strong> (day_of_year shows activity peaking in spring/summer)</li>
+</ul>
+<p><strong>Why the poor CV performance:</strong> The R² of 0.04 means the model explains almost none of the variation when tested on new data. Fish activity is highly variable week-to-week — the patterns found in training data don’t transfer well to new time periods.</p>
+</section>
+</section>
+<section id="fish-richness" class="level3">
+<h3 class="anchored" data-anchor-id="fish-richness">fish_richness</h3>
+<p><strong>Response type:</strong> Count (negative binomial)</p>
+<p><strong>Top indices by effect size:</strong> HFC (0.36×), EVNtCount (2.1×), ACTtFraction (0.55×), aROI (1.5×), LEQt (0.70×), LFC (1.4×), nROI (0.74×), ACTtMean (1.3×)</p>
+<p><strong>CV Performance:</strong> RMSE = 0.55, R² = 0.05 (low error, poor R²)</p>
+<section id="smooth-terms-overview-1" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-1">Smooth Terms Overview</h4>
+<p><img src="figures/fish_richness/gamm_smooths_top12.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-1" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-1">Diagnostics</h4>
+<p><img src="figures/fish_richness/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-1" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-1">Interpretation</h4>
+<p><strong>The big picture:</strong> Fish richness (number of different fish sound types) is slightly more predictable than raw activity counts, but still doesn’t generalize well (R² = 0.05). The low RMSE (0.56) just means typical richness values are small, not that predictions are accurate.</p>
+<p><strong>What predicts fish richness (by effect size):</strong></p>
+<ul>
+<li><strong>HFC shows the largest effect</strong> (0.36× fold change) — high-frequency content is inversely related to fish richness</li>
+<li><strong>EVNtCount shows a strong positive effect</strong> (2.1×) — more acoustic events = more fish species calling, which makes intuitive sense</li>
+<li><strong>Activity fraction indices</strong> (ACTtFraction, ACTtMean) and <strong>region indices</strong> (aROI, nROI) also contribute</li>
+<li><strong>Depth/tide is important</strong> — higher richness at high tide</li>
+<li><strong>Time of day patterns</strong> — diel variation in which species are calling</li>
+</ul>
+<p><strong>Why it’s hard to predict:</strong> Fish species composition changes in ways that aren’t fully captured by the acoustic indices or environmental variables we measured. The indices pick up <em>something</em>, but not enough to reliably predict richness in new time periods.</p>
+</section>
+</section>
+<section id="fish-presence" class="level3">
+<h3 class="anchored" data-anchor-id="fish-presence">fish_presence</h3>
+<p><strong>Response type:</strong> Binary (binomial)</p>
+<p><strong>Top indices by effect size:</strong> LFC (+24 pp), Hf (+23 pp), AGI (+15 pp), HFC (−15 pp), nROI (−15 pp), LEQt (−14 pp), MEANf (−14 pp), SNRt (+14 pp)</p>
+<p><strong>CV Performance:</strong> AUC = 0.75 (moderate — useful signal)</p>
+<section id="smooth-terms-overview-2" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-2">Smooth Terms Overview</h4>
+<p><img src="figures/fish_presence/gamm_smooths_top12.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-2" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-2">Diagnostics</h4>
+<p><img src="figures/fish_presence/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-2" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-2">Interpretation</h4>
+<p><strong>The big picture:</strong> Fish presence (are fish sounds happening: yes/no?) is much easier to predict than fish activity counts. The AUC of 0.75 means the model does a decent job distinguishing “fish present” from “fish absent” time periods.</p>
+<p><strong>Why presence is easier than counts:</strong> Detecting <em>whether</em> biological activity is happening is fundamentally easier than measuring <em>how much</em>. Many different acoustic indices can pick up the general signature of fish sounds, even if they can’t precisely quantify the amount.</p>
+<p><strong>What predicts fish presence (by effect size):</strong></p>
+<ul>
+<li><strong>LFC (low-frequency content) is the top predictor</strong> (+24 pp) — fish produce predominantly low-frequency sounds, so this makes ecological sense</li>
+<li><strong>Hf (spectral entropy) also has a large positive effect</strong> (+23 pp) — more diverse frequency content when fish are present</li>
+<li><strong>HFC, nROI, LEQt have negative effects</strong> (−14 to −15 pp) — high-frequency content and certain event metrics decrease when fish are calling</li>
+<li><strong>Strong seasonal pattern</strong> (day_of_year shows a clear spring peak)</li>
+<li><strong>Depth/tide matters</strong> (fish presence increases at high tide)</li>
+</ul>
+<p><strong>Practical implication:</strong> If you want to use acoustic indices to monitor fish, focus on presence/absence rather than trying to count activity levels. LFC is a good starting point for fish detection.</p>
+</section>
+</section>
+<section id="dolphin-burst-pulse" class="level3">
+<h3 class="anchored" data-anchor-id="dolphin-burst-pulse">dolphin_burst_pulse</h3>
+<p><strong>Response type:</strong> Count (negative binomial)</p>
+<p><strong>Top indices by effect size:</strong> MFC (0.002×), HFC (0.07×), EPS (12.7×), EPS_SKEW (0.09×), EVNspFract (0.10×), AGI (0.13×), ACTspMean (5.2×), Ht (0.44×)</p>
+<p><strong>CV Performance:</strong> RMSE = 46.7, R² = -44,154 (doesn’t generalize)</p>
+<section id="smooth-terms-overview-3" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-3">Smooth Terms Overview</h4>
+<p><img src="figures/dolphin_burst_pulse/gamm_smooths_top12.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-3" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-3">Diagnostics</h4>
+<p><img src="figures/dolphin_burst_pulse/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-3" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-3">Interpretation</h4>
+<p><strong>The big picture:</strong> Burst pulses are rapid clicks dolphins produce while hunting. They’re discrete events (a dolphin catches a fish, or doesn’t) rather than continuous activity, which makes them inherently hard to predict.</p>
+<p><strong>What predicts burst pulses (by effect size):</strong></p>
+<ul>
+<li><strong>Frequency band indices show extreme effects</strong> — MFC (0.002×) and HFC (0.07×) have very strong inverse relationships; burst pulses occur when mid/high frequency content is low</li>
+<li><strong>EPS (spectral entropy) has a large positive effect</strong> (12.7×) — burst pulses associate with more complex spectral patterns</li>
+<li><strong>ACTspMean shows a positive effect</strong> (5.2×) — higher spectral activity intensity correlates with burst pulse occurrence</li>
+<li><strong>Temperature matters</strong> — more foraging activity in cooler water (possibly related to prey availability)</li>
+<li><strong>Very low temporal persistence</strong> (AR1 ρ = 0.06) — knowing burst pulses happened in one 2-hour window tells you almost nothing about the next window</li>
+</ul>
+<p><strong>Why the negative R²:</strong> A negative R² means the model’s predictions are worse than just guessing the average. Burst pulse events are too sporadic and unpredictable — the model captures some patterns in the training data but they don’t transfer to new time periods.</p>
+</section>
+</section>
+<section id="dolphin-echolocation" class="level3">
+<h3 class="anchored" data-anchor-id="dolphin-echolocation">dolphin_echolocation</h3>
+<p><strong>Response type:</strong> Count (negative binomial)</p>
+<p><strong>Top indices by effect size:</strong> ACTspCount (2378×), HFC (0.01×), EVNspFract (0.02×), ACTspFract (19×), MFC (0.16×), Ht (0.26×), ACTtMean (0.34×), EPS_SKEW (0.51×)</p>
+<p><strong>CV Performance:</strong> RMSE = 4.06, R² = -1.6 (poor generalization)</p>
+<section id="smooth-terms-overview-4" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-4">Smooth Terms Overview</h4>
+<p><img src="figures/dolphin_echolocation/gamm_smooths_top12.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-4" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-4">Diagnostics</h4>
+<p><img src="figures/dolphin_echolocation/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-4" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-4">Interpretation</h4>
+<p><strong>The big picture:</strong> Echolocation clicks are the sounds dolphins use for navigation and finding prey. They’re broadband (spread across many frequencies) and occur in rapid sequences. The model finds real patterns, but fails to generalize when tested on new data (R² = -1.6).</p>
+<p><strong>What predicts echolocation (by effect size):</strong></p>
+<ul>
+<li><strong>ACTspCount dominates with an extreme effect</strong> (2378× fold change) — this spectral activity count index essentially captures echolocation directly. When ACTspCount is high, echolocation counts are dramatically higher.</li>
+<li><strong>HFC and EVNspFract show strong inverse effects</strong> (0.01× and 0.02×) — echolocation occurs when these indices are very low</li>
+<li><strong>ACTspFract also shows a large positive effect</strong> (19×) — consistent with ACTspCount; spectral activity indices directly capture click activity</li>
+<li><strong>Temperature effect</strong> — like burst pulses, more echolocation in cooler water</li>
+<li><strong>Depth matters</strong> — echolocation use varies with water depth</li>
+</ul>
+<p><strong>Why the negative R²:</strong> A negative R² means the model’s predictions are worse than just guessing the average. The extreme sensitivity to ACTspCount (2378×) means small prediction errors get amplified when activity is high. The model captures real patterns in the training data, but those patterns don’t transfer reliably to new weeks.</p>
+</section>
+</section>
+<section id="dolphin-whistle" class="level3">
+<h3 class="anchored" data-anchor-id="dolphin-whistle">dolphin_whistle</h3>
+<p><strong>Response type:</strong> Count (negative binomial)</p>
+<p><strong>Top indices by effect size:</strong> Ht (0.02×), SNRt (0.07×), MFC (0.24×), TFSD (0.24×), ZCR (3.4×), EVNspMean (3.0×), BGNf (2.7×), ECU (0.40×)</p>
+<p><strong>CV Performance:</strong> RMSE = 1.22, R² = -∞ (rare events)</p>
+<section id="smooth-terms-overview-5" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-5">Smooth Terms Overview</h4>
+<p><img src="figures/dolphin_whistle/gamm_smooths_top12.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-5" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-5">Diagnostics</h4>
+<p><img src="figures/dolphin_whistle/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-5" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-5">Interpretation</h4>
+<p><strong>The big picture:</strong> Whistles are tonal sounds dolphins use for social communication (think: dolphin “names” and contact calls). They’re rare in this dataset — most 2-hour windows have zero whistles — which makes prediction extremely difficult.</p>
+<p><strong>What predicts whistles (by effect size):</strong></p>
+<ul>
+<li><strong>Ht (temporal entropy) shows the strongest effect</strong> (0.02× fold change) — whistles occur when temporal entropy is very low, suggesting a distinctive temporal pattern</li>
+<li><strong>SNRt also shows a strong inverse effect</strong> (0.07×) — lower signal-to-noise when whistles are absent</li>
+<li><strong>ZCR has a positive effect</strong> (3.4×) — higher zero-crossing rates associate with whistle presence, consistent with the tonal nature of whistles</li>
+<li><strong>Station differences</strong> — whistle occurrence varies by location (some areas may be more social)</li>
+<li><strong>Temperature and depth</strong> — environmental conditions affect dolphin social behavior</li>
+</ul>
+<p><strong>Why R² = -∞:</strong> When most observations are zeros, the model essentially learns “predict zero.” Then when whistles actually occur, it’s wrong. The R² formula breaks down when you’re trying to predict rare events — it’s not that the model is infinitely bad, it’s that this metric isn’t meaningful for rare-event data.</p>
+<p><strong>The underlying problem:</strong> Whistles are social signals that depend on dolphin group dynamics — whether dolphins happen to be socializing in range of the hydrophone. This isn’t reliably predictable from acoustic indices or environmental conditions.</p>
+</section>
+</section>
+<section id="dolphin-activity" class="level3">
+<h3 class="anchored" data-anchor-id="dolphin-activity">dolphin_activity</h3>
+<p><strong>Response type:</strong> Count (negative binomial)</p>
+<p><strong>Top indices by effect size:</strong> ACTspCount (11650×), HFC (0.01×), EVNspCount (0.05×), ACTspFract (17×), MFC (0.10×), Ht (0.22×), EVNspFract (0.26×), EPS_SKEW (0.30×)</p>
+<p><strong>CV Performance:</strong> RMSE = 5.78, R² = -1.8 (poor generalization)</p>
+<section id="smooth-terms-overview-6" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-6">Smooth Terms Overview</h4>
+<p><img src="figures/dolphin_activity/gamm_smooths_top12.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-6" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-6">Diagnostics</h4>
+<p><img src="figures/dolphin_activity/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-6" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-6">Interpretation</h4>
+<p><strong>The big picture:</strong> Dolphin activity combines all dolphin sound types (clicks, whistles, burst pulses) into one count. It’s the “total dolphin noise” metric. Like echolocation, it shows extreme sensitivity to spectral activity indices.</p>
+<p><strong>What predicts dolphin activity (by effect size):</strong></p>
+<ul>
+<li><strong>ACTspCount has an extreme effect</strong> (11,650× fold change) — this single index essentially captures total dolphin acoustic activity. The relationship is nearly tautological: more spectral activity events = more dolphin sounds counted.</li>
+<li><strong>HFC and EVNspCount show strong inverse effects</strong> (0.01× and 0.05×) — dolphin activity is highest when these indices are very low</li>
+<li><strong>ACTspFract also shows a large positive effect</strong> (17×) — consistent pattern across dolphin metrics</li>
+<li><strong>Temperature is key</strong> — dolphins are more acoustically active in cooler water (this pattern appears across all dolphin metrics)</li>
+<li><strong>Time of day and depth</strong> — behavioral patterns drive when and where dolphins vocalize</li>
+</ul>
+<p><strong>Why the poor generalization:</strong> The extreme sensitivity to ACTspCount (11,650×) means the model is essentially learning “ACTspCount predicts activity” — which doesn’t help predict <em>future</em> activity levels. The patterns don’t transfer to new time periods.</p>
+<p><strong>Comparison to presence:</strong> Dolphin presence (AUC = 0.74) works much better than activity counts (R² = -1.8). If you need to monitor dolphins, detect presence rather than trying to quantify activity.</p>
+</section>
+</section>
+<section id="dolphin-presence" class="level3">
+<h3 class="anchored" data-anchor-id="dolphin-presence">dolphin_presence</h3>
+<p><strong>Response type:</strong> Binary (binomial)</p>
+<p><strong>Top indices by effect size:</strong> <strong>ACTspFract (+97 pp)</strong>, HFC (−21 pp), EVNspCount (−19 pp), MFC (−13 pp), Ht (−10 pp), ACTtMean (−7 pp), ECU (−4 pp), BI (−3 pp)</p>
+<p><strong>CV Performance:</strong> AUC = 0.74 (moderate — useful signal)</p>
+<section id="smooth-terms-overview-7" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-7">Smooth Terms Overview</h4>
+<p><img src="figures/dolphin_presence/gamm_smooths_top12.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-7" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-7">Diagnostics</h4>
+<p><img src="figures/dolphin_presence/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-7" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-7">Interpretation</h4>
+<p><strong>The big picture:</strong> Dolphin presence (are dolphins vocalizing: yes/no?) is the best-performing dolphin metric, with an AUC of 0.74. Unlike fish presence where multiple indices contribute moderate effects, dolphin presence is <strong>dominated by a single index</strong>.</p>
+<p><strong>What predicts dolphin presence:</strong></p>
+<ul>
+<li><strong>ACTspFract is the dominant predictor</strong> — this single index (spectral activity fraction) has a +97 percentage point effect, essentially determining presence on its own. When ACTspFract is low, dolphin detection probability is near 0%; when high, it’s near 100%. This makes ecological sense: dolphins produce distinctive clicks and whistles that dramatically increase acoustic activity in specific frequency bands.</li>
+<li><strong>Secondary indices have much smaller effects</strong> — HFC (−21 pp), EVNspCount (−19 pp), and MFC (−13 pp) contribute, but are dwarfed by ACTspFract</li>
+<li><strong>Temperature matters</strong> — dolphins more likely present in cooler water</li>
+<li><strong>Station and depth effects</strong> — presence varies by location and tidal state</li>
+</ul>
+<p><strong>Why presence works better than counts:</strong> The AUC of 0.74 reflects ACTspFract doing the heavy lifting. When dolphins vocalize, they create a distinctive acoustic signature that ACTspFract captures directly. But counting <em>how many</em> sounds they make is much noisier — hence the poor performance of count models.</p>
+<p><strong>Practical implication:</strong> For dolphin monitoring, ACTspFract alone may be sufficient as a presence indicator. The other indices add relatively little predictive value.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+A Note on Circularity
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The dominance of ACTspFract raises an important question: Is this model “predicting” dolphin presence, or simply <em>detecting</em> it through a proxy measurement?</p>
+<p>Dolphin clicks and whistles directly increase spectral activity — so ACTspFract is essentially measuring whether dolphin-like sounds are present. This is useful for <strong>automated detection</strong> (flagging recordings that likely contain dolphins), but it’s somewhat circular as a “prediction” model. The index isn’t predicting dolphin <em>behavior</em> from independent soundscape features; it’s detecting the acoustic signature of dolphins themselves.</p>
+<p>For practical monitoring, this circularity may not matter — if ACTspFract reliably flags dolphin presence, it’s a useful tool regardless of the mechanism. But for understanding <em>what environmental conditions attract dolphins</em>, you’d need to look at the secondary predictors (temperature, depth, time of day) rather than the acoustic indices.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="vessel-presence" class="level3">
+<h3 class="anchored" data-anchor-id="vessel-presence">vessel_presence</h3>
+<p><strong>Response type:</strong> Binary (binomial)</p>
+<p><strong>Top indices by effect size:</strong> HFC (+94 pp), aROI (−82 pp), nROI (+76 pp), ACTspFract (−67 pp), Hf (+60 pp), SKEWf (+53 pp), ACTtMean (+43 pp), EPS (+41 pp)</p>
+<p><strong>CV Performance:</strong> AUC = 0.92 (excellent)</p>
+<section id="smooth-terms-overview-8" class="level4">
+<h4 class="anchored" data-anchor-id="smooth-terms-overview-8">Smooth Terms Overview</h4>
+<p><img src="figures/vessel_presence/gamm_smooths_top12.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="diagnostics-8" class="level4">
+<h4 class="anchored" data-anchor-id="diagnostics-8">Diagnostics</h4>
+<p><img src="figures/vessel_presence/gamm_diagnostics.png" class="img-fluid" style="width:100.0%"></p>
+</section>
+<section id="interpretation-8" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-8">Interpretation</h4>
+<p><strong>The big picture:</strong> Vessel detection is the clear success story of this analysis. With an AUC of 0.92, the model can reliably distinguish “boat present” from “boat absent” time periods. This is excellent performance driven by massive effect sizes.</p>
+<p><strong>Why vessels are easy to detect:</strong></p>
+<ul>
+<li><strong>Boats are loud</strong> — they dominate the soundscape when present</li>
+<li><strong>Distinctive acoustic signature</strong> — broadband noise with consistent temporal patterns</li>
+<li><strong>Huge effect sizes</strong> — HFC alone shifts detection probability by +94 percentage points; aROI (−82 pp) and nROI (+76 pp) are similarly large. Multiple indices independently capture the vessel signature with effects exceeding ±40 pp.</li>
+</ul>
+<p><strong>What predicts vessel presence:</strong></p>
+<ul>
+<li><strong>HFC (high-frequency content) is the top predictor</strong> (+94 pp) — boat noise is broadband with strong high-frequency energy</li>
+<li><strong>Activity region indices (aROI, nROI)</strong> capture the distinctive acoustic “footprint” of vessels</li>
+<li><strong>ACTspFract has a strong negative effect</strong> (−67 pp) — interesting contrast with dolphins, where high ACTspFract indicates biological activity; for vessels, the noise pattern is different</li>
+<li><strong>Time of day matters</strong> (morning peak in boat traffic)</li>
+<li><strong>Temperature and depth are NOT significant</strong> — vessel presence is purely an acoustic phenomenon</li>
+</ul>
+<p><strong>Practical implication:</strong> Acoustic indices are highly effective for automated vessel monitoring. With effect sizes this large, even simple thresholding on HFC or nROI could provide useful detection.</p>
+<hr>
+</section>
+</section>
+</section>
+<section id="validation" class="level2">
+<h2 class="anchored" data-anchor-id="validation">Validation Results</h2>
+<p>Building a model that fits your data is one thing. Building a model that works on <em>new</em> data is harder — and ultimately what matters. This section asks: <strong>How well do our models generalize?</strong></p>
+<p>We use two complementary validation approaches:</p>
+<ol type="1">
+<li><strong>AR1 check:</strong> Did our temporal correlation correction actually work?</li>
+<li><strong>Cross-validation:</strong> If we train on some weeks and predict others, how accurate are we?</li>
+</ol>
+<section id="ar1-autocorrelation-check" class="level3">
+<h3 class="anchored" data-anchor-id="ar1-autocorrelation-check">AR1 Autocorrelation Check</h3>
+<p><strong>The problem we’re solving:</strong> Time series data has “memory.” If dolphins were clicking at 2pm, they’re probably still clicking at 4pm. Standard statistical models assume observations are independent, which would make us overconfident in patterns that are really just temporal persistence.</p>
+<p><strong>Our solution:</strong> We added an AR1 (first-order autoregressive) structure to account for this. The model estimates a correlation parameter (ρ) that represents how similar consecutive observations tend to be, then adjusts the statistical calculations accordingly.</p>
+<p><strong>Did it work?</strong> Only partially — and here’s how to tell.</p>
+<p><img src="figures/acf_residuals.png" class="img-fluid" style="width:100.0%"></p>
+<p>The plot shows “residual autocorrelation” — how much temporal pattern remains in the model’s errors <em>after</em> our correction. <strong>If the AR1 correction worked perfectly, these values would be near zero</strong> (the correction would have accounted for all the temporal structure).</p>
+<p><strong>What we actually see:</strong> The residual autocorrelation is still present at levels of 0.06–0.20. This means the AR1 correction didn’t fully remove the temporal dependence — some “memory” in the data wasn’t captured by the simple AR1 structure.</p>
+<p><strong>Why this matters:</strong> When autocorrelation remains in residuals, p-values become optimistic — effects may appear more statistically significant than they truly are. A result reported as p = 0.04 might actually be p = 0.06 or higher if we fully accounted for the temporal structure. <strong>Bottom line:</strong> Highly significant results (p &lt; 0.001) are still trustworthy; borderline cases deserve skepticism.</p>
+</section>
+<section id="cross-validation-can-we-predict-the-future" class="level3">
+<h3 class="anchored" data-anchor-id="cross-validation-can-we-predict-the-future">Cross-Validation: Can We Predict the Future?</h3>
+<p>The real test of a model isn’t how well it explains data it was trained on — it’s how well it predicts data it hasn’t seen. We used “leave-one-week-out” cross-validation: train on all weeks except one, predict that held-out week, repeat for all weeks, then average the errors.</p>
+<p>This simulates a realistic use case: “We’ve learned patterns from the past year. How well can we predict next week?”</p>
+<p><img src="figures/cv_performance_by_metric.png" class="img-fluid" style="width:100.0%"></p>
+<section id="binary-models-presenceabsence-good-news" class="level4">
+<h4 class="anchored" data-anchor-id="binary-models-presenceabsence-good-news">Binary Models (Presence/Absence): Good News</h4>
+<p>For presence/absence detection, we use <strong>AUC</strong> (Area Under the ROC Curve). AUC = 0.5 means random guessing, AUC = 1.0 means perfect prediction.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 25%">
+<col style="width: 12%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Mean AUC</th>
+<th>SD</th>
+<th>What this means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>vessel_presence</td>
+<td><strong>0.93</strong></td>
+<td>0.03</td>
+<td>Excellent — can reliably detect boats</td>
+</tr>
+<tr class="even">
+<td>fish_presence</td>
+<td>0.77</td>
+<td>0.11</td>
+<td>Good — better than chance, useful for screening</td>
+</tr>
+<tr class="odd">
+<td>dolphin_presence</td>
+<td>0.77</td>
+<td>0.12</td>
+<td>Good — same as fish</td>
+</tr>
+</tbody>
+</table>
+<p>These are genuinely useful for detection. An AUC of 0.77 means if you pick one “dolphin present” and one “dolphin absent” time window, the model will correctly rank them 77% of the time.</p>
+</section>
+<section id="count-models-activity-levels-bad-news" class="level4">
+<h4 class="anchored" data-anchor-id="count-models-activity-levels-bad-news">Count Models (Activity Levels): Bad News</h4>
+<p>For activity counts, we use <strong>R²</strong> — the proportion of variance explained. R² = 1.0 is perfect prediction; R² = 0 means you’re no better than just predicting the average; R² &lt; 0 means you’re <em>worse</em> than predicting the average.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 25%">
+<col style="width: 20%">
+<col style="width: 36%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Mean RMSE</th>
+<th>Mean R²</th>
+<th>What this means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>fish_richness</td>
+<td>0.55</td>
+<td>0.05</td>
+<td>Essentially no predictive power</td>
+</tr>
+<tr class="even">
+<td>fish_activity</td>
+<td>1.11</td>
+<td>0.04</td>
+<td>Same</td>
+</tr>
+<tr class="odd">
+<td>dolphin_whistle</td>
+<td>1.22</td>
+<td>−∞</td>
+<td>Model can’t handle this</td>
+</tr>
+<tr class="even">
+<td>dolphin_burst_pulse</td>
+<td>46.7</td>
+<td>−44,154</td>
+<td>One extreme week broke everything</td>
+</tr>
+<tr class="odd">
+<td>dolphin_echolocation</td>
+<td>4.06</td>
+<td>−1.6</td>
+<td>Worse than guessing the mean</td>
+</tr>
+<tr class="even">
+<td>dolphin_activity</td>
+<td>5.78</td>
+<td>−1.8</td>
+<td>Worse than guessing the mean</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why are count models so bad at prediction?</strong> The patterns learned from one week don’t transfer well to other weeks. A week with unusual dolphin activity throws off predictions entirely. The model captures real relationships (as shown by deviance explained in the fitting phase), but those relationships vary enough across weeks that they don’t help predict new weeks.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Count Models: Good for Description, Bad for Prediction
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The negative R² values aren’t a bug — they’re telling us something important. These models are useful for understanding <em>what</em> relates to dolphin activity (exploratory analysis), but they shouldn’t be used to predict <em>how much</em> activity will occur next week (forecasting). If you need predictions, use the presence/absence models instead.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+</section>
+<section id="diagnostic-checks" class="level2">
+<h2 class="anchored" data-anchor-id="diagnostic-checks">Diagnostic Checks</h2>
+<p>Statistics can be misleading. A “significant” result might be trivially small. A model might fit well on average but fail completely on certain data types. This section digs into three diagnostic questions that help us interpret the main results honestly.</p>
+<section id="effect-sizes-significant-vs.-actually-meaningful" class="level3">
+<h3 class="anchored" data-anchor-id="effect-sizes-significant-vs.-actually-meaningful">Effect Sizes: Significant vs.&nbsp;Actually Meaningful</h3>
+<p>Here’s a dirty secret of large-sample statistics: with 13,102 observations, almost everything is “statistically significant.” The p-value just tells you the effect isn’t exactly zero — it doesn’t tell you whether the effect is large enough to matter.</p>
+<p><strong>Effect size</strong> answers the more important question: <em>How much does this actually change things?</em></p>
+<p>For presence/absence models, we calculated: “If this index moves from low (10th percentile) to high (90th percentile), how much does the probability of detection change?” We hold all other predictors at their median values to isolate each index’s contribution.</p>
+<p><img src="figures/effect_sizes_presence.png" class="img-fluid" style="width:100.0%"></p>
+<p><strong>Reading this plot:</strong> Each bar shows the change in detection probability (in percentage points) associated with moving from low to high values of that index. The dotted lines at ±10 percentage points mark a rough threshold for “practically meaningful.”</p>
+<p><strong>What we learn:</strong></p>
+<ul>
+<li><p><strong>Vessel presence has huge effects.</strong> HFC alone changes vessel detection probability by +94 percentage points, with aROI (−82 pp) and nROI (+76 pp) close behind. This explains the excellent AUC — the signal is genuinely strong.</p></li>
+<li><p><strong>Dolphin presence is dominated by one index.</strong> ACTspFract (activity fraction in the spectral domain) has a massive +97 percentage point effect — moving from low to high ACTspFract values takes detection probability from near 0% to near 100%. The next largest effects (HFC −21 pp, EVNspCount −19 pp) are much smaller. This single index is doing most of the predictive work.</p></li>
+<li><p><strong>Fish presence has moderate effects.</strong> LFC (+24 pp), Hf (+23 pp), and AGI (+15 pp) exceed the ±10 pp threshold. There’s enough signal to make useful predictions, spread across multiple indices rather than dominated by one.</p></li>
+</ul>
+<p><strong>The insight:</strong> Effect size reveals which indices actually matter. For dolphins, ACTspFract is the key — it directly measures acoustic activity in the frequency bands where dolphin sounds occur.</p>
+</section>
+<section id="zero-inflation-a-structural-problem" class="level3">
+<h3 class="anchored" data-anchor-id="zero-inflation-a-structural-problem">Zero-Inflation: A Structural Problem</h3>
+<p>Why do count models fail so badly at prediction while presence models succeed? A big part of the answer is <strong>zero-inflation</strong>.</p>
+<p>Our count models use a negative binomial distribution, which is the standard choice for ecological count data. But this distribution has expectations about how often zeros should occur — and our data has <em>far more zeros</em> than expected.</p>
+<p><img src="figures/zero_inflation_gap.png" class="img-fluid" style="width:100.0%"></p>
+<p><strong>Reading this plot:</strong> Each bar shows the “gap” — the difference between observed zeros (what we actually see) and predicted zeros (what the model expects). Larger gaps indicate worse model fit.</p>
+<p><strong>What’s happening:</strong></p>
+<ul>
+<li><p><strong>Dolphin Activity:</strong> The model expects about 24% of time windows to have zero detections. In reality, 77% have zero. That’s a 52 percentage point gap. The model thinks dolphins should be active most of the time, when actually they’re absent most of the time.</p></li>
+<li><p><strong>Dolphin Echolocation:</strong> Similar story — 77% observed zeros vs.&nbsp;33% expected.</p></li>
+<li><p><strong>Fish Activity:</strong> More modest gap (14 pp) but still flagged.</p></li>
+</ul>
+<p><strong>Why this matters:</strong> When a model systematically misunderstands the basic structure of your data (how often zeros occur), its predictions will be unreliable. It’s like trying to predict rare events with a model designed for common ones.</p>
+<p><strong>What to do about it:</strong> For applications requiring activity counts, a <strong>zero-inflated model</strong> (which explicitly models the zero-generating process separately) or a <strong>hurdle model</strong> (which treats “any vs.&nbsp;none” and “how much” as separate questions) might be more appropriate. Our presence/absence models sidestep this issue entirely by treating the question as binary.</p>
+</section>
+<section id="concurvity-why-so-many-indices-seem-important" class="level3">
+<h3 class="anchored" data-anchor-id="concurvity-why-so-many-indices-seem-important">Concurvity: Why So Many Indices Seem Important</h3>
+<p>If you look at the significance tables for each metric, you’ll notice something that might seem suspicious: <em>lots</em> of indices are significant. Are they really all contributing independent information?</p>
+<p>Probably not. The culprit is <strong>concurvity</strong> — the GAM equivalent of multicollinearity.</p>
+<p><strong>What is concurvity?</strong> It measures how much each smooth term can be predicted by the other smooth terms. High concurvity (&gt; 0.8) means the terms are capturing overlapping information.</p>
+<p><strong>What we found:</strong> Most index terms in these models have concurvity &gt; 0.8. The acoustic indices are measuring similar underlying acoustic characteristics from different angles.</p>
+<p><strong>What this means for interpretation:</strong></p>
+<ol type="1">
+<li><p><strong>The 60 indices aren’t 60 independent predictors.</strong> They’re more like 60 different views of maybe 5-10 underlying acoustic “dimensions.”</p></li>
+<li><p><strong>Significance spreads across correlated indices.</strong> If ZCR genuinely predicts fish presence, then all indices correlated with ZCR will <em>also</em> appear to predict fish presence. The signal gets split and replicated.</p></li>
+<li><p><strong>Don’t over-interpret individual index effects.</strong> Saying “ZCR is the key predictor” overstates our ability to pinpoint specific indices. It’s more accurate to say “the acoustic characteristics captured by ZCR and related indices predict fish presence.”</p></li>
+</ol>
+<p><strong>Practical advice:</strong> When thinking about which indices matter, focus on effect sizes rather than counting significant p-values. And think of the indices as capturing “acoustic regimes” broadly, not as mechanistic individual predictors.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Diagnostic Summary
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Three key insights from diagnostics:</p>
+<ol type="1">
+<li><p><strong>Effect sizes separate the meaningful from the trivial.</strong> Vessel indices have big effects; dolphin indices have tiny ones even when “significant.”</p></li>
+<li><p><strong>Zero-inflation explains count model failures.</strong> The models expect more activity than actually occurs.</p></li>
+<li><p><strong>Concurvity means indices overlap.</strong> Many significant indices ≠ many independent predictors.</p></li>
+</ol>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="conclusions" class="level2">
+<h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
+<section id="what-we-learned" class="level3">
+<h3 class="anchored" data-anchor-id="what-we-learned">What We Learned</h3>
+<p>This analysis asked a simple question: <strong>Can automated acoustic measurements tell us about biological activity in an estuary?</strong> The answer is nuanced, and understanding the nuance is useful for planning future acoustic monitoring work.</p>
+<section id="the-clear-win-vessel-detection" class="level4">
+<h4 class="anchored" data-anchor-id="the-clear-win-vessel-detection">The Clear Win: Vessel Detection</h4>
+<p>Acoustic indices excel at detecting vessel presence (AUC = 0.93). This makes intuitive sense — boats are loud, their acoustic signature is distinctive, and the soundscape changes dramatically when a vessel passes. Multiple indices pick up the same signal, and the effect sizes are large (the nROI index alone shifts detection probability by 76 percentage points).</p>
+<p><strong>Practical application:</strong> Automated vessel monitoring using acoustic indices is highly feasible. This could support studies of anthropogenic noise exposure, vessel traffic patterns, or marine protected area compliance.</p>
+</section>
+<section id="the-partial-win-biological-presence" class="level4">
+<h4 class="anchored" data-anchor-id="the-partial-win-biological-presence">The Partial Win: Biological Presence</h4>
+<p>For fish and dolphin presence detection, the models work moderately well (AUC ~0.77). This is genuinely useful — substantially better than random guessing — but not reliable enough for automated monitoring without human verification.</p>
+<p><strong>What’s happening ecologically:</strong> The soundscape does change when fish or dolphins are present. Fish choruses add tonal structure; dolphin clicks and whistles shift the spectral profile. Acoustic indices capture these changes, but the signal is weaker and more variable than for vessels.</p>
+<p><strong>Practical application:</strong> These models are useful for <em>screening</em> — flagging time periods that are worth human review, prioritizing recordings for manual annotation, or identifying hotspots in large datasets. They’re not reliable enough to replace human validation entirely.</p>
+</section>
+<section id="the-honest-failure-activity-quantification" class="level4">
+<h4 class="anchored" data-anchor-id="the-honest-failure-activity-quantification">The Honest Failure: Activity Quantification</h4>
+<p>For predicting <em>how much</em> activity occurs (counts of fish sounds, dolphin clicks, etc.), the models fail to generalize. They fit the training data reasonably well, but predictions on held-out weeks are worse than simply guessing the mean.</p>
+<p><strong>Why this happens:</strong></p>
+<ol type="1">
+<li><strong>Zero-inflation:</strong> Most time windows have zero activity. The models expect more activity than actually occurs.</li>
+<li><strong>Week-to-week variability:</strong> Patterns learned from one week don’t transfer well to other weeks. Dolphins are episodic; what predicts their activity this Tuesday doesn’t predict next Tuesday.</li>
+<li><strong>Count noise:</strong> Counting individual sounds is inherently noisier than detecting presence/absence.</li>
+</ol>
+<p><strong>Practical implication:</strong> Use binary (presence/absence) models rather than count models when prediction is the goal. If you need activity levels, acoustic indices can help describe patterns after the fact (exploratory analysis), but don’t rely on them for forecasting.</p>
+</section>
+</section>
+<section id="methodological-lessons" class="level3">
+<h3 class="anchored" data-anchor-id="methodological-lessons">Methodological Lessons</h3>
+<p><strong>60 indices beat 17:</strong> Post-hoc validation showed that including all 60 acoustic indices (with GAMM regularization) outperformed the VIF-filtered 17-index approach. Letting the model decide which indices matter worked better than pre-filtering based on statistical rules.</p>
+<p><strong>Presence beats counts:</strong> Binary models are more robust than count models for prediction. When designing an acoustic monitoring system, frame questions as “Is there activity?” rather than “How much activity?”</p>
+<p><strong>Effect sizes matter more than p-values:</strong> With large samples, everything is significant. Focus on indices with large practical effects rather than counting significant predictors.</p>
+</section>
+<section id="for-future-work" class="level3">
+<h3 class="anchored" data-anchor-id="for-future-work">For Future Work</h3>
+<p>If replicating this approach in other systems, consider:</p>
+<ul>
+<li><strong>Use presence/absence models</strong> for detection applications</li>
+<li><strong>Include all candidate indices</strong> and let regularization handle selection</li>
+<li><strong>Evaluate with cross-validation</strong>, not just model fit statistics</li>
+<li><strong>Check zero-inflation</strong> before building count models — if most observations are zeros, consider hurdle models</li>
+<li><strong>Think of indices as overlapping descriptors</strong>, not independent predictors</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+The One-Sentence Summary
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Acoustic indices can tell you <em>whether</em> biological activity is happening, but not <em>how much</em> — and vessel detection works much better than biological detection.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="downloads" class="level2">
+<h2 class="anchored" data-anchor-id="downloads">Downloads</h2>
+<section id="model-results" class="level3">
+<h3 class="anchored" data-anchor-id="model-results">Model Results</h3>
+<ul>
+<li><a href="tables/model_summary.csv">Model Summary (CSV)</a></li>
+<li><a href="tables/effect_sizes.csv">Effect Sizes (CSV)</a> — 60 indices × 9 metrics</li>
+<li><a href="tables/zero_inflation_check.csv">Zero-Inflation Check (CSV)</a></li>
+</ul>
+</section>
+<section id="validation-1" class="level3">
+<h3 class="anchored" data-anchor-id="validation-1">Validation</h3>
+<ul>
+<li><a href="tables/cv_performance_summary.csv">CV Performance Summary (CSV)</a></li>
+<li><a href="tables/ar1_validation.csv">AR1 Validation (CSV)</a></li>
+<li><a href="tables/baseline_comparison.csv">Baseline Comparison (CSV)</a> — indices vs no-indices</li>
+<li><a href="tables/acoustic_only_comparison.csv">Acoustic-Only Comparison (CSV)</a> — indices alone vs full model</li>
+<li><a href="tables/baseline_comparison_bystation.csv">Per-Station Baseline (CSV)</a></li>
+<li><a href="tables/bystation_significance_summary.csv">Per-Station Index Significance (CSV)</a> — which indices matter at each station</li>
+<li><a href="tables/vif_validation.csv">VIF Validation (CSV)</a> — 17 vs 60 indices</li>
+</ul>
+</section>
+<section id="archive" class="level3">
+<h3 class="anchored" data-anchor-id="archive">Archive</h3>
+<ul>
+<li><a href="results-viewer-v1.pdf">v1 Results (17 indices, PDF)</a></li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="appendix-vif" class="level2">
+<h2 class="anchored" data-anchor-id="appendix-vif">Appendix A: Methodological Evolution</h2>
+<section id="why-we-moved-from-17-to-60-indices" class="level3">
+<h3 class="anchored" data-anchor-id="why-we-moved-from-17-to-60-indices">Why We Moved from 17 to 60 Indices</h3>
+<p><strong>Original Approach (v1):</strong> We pre-filtered indices using Variance Inflation Factor (VIF) analysis, reducing 62 indices to 17 before modeling. The rationale was standard practice: remove collinear predictors to improve coefficient interpretability and model stability.</p>
+<p><strong>The Problem:</strong> Post-hoc validation revealed that 60-index models consistently outperformed 17-index models across all metrics:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>17-Index AIC</th>
+<th>60-Index AIC</th>
+<th>ΔAIC</th>
+<th>Winner</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>fish_activity</td>
+<td>33,897</td>
+<td>33,450</td>
+<td>−447</td>
+<td>60-index</td>
+</tr>
+<tr class="even">
+<td>fish_richness</td>
+<td>22,472</td>
+<td>22,334</td>
+<td>−138</td>
+<td>60-index</td>
+</tr>
+<tr class="odd">
+<td>fish_presence</td>
+<td>9,413</td>
+<td>9,077</td>
+<td>−336</td>
+<td>60-index</td>
+</tr>
+<tr class="even">
+<td>dolphin_burst_pulse</td>
+<td>8,187</td>
+<td>8,046</td>
+<td>−141</td>
+<td>60-index</td>
+</tr>
+<tr class="odd">
+<td>dolphin_echolocation</td>
+<td>30,765</td>
+<td>30,565</td>
+<td>−200</td>
+<td>60-index</td>
+</tr>
+<tr class="even">
+<td>dolphin_whistle</td>
+<td>3,189</td>
+<td>3,117</td>
+<td>−72</td>
+<td>60-index</td>
+</tr>
+<tr class="odd">
+<td>dolphin_activity</td>
+<td>32,367</td>
+<td>32,128</td>
+<td>−239</td>
+<td>60-index</td>
+</tr>
+<tr class="even">
+<td>dolphin_presence</td>
+<td>10,949</td>
+<td>10,693</td>
+<td>−256</td>
+<td>60-index</td>
+</tr>
+<tr class="odd">
+<td>vessel_presence</td>
+<td>6,961</td>
+<td>6,435</td>
+<td>−526</td>
+<td>60-index</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Average improvement:</strong> ΔAIC = −262 (favoring 60-index models)</p>
+</section>
+<section id="what-changed" class="level3">
+<h3 class="anchored" data-anchor-id="what-changed">What Changed</h3>
+<p>Instead of VIF pre-filtering, we rely on GAMM’s built-in regularization (<code>select=TRUE</code>), which:</p>
+<ul>
+<li>Adds a penalty to each smooth term</li>
+<li>Shrinks uninformative smooths toward zero (EDF → 0)</li>
+<li>Retains predictors with genuine signal</li>
+<li>Allows the data to determine which indices matter</li>
+</ul>
+<p>We also reduced the smooth basis dimension (<code>k=5</code> → <code>k=3</code>) to help 60-index models converge.</p>
+</section>
+<section id="implications" class="level3">
+<h3 class="anchored" data-anchor-id="implications">Implications</h3>
+<ol type="1">
+<li><p><strong>More indices can participate:</strong> Some indices removed by VIF turn out to contribute unique information that other indices don’t capture.</p></li>
+<li><p><strong>Regularization handles collinearity:</strong> The GAMM shrinkage effectively manages the collinearity that VIF was meant to address.</p></li>
+<li><p><strong>Largest gains for vessels and fish:</strong> Vessel presence showed the largest improvement (ΔAIC = −526), followed by fish_activity (−447) and fish_presence (−336). The additional indices capture acoustic signatures that VIF filtering had removed.</p></li>
+</ol>
+</section>
+<section id="when-vif-pre-filtering-still-makes-sense" class="level3">
+<h3 class="anchored" data-anchor-id="when-vif-pre-filtering-still-makes-sense">When VIF Pre-Filtering Still Makes Sense</h3>
+<p>VIF remains useful when: - Interpreting individual coefficient estimates is critical - Using models without built-in regularization (e.g., standard GLMs) - Computational constraints require fewer predictors</p>
+<p>For exploratory analysis with modern regularized methods (GAMMs, LASSO, random forests), letting the algorithm select features is often preferable to manual pre-filtering.</p>
+<hr>
+</section>
+</section>
+<section id="appendix-full-smooths" class="level2">
+<h2 class="anchored" data-anchor-id="appendix-full-smooths">Appendix B: Full Smooth Plots (All 60 Indices)</h2>
+<p>The main results show only the top 8 indices by effect size plus 4 temporal/environmental predictors (12 total) for readability. Below are the complete smooth plots showing all 60 acoustic indices plus temporal and environmental predictors.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">fish_activity</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">fish_richness</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">fish_presence</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false" href="">dolphin_burst_pulse</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-5" role="tab" aria-controls="tabset-1-5" aria-selected="false" href="">dolphin_echolocation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-6" role="tab" aria-controls="tabset-1-6" aria-selected="false" href="">dolphin_whistle</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-7-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-7" role="tab" aria-controls="tabset-1-7" aria-selected="false" href="">dolphin_activity</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-8-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-8" role="tab" aria-controls="tabset-1-8" aria-selected="false" href="">dolphin_presence</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-9-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-9" role="tab" aria-controls="tabset-1-9" aria-selected="false" href="">vessel_presence</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p><img src="figures/fish_activity/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p><img src="figures/fish_richness/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<p><img src="figures/fish_presence/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</div>
+<div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
+<p><img src="figures/dolphin_burst_pulse/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</div>
+<div id="tabset-1-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-5-tab">
+<p><img src="figures/dolphin_echolocation/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</div>
+<div id="tabset-1-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-6-tab">
+<p><img src="figures/dolphin_whistle/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</div>
+<div id="tabset-1-7" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-7-tab">
+<p><img src="figures/dolphin_activity/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</div>
+<div id="tabset-1-8" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-8-tab">
+<p><img src="figures/dolphin_presence/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</div>
+<div id="tabset-1-9" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-9-tab">
+<p><img src="figures/vessel_presence/gamm_smooths.png" class="img-fluid" style="width:100.0%"></p>
+</div>
+</div>
+</div>
+<section id="effect-size-reference" class="level3">
+<h3 class="anchored" data-anchor-id="effect-size-reference">Effect Size Reference</h3>
+<p>The smooth plots above show the <em>shape</em> of each relationship, but not the <em>magnitude</em>. For the actual effect sizes (how much each index changes the predicted outcome), download the effect sizes table:</p>
+<ul>
+<li><a href="tables/effect_sizes.csv">Effect Sizes (CSV)</a> — For each index × metric combination, shows:
+<ul>
+<li><strong>low_value / high_value</strong>: 10th and 90th percentile of the index</li>
+<li><strong>low_pred / high_pred</strong>: Predicted outcome at those values</li>
+<li><strong>effect_size</strong>: For presence models, probability change in percentage points; for count models, fold change</li>
+<li><strong>effect_type</strong>: “probability_change” or “fold_change”</li>
+</ul></li>
+</ul>
+<p><strong>Interpreting effect sizes:</strong></p>
+<ul>
+<li>For <strong>presence models</strong>: Effect size is the change in detection probability (e.g., +0.25 means +25 percentage points)</li>
+<li>For <strong>count models</strong>: Effect size is the multiplicative change (e.g., 2.0 means twice as many detections)</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="appendix-bystation" class="level2">
+<h2 class="anchored" data-anchor-id="appendix-bystation">Appendix C: Per-Station Index Effects</h2>
+<p>The main analysis pools data across all three monitoring stations (9M, 14M, 37M). But do the same indices matter at each location, or are some effects station-specific?</p>
+<p>To answer this, we fit separate GAMM models for each station and calculated <strong>effect sizes</strong> (probability change when moving from 10th to 90th percentile of each index). Note: Sample sizes are roughly equal across all three stations, so differences in effects reflect genuine station-level variation rather than sampling imbalance.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Reading Effect Sizes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>Positive values (+)</strong> = higher index values → higher detection probability</li>
+<li><strong>Negative values (−)</strong> = higher index values → lower detection probability</li>
+</ul>
+<p>For example, ACTspCount (+86) means that when ACTspCount goes from low to high, dolphin detection probability increases by 86 percentage points.</p>
+</div>
+</div>
+<section id="top-5-indices-by-effect-size-at-each-station" class="level3">
+<h3 class="anchored" data-anchor-id="top-5-indices-by-effect-size-at-each-station">Top 5 Indices by Effect Size at Each Station</h3>
+<p><strong>dolphin_presence</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 83%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Station</th>
+<th>Top 5 Indices (effect in percentage points)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>9M</strong></td>
+<td>AEI (−29), ADI (−22), aROI (−18), TFSD (−12), LEQt (+10)</td>
+</tr>
+<tr class="even">
+<td><strong>14M</strong></td>
+<td><strong>ACTspCount (+86)</strong>, MFC (−73), EVNspCount (−53), MEANf (−18), EVNspFract (−17)</td>
+</tr>
+<tr class="odd">
+<td><strong>37M</strong></td>
+<td><strong>ACTspCount (+80)</strong>, HFC (−52), EVNspCount (−29), EVNspFract (−27), MEANf (+24)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key finding:</strong> ACTspCount dominates at the deeper stations (14M, 37M) with massive effects (+80-86 pp), but has minimal effect at 9M. At the shallowest station, different indices matter entirely (AEI, ADI, aROI).</p>
+<p><strong>fish_presence</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 83%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Station</th>
+<th>Top 5 Indices (effect in percentage points)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>9M</strong></td>
+<td><strong>LFC (+64)</strong>, LEQt (−41), EPS (−37), aROI (+22), ACTspCount (−18)</td>
+</tr>
+<tr class="even">
+<td><strong>14M</strong></td>
+<td>ROU (+31), nROI (−27), ACTtMean (+27), aROI (+22), MEANf (−18)</td>
+</tr>
+<tr class="odd">
+<td><strong>37M</strong></td>
+<td><em>(Model collapsed — all effects ~0 pp)</em></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key finding:</strong> Fish presence detection works well at 9M (LFC has a huge +64 pp effect) and moderately at 14M, but the model provides no predictive value at 37M. This may reflect differences in fish community or acoustic environment at the deepest station.</p>
+<p><strong>vessel_presence</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 83%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Station</th>
+<th>Top 5 Indices (effect in percentage points)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>9M</strong></td>
+<td><em>(All effects &lt;3 pp — vessels hard to detect acoustically)</em></td>
+</tr>
+<tr class="even">
+<td><strong>14M</strong></td>
+<td><strong>MFC (−60)</strong>, aROI (−26), HFC (+21), nROI (+16), EVNtCount (−11)</td>
+</tr>
+<tr class="odd">
+<td><strong>37M</strong></td>
+<td>nROI (+21), aROI (−19), HFC (+16), ACTtMean (+16), SNRf (−8)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key finding:</strong> Vessel detection via acoustic indices works well at 14M and 37M but fails at 9M (the shallowest station). This could reflect acoustic propagation differences or different vessel traffic patterns.</p>
+</section>
+<section id="what-this-tells-us" class="level3">
+<h3 class="anchored" data-anchor-id="what-this-tells-us">What This Tells Us</h3>
+<ol type="1">
+<li><p><strong>Station matters a lot.</strong> The “best” index for detection varies dramatically by location. ACTspCount is the dominant dolphin predictor at deeper stations but irrelevant at 9M.</p></li>
+<li><p><strong>Depth may drive the differences.</strong> The 37M station (deepest) shows different patterns than shallower stations for all three metrics. This could reflect:</p>
+<ul>
+<li>Different acoustic propagation characteristics</li>
+<li>Different animal behavior at depth</li>
+<li>Different background noise environments</li>
+</ul></li>
+<li><p><strong>No universal “best index.”</strong> An index that works well at one station may be useless at another. Any operational monitoring system should be calibrated per-location.</p></li>
+</ol>
+</section>
+<section id="downloads-1" class="level3">
+<h3 class="anchored" data-anchor-id="downloads-1">Downloads</h3>
+<ul>
+<li><a href="tables/bystation_effect_sizes.csv">Per-Station Effect Sizes (CSV)</a> — Effect sizes for all indices at each station</li>
+<li><a href="tables/bystation_significance_summary.csv">Per-Station Significance (CSV)</a> — P-values and EDFs for reference</li>
+</ul>
+<hr>
+<p><em>Generated: 2026-02-09</em></p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

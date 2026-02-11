@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-02-03 15:31:02",
+  "stage": "05b-validation",
+  "ar1_validation": {
+    "metrics_validated": 9,
+    "all_effective": false
+  },
+  "cross_validation": {
+    "strategy": "week_based_kfold",
+    "min_fold_rows": 20,
+    "total_folds_run": 477,
+    "metrics_validated": 9
+  },
+  "outputs": {
+    "tables": ["results/tables/ar1_validation.csv", "results/tables/cv_fold_results.csv", "results/tables/cv_performance_summary.csv"],
+    "figures": ["results/figures/acf_residuals.png", "results/figures/cv_performance_by_metric.png"]
+  }
+}

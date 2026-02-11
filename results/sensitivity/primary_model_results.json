@@ -1,0 +1,482 @@
+{
+  "fish_activity": {
+    "converged": true,
+    "AIC": "NA",
+    "n_obs": 13102,
+    "coefficients": [
+      {
+        "Estimate": -0.0303,
+        "Std. Error": 0.2615,
+        "z value": -0.1158,
+        "Pr(>|z|)": 0.9078,
+        "predictor": "(Intercept)",
+        "_row": "(Intercept)"
+      },
+      {
+        "Estimate": 0.0908,
+        "Std. Error": 0.0108,
+        "z value": 8.4122,
+        "Pr(>|z|)": 4.0242e-17,
+        "predictor": "ACI",
+        "_row": "ACI"
+      },
+      {
+        "Estimate": -0.044,
+        "Std. Error": 0.0119,
+        "z value": -3.6855,
+        "Pr(>|z|)": 0.0002,
+        "predictor": "ACTtCount",
+        "_row": "ACTtCount"
+      },
+      {
+        "Estimate": -0.0187,
+        "Std. Error": 0.0078,
+        "z value": -2.3922,
+        "Pr(>|z|)": 0.0167,
+        "predictor": "ADI",
+        "_row": "ADI"
+      },
+      {
+        "Estimate": -0.0647,
+        "Std. Error": 0.0131,
+        "z value": -4.9315,
+        "Pr(>|z|)": 8.1596e-07,
+        "predictor": "BI",
+        "_row": "BI"
+      },
+      {
+        "Estimate": 0.0158,
+        "Std. Error": 0.0059,
+        "z value": 2.6864,
+        "Pr(>|z|)": 0.0072,
+        "predictor": "BioEnergy",
+        "_row": "BioEnergy"
+      },
+      {
+        "Estimate": 0.0384,
+        "Std. Error": 0.0109,
+        "z value": 3.5127,
+        "Pr(>|z|)": 0.0004,
+        "predictor": "EAS",
+        "_row": "EAS"
+      },
+      {
+        "Estimate": -0.0048,
+        "Std. Error": 0.0115,
+        "z value": -0.4128,
+        "Pr(>|z|)": 0.6798,
+        "predictor": "EPS_KURT",
+        "_row": "EPS_KURT"
+      },
+      {
+        "Estimate": -0.0298,
+        "Std. Error": 0.0103,
+        "z value": -2.8911,
+        "Pr(>|z|)": 0.0038,
+        "predictor": "EVNspMean",
+        "_row": "EVNspMean"
+      },
+      {
+        "Estimate": -0.0307,
+        "Std. Error": 0.0169,
+        "z value": -1.8207,
+        "Pr(>|z|)": 0.0686,
+        "predictor": "KURTt",
+        "_row": "KURTt"
+      },
+      {
+        "Estimate": 0.0005,
+        "Std. Error": 0.0102,
+        "z value": 0.0446,
+        "Pr(>|z|)": 0.9644,
+        "predictor": "MEANt",
+        "_row": "MEANt"
+      },
+      {
+        "Estimate": -0.0192,
+        "Std. Error": 0.0119,
+        "z value": -1.6123,
+        "Pr(>|z|)": 0.1069,
+        "predictor": "NBPEAKS",
+        "_row": "NBPEAKS"
+      },
+      {
+        "Estimate": 0.0156,
+        "Std. Error": 0.014,
+        "z value": 1.1147,
+        "Pr(>|z|)": 0.265,
+        "predictor": "SKEWt",
+        "_row": "SKEWt"
+      },
+      {
+        "Estimate": -0.0373,
+        "Std. Error": 0.0077,
+        "z value": -4.8437,
+        "Pr(>|z|)": 1.2745e-06,
+        "predictor": "TFSD",
+        "_row": "TFSD"
+      },
+      {
+        "Estimate": -0.1097,
+        "Std. Error": 0.0162,
+        "z value": -6.7782,
+        "Pr(>|z|)": 1.217e-11,
+        "predictor": "VARt",
+        "_row": "VARt"
+      },
+      {
+        "Estimate": 0.4797,
+        "Std. Error": 0.0327,
+        "z value": 14.665,
+        "Pr(>|z|)": 1.0797e-48,
+        "predictor": "temperature",
+        "_row": "temperature"
+      },
+      {
+        "Estimate": 0.2286,
+        "Std. Error": 0.013,
+        "z value": 17.5815,
+        "Pr(>|z|)": 3.4163e-69,
+        "predictor": "depth",
+        "_row": "depth"
+      },
+      {
+        "Estimate": -0.1758,
+        "Std. Error": 0.0107,
+        "z value": -16.3867,
+        "Pr(>|z|)": 2.3808e-60,
+        "predictor": "sin_hour",
+        "_row": "sin_hour"
+      },
+      {
+        "Estimate": -0.0716,
+        "Std. Error": 0.0113,
+        "z value": -6.3559,
+        "Pr(>|z|)": 2.0718e-10,
+        "predictor": "cos_hour",
+        "_row": "cos_hour"
+      }
+    ],
+    "significant_predictors": ["ACI", "ACTtCount", "ADI", "BI", "BioEnergy", "EAS", "EVNspMean", "TFSD", "VARt", "temperature", "depth", "sin_hour", "cos_hour"]
+  },
+  "dolphin_activity": {
+    "converged": true,
+    "AIC": 32705.7457,
+    "n_obs": 13102,
+    "coefficients": [
+      {
+        "Estimate": 0.1722,
+        "Std. Error": 0.2896,
+        "z value": 0.5946,
+        "Pr(>|z|)": 0.5521,
+        "predictor": "(Intercept)",
+        "_row": "(Intercept)"
+      },
+      {
+        "Estimate": 0.0753,
+        "Std. Error": 0.0367,
+        "z value": 2.0521,
+        "Pr(>|z|)": 0.0402,
+        "predictor": "ACI",
+        "_row": "ACI"
+      },
+      {
+        "Estimate": -0.1004,
+        "Std. Error": 0.0416,
+        "z value": -2.4121,
+        "Pr(>|z|)": 0.0159,
+        "predictor": "ACTtCount",
+        "_row": "ACTtCount"
+      },
+      {
+        "Estimate": 0.1088,
+        "Std. Error": 0.0336,
+        "z value": 3.2398,
+        "Pr(>|z|)": 0.0012,
+        "predictor": "ADI",
+        "_row": "ADI"
+      },
+      {
+        "Estimate": -0.1397,
+        "Std. Error": 0.0373,
+        "z value": -3.7434,
+        "Pr(>|z|)": 0.0002,
+        "predictor": "BI",
+        "_row": "BI"
+      },
+      {
+        "Estimate": 0.0081,
+        "Std. Error": 0.0316,
+        "z value": 0.2566,
+        "Pr(>|z|)": 0.7975,
+        "predictor": "BioEnergy",
+        "_row": "BioEnergy"
+      },
+      {
+        "Estimate": 0.0211,
+        "Std. Error": 0.0396,
+        "z value": 0.5324,
+        "Pr(>|z|)": 0.5944,
+        "predictor": "EAS",
+        "_row": "EAS"
+      },
+      {
+        "Estimate": -0.1025,
+        "Std. Error": 0.0436,
+        "z value": -2.3507,
+        "Pr(>|z|)": 0.0187,
+        "predictor": "EPS_KURT",
+        "_row": "EPS_KURT"
+      },
+      {
+        "Estimate": 0.0631,
+        "Std. Error": 0.037,
+        "z value": 1.7063,
+        "Pr(>|z|)": 0.088,
+        "predictor": "EVNspMean",
+        "_row": "EVNspMean"
+      },
+      {
+        "Estimate": 0.0522,
+        "Std. Error": 0.0345,
+        "z value": 1.5134,
+        "Pr(>|z|)": 0.1302,
+        "predictor": "KURTt",
+        "_row": "KURTt"
+      },
+      {
+        "Estimate": 0.0111,
+        "Std. Error": 0.0305,
+        "z value": 0.3648,
+        "Pr(>|z|)": 0.7153,
+        "predictor": "MEANt",
+        "_row": "MEANt"
+      },
+      {
+        "Estimate": -0.1689,
+        "Std. Error": 0.04,
+        "z value": -4.2267,
+        "Pr(>|z|)": 0,
+        "predictor": "NBPEAKS",
+        "_row": "NBPEAKS"
+      },
+      {
+        "Estimate": -0.0108,
+        "Std. Error": 0.0378,
+        "z value": -0.2867,
+        "Pr(>|z|)": 0.7743,
+        "predictor": "SKEWt",
+        "_row": "SKEWt"
+      },
+      {
+        "Estimate": -0.5173,
+        "Std. Error": 0.059,
+        "z value": -8.7647,
+        "Pr(>|z|)": 1.8725e-18,
+        "predictor": "TFSD",
+        "_row": "TFSD"
+      },
+      {
+        "Estimate": 0.0393,
+        "Std. Error": 0.0542,
+        "z value": 0.7258,
+        "Pr(>|z|)": 0.468,
+        "predictor": "VARt",
+        "_row": "VARt"
+      },
+      {
+        "Estimate": -0.359,
+        "Std. Error": 0.0658,
+        "z value": -5.4581,
+        "Pr(>|z|)": 4.8135e-08,
+        "predictor": "temperature",
+        "_row": "temperature"
+      },
+      {
+        "Estimate": -0.2459,
+        "Std. Error": 0.0494,
+        "z value": -4.9736,
+        "Pr(>|z|)": 6.5717e-07,
+        "predictor": "depth",
+        "_row": "depth"
+      },
+      {
+        "Estimate": -0.1091,
+        "Std. Error": 0.0421,
+        "z value": -2.5914,
+        "Pr(>|z|)": 0.0096,
+        "predictor": "sin_hour",
+        "_row": "sin_hour"
+      },
+      {
+        "Estimate": 0.0945,
+        "Std. Error": 0.0417,
+        "z value": 2.2634,
+        "Pr(>|z|)": 0.0236,
+        "predictor": "cos_hour",
+        "_row": "cos_hour"
+      }
+    ],
+    "significant_predictors": ["ACI", "ACTtCount", "ADI", "BI", "EPS_KURT", "NBPEAKS", "TFSD", "temperature", "depth", "sin_hour", "cos_hour"]
+  },
+  "vessel_presence": {
+    "converged": true,
+    "AIC": 7390.7611,
+    "n_obs": 13102,
+    "coefficients": [
+      {
+        "Estimate": -2.4676,
+        "Std. Error": 0.8741,
+        "z value": -2.823,
+        "Pr(>|z|)": 0.0048,
+        "predictor": "(Intercept)",
+        "_row": "(Intercept)"
+      },
+      {
+        "Estimate": -0.2043,
+        "Std. Error": 0.0394,
+        "z value": -5.1814,
+        "Pr(>|z|)": 2.2022e-07,
+        "predictor": "ACI",
+        "_row": "ACI"
+      },
+      {
+        "Estimate": -0.1757,
+        "Std. Error": 0.0505,
+        "z value": -3.4806,
+        "Pr(>|z|)": 0.0005,
+        "predictor": "ACTtCount",
+        "_row": "ACTtCount"
+      },
+      {
+        "Estimate": -0.1395,
+        "Std. Error": 0.0361,
+        "z value": -3.8684,
+        "Pr(>|z|)": 0.0001,
+        "predictor": "ADI",
+        "_row": "ADI"
+      },
+      {
+        "Estimate": -0.4216,
+        "Std. Error": 0.0513,
+        "z value": -8.211,
+        "Pr(>|z|)": 2.1935e-16,
+        "predictor": "BI",
+        "_row": "BI"
+      },
+      {
+        "Estimate": -0.1168,
+        "Std. Error": 0.0391,
+        "z value": -2.9883,
+        "Pr(>|z|)": 0.0028,
+        "predictor": "BioEnergy",
+        "_row": "BioEnergy"
+      },
+      {
+        "Estimate": -0.2746,
+        "Std. Error": 0.0503,
+        "z value": -5.4606,
+        "Pr(>|z|)": 4.7463e-08,
+        "predictor": "EAS",
+        "_row": "EAS"
+      },
+      {
+        "Estimate": 0.087,
+        "Std. Error": 0.044,
+        "z value": 1.9775,
+        "Pr(>|z|)": 0.048,
+        "predictor": "EPS_KURT",
+        "_row": "EPS_KURT"
+      },
+      {
+        "Estimate": 0.572,
+        "Std. Error": 0.0408,
+        "z value": 14.0256,
+        "Pr(>|z|)": 1.0869e-44,
+        "predictor": "EVNspMean",
+        "_row": "EVNspMean"
+      },
+      {
+        "Estimate": 0.1673,
+        "Std. Error": 0.05,
+        "z value": 3.3468,
+        "Pr(>|z|)": 0.0008,
+        "predictor": "KURTt",
+        "_row": "KURTt"
+      },
+      {
+        "Estimate": -0.0054,
+        "Std. Error": 0.0381,
+        "z value": -0.1429,
+        "Pr(>|z|)": 0.8864,
+        "predictor": "MEANt",
+        "_row": "MEANt"
+      },
+      {
+        "Estimate": -0.049,
+        "Std. Error": 0.0524,
+        "z value": -0.9345,
+        "Pr(>|z|)": 0.35,
+        "predictor": "NBPEAKS",
+        "_row": "NBPEAKS"
+      },
+      {
+        "Estimate": 0.0918,
+        "Std. Error": 0.0498,
+        "z value": 1.8417,
+        "Pr(>|z|)": 0.0655,
+        "predictor": "SKEWt",
+        "_row": "SKEWt"
+      },
+      {
+        "Estimate": 0.0904,
+        "Std. Error": 0.0442,
+        "z value": 2.0459,
+        "Pr(>|z|)": 0.0408,
+        "predictor": "TFSD",
+        "_row": "TFSD"
+      },
+      {
+        "Estimate": 0.0318,
+        "Std. Error": 0.0248,
+        "z value": 1.2827,
+        "Pr(>|z|)": 0.1996,
+        "predictor": "VARt",
+        "_row": "VARt"
+      },
+      {
+        "Estimate": 0.4151,
+        "Std. Error": 0.0773,
+        "z value": 5.3672,
+        "Pr(>|z|)": 7.9989e-08,
+        "predictor": "temperature",
+        "_row": "temperature"
+      },
+      {
+        "Estimate": -0.1442,
+        "Std. Error": 0.0546,
+        "z value": -2.642,
+        "Pr(>|z|)": 0.0082,
+        "predictor": "depth",
+        "_row": "depth"
+      },
+      {
+        "Estimate": 2.0159,
+        "Std. Error": 0.0604,
+        "z value": 33.3506,
+        "Pr(>|z|)": 7.1307e-244,
+        "predictor": "sin_hour",
+        "_row": "sin_hour"
+      },
+      {
+        "Estimate": -1.045,
+        "Std. Error": 0.0497,
+        "z value": -21.035,
+        "Pr(>|z|)": 3.1372e-98,
+        "predictor": "cos_hour",
+        "_row": "cos_hour"
+      }
+    ],
+    "significant_predictors": ["(Intercept)", "ACI", "ACTtCount", "ADI", "BI", "BioEnergy", "EAS", "EPS_KURT", "EVNspMean", "KURTt", "TFSD", "temperature", "depth", "sin_hour", "cos_hour"]
+  }
+}

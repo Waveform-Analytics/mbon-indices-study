@@ -1,0 +1,76 @@
+{
+  "timestamp": ["2026-02-03 17:30:57"],
+  "pilot_mode": [false],
+  "scaling_enabled": [true],
+  "predictors_scaled": ["ACI", "ACTspCount", "ACTspFract", "ACTspMean", "ACTtCount", "ACTtFraction", "ACTtMean", "ADI", "AEI", "AGI", "AnthroEnergy", "BGNf", "BGNt", "BI", "BioEnergy", "EAS", "ECU", "ECV", "ENRf", "EPS", "EPS_KURT", "EPS_SKEW", "EVNspCount", "EVNspFract", "EVNspMean", "EVNtCount", "EVNtFraction", "EVNtMean", "HFC", "H_GiniSimpson", "H_Havrda", "H_Renyi", "H_gamma", "H_pairedShannon", "Hf", "Ht", "KURTf", "KURTt", "LEQf", "LEQt", "LFC", "MEANf", "MEANt", "MED", "MFC", "NBPEAKS", "NDSI", "RAOQ", "ROU", "SKEWf", "SKEWt", "SNRf", "SNRt", "TFSD", "VARf", "VARt", "ZCR", "aROI", "nROI", "rBA", "temperature", "depth"],
+  "n_responses_modeled": [9],
+  "responses_modeled": ["fish_activity", "fish_richness", "fish_presence", "dolphin_burst_pulse", "dolphin_echolocation", "dolphin_whistle", "dolphin_activity", "dolphin_presence", "vessel_presence"],
+  "n_indices": [60],
+  "indices_used": ["ACI", "ACTspCount", "ACTspFract", "ACTspMean", "ACTtCount", "ACTtFraction", "ACTtMean", "ADI", "AEI", "AGI", "AnthroEnergy", "BGNf", "BGNt", "BI", "BioEnergy", "EAS", "ECU", "ECV", "ENRf", "EPS", "EPS_KURT", "EPS_SKEW", "EVNspCount", "EVNspFract", "EVNspMean", "EVNtCount", "EVNtFraction", "EVNtMean", "HFC", "H_GiniSimpson", "H_Havrda", "H_Renyi", "H_gamma", "H_pairedShannon", "Hf", "Ht", "KURTf", "KURTt", "LEQf", "LEQt", "LFC", "MEANf", "MEANt", "MED", "MFC", "NBPEAKS", "NDSI", "RAOQ", "ROU", "SKEWf", "SKEWt", "SNRf", "SNRt", "TFSD", "VARf", "VARt", "ZCR", "aROI", "nROI", "rBA"],
+  "n_observations": [13102],
+  "results_summary": [
+    {
+      "metric": "fish_activity",
+      "converged": true,
+      "rho": 0.1692,
+      "aic": 33450.1937,
+      "time_mins": 0.2206
+    },
+    {
+      "metric": "fish_richness",
+      "converged": true,
+      "rho": 0.1596,
+      "aic": 22334.2204,
+      "time_mins": 0.2576
+    },
+    {
+      "metric": "fish_presence",
+      "converged": true,
+      "rho": 0.1236,
+      "aic": 9076.9028,
+      "time_mins": 0.2311
+    },
+    {
+      "metric": "dolphin_burst_pulse",
+      "converged": true,
+      "rho": 0.0602,
+      "aic": 8046.1,
+      "time_mins": 0.3127
+    },
+    {
+      "metric": "dolphin_echolocation",
+      "converged": true,
+      "rho": 0.1015,
+      "aic": 30564.5841,
+      "time_mins": 0.4597
+    },
+    {
+      "metric": "dolphin_whistle",
+      "converged": true,
+      "rho": 0.1138,
+      "aic": 3117.4749,
+      "time_mins": 0.3165
+    },
+    {
+      "metric": "dolphin_activity",
+      "converged": true,
+      "rho": 0.1022,
+      "aic": 32128.3126,
+      "time_mins": 0.3461
+    },
+    {
+      "metric": "dolphin_presence",
+      "converged": true,
+      "rho": 0.0929,
+      "aic": 10692.7882,
+      "time_mins": 0.2749
+    },
+    {
+      "metric": "vessel_presence",
+      "converged": true,
+      "rho": 0.0643,
+      "aic": 6434.6177,
+      "time_mins": 0.2997
+    }
+  ]
+}
